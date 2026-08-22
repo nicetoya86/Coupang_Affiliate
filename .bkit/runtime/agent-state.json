@@ -1,0 +1,21 @@
+{
+  "version": "1.0",
+  "enabled": false,
+  "teamName": "",
+  "feature": "coupang-threads-auto-posting",
+  "pdcaPhase": "act",
+  "orchestrationPattern": "leader",
+  "ctoAgent": "opus",
+  "startedAt": "2026-08-05T16:40:19.851Z",
+  "lastUpdated": "2026-08-18T15:30:38.077Z",
+  "teammates": [],
+  "progress": {
+    "totalTasks": 0,
+    "completedTasks": 0,
+    "inProgressTasks": 0,
+    "failedTasks": 0,
+    "pendingTasks": 0
+  },
+  "recentMessages": [],
+  "sessionId": "86d8e265-9168-4b9c-98f5-e55d627dacaf"
+}

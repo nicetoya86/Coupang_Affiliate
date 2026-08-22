@@ -1,0 +1,6 @@
+.env
+node_modules/
+.state.json
+.storage-state.json
+service-account.json
+screenshots/

@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<title>쿠팡 상품 수집</title>
+<style>
+  body { font-family: -apple-system, "Malgun Gothic", sans-serif; max-width: 780px; margin: 40px auto; padding: 0 16px; color: #222; }
+  h1 { font-size: 20px; }
+  textarea { width: 100%; height: 220px; font-size: 14px; padding: 8px; box-sizing: border-box; }
+  button { font-size: 14px; padding: 8px 16px; margin-top: 10px; margin-right: 8px; cursor: pointer; }
+  table { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 13px; }
+  th, td { border: 1px solid #ddd; padding: 6px 8px; text-align: left; }
+  tr.dup { color: #999; background: #f7f7f7; }
+  .status { margin-top: 12px; font-size: 14px; }
+  .status.error { color: #c00; }
+  .status.ok { color: #0a7a0a; }
+  .hint { color: #666; font-size: 13px; }
+</style>
+</head>
+<body>
+  <h1>쿠팡 상품 수집</h1>
+  <p class="hint">터미널에서 <code>npm run serve</code>로 서버를 켜둔 상태여야 동작합니다. 쿠팡 목록 페이지에서 상품 카드 여러 개를 드래그로 선택해 복사(Ctrl+C)한 다음, 아래에 붙여넣고(Ctrl+V) "미리보기"를 누르세요.</p>
+
+  <textarea id="raw" placeholder="여기에 붙여넣기 (Ctrl+V)"></textarea>
+  <div>
+    <button id="previewBtn">미리보기</button>
+  </div>
+
+  <div id="resultArea"></div>
+
+  <script>
+    const API_BASE = 'http://localhost:5175';
+    const raw = document.getElementById('raw');
+    const previewBtn = document.getElementById('previewBtn');
+    const resultArea = document.getElementById('resultArea');
+    let lastItems = [];
+
+    function renderStatus(msg, cls) {
+      resultArea.innerHTML = `<div class="status ${cls || ''}">${msg}</div>`;
+    }
+
+    function renderTable(items) {
+      lastItems = items;
+      const freshCount = items.filter((i) => !i.isDuplicate).length;
+      const dupCount = items.length - freshCount;
+
+      const rows = items.map((it, idx) => `
+        <tr class="${it.isDuplicate ? 'dup' : ''}">
+          <td><input type="checkbox" data-idx="${idx}" ${it.isDuplicate ? 'disabled' : 'checked'}></td>
+          <td>${it.title}</td>
+          <td>${it.discountPrice || '-'}</td>
+          <td>${it.originalPrice || '-'}</td>
+          <td>${it.discountRate != null ? it.discountRate + '%' : '-'}</td>
+          <td>${it.productUrl ? '✅' : '❌'}</td>
+          <td>${it.isDuplicate ? '중복' : '신규'}</td>
+        </tr>
+      `).join('');
+
+      resultArea.innerHTML = `
+        <div class="status">총 ${items.length}개 인식됨 (신규 ${freshCount} / 중복 ${dupCount})</div>
+        <table>
+          <thead><tr><th>추가</th><th>상품명</th><th>판매가</th><th>원가</th><th>할인율</th><th>URL</th><th>상태</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+        <button id="commitBtn">체크된 상품 구글 시트에 추가</button>
+      `;
+
+      document.getElementById('commitBtn').addEventListener('click', commit);
+    }
+
+    async function preview() {
+      const text = raw.value.trim();
+      if (!text) { renderStatus('붙여넣은 내용이 없습니다.', 'error'); return; }
+      renderStatus('확인 중...');
+      try {
+        const res = await fetch(`${API_BASE}/api/preview`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || '알 수 없는 오류');
+        if (!data.items.length) { renderStatus('상품을 하나도 못 찾았습니다. 다시 드래그+복사해보세요.', 'error'); return; }
+        renderTable(data.items);
+      } catch (e) {
+        renderStatus('오류: ' + e.message, 'error');
+      }
+    }
+
+    async function commit() {
+      const checked = Array.from(document.querySelectorAll('#resultArea input[type=checkbox]:checked'))
+        .map((el) => lastItems[Number(el.dataset.idx)]);
+      if (!checked.length) { renderStatus('선택된 상품이 없습니다.', 'error'); return; }
+      renderStatus('시트에 추가하는 중...');
+      try {
+        const res = await fetch(`${API_BASE}/api/commit`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ items: checked }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || '알 수 없는 오류');
+        renderStatus(`완료: ${data.added}개 시트에 추가됨. 제휴 링크는 시트에서 직접 채워넣으세요.`, 'ok');
+        raw.value = '';
+      } catch (e) {
+        renderStatus('오류: ' + e.message, 'error');
+      }
+    }
+
+    previewBtn.addEventListener('click', preview);
+  </script>
+</body>
+</html>

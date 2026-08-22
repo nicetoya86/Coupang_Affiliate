@@ -1,0 +1,56 @@
+{
+  "name": "쿠팡 파트너스 - 오류 알림 (텔레그램)",
+  "nodes": [
+    {
+      "id": "err-trigger-1",
+      "name": "오류 발생 감지",
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [-200, 300],
+      "parameters": {}
+    },
+    {
+      "id": "err-code-1",
+      "name": "에러를 쉬운 말로 변환",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [20, 300],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const nodeNameMap = {\n  '현재 토큰 불러오기': 'Threads 로그인 정보 확인',\n  '현재 토큰 불러오기 (갱신용)': 'Threads 로그인 정보 확인 (자동 갱신)',\n  'NVIDIA 요청 만들기': '게시글 문구 준비',\n  '스토리텔링 생성 (NVIDIA API)': 'AI 게시글 문구 생성',\n  '응답 파싱 및 댓글 텍스트 구성': '게시글/댓글 문구 정리',\n  '본문 컨테이너 생성': 'Threads 게시글 준비',\n  '본문 게시': 'Threads 게시글 올리기',\n  '댓글 컨테이너 생성': 'Threads 댓글 준비',\n  '댓글 게시 (제휴링크)': 'Threads 댓글(제휴링크) 올리기',\n  '토큰 갱신 요청': 'Threads 로그인 정보 갱신',\n  '새 토큰 저장': 'Threads 로그인 정보 저장'\n};\n\nconst input = $input.first().json;\nconst execution = input.execution || {};\nconst errorObj = execution.error || {};\nconst errorMessage = errorObj.message || '알 수 없는 오류';\nconst lastNode = execution.lastNodeExecuted || '알 수 없는 단계';\nconst friendlyStep = nodeNameMap[lastNode] || lastNode;\nconst lowerMsg = String(errorMessage).toLowerCase();\n\nlet explanation = '\"' + friendlyStep + '\" 단계에서 오류가 발생했습니다.';\nlet action = '실행 기록(n8n Executions)을 확인해주세요.';\n\nif (lowerMsg.indexOf('authorization') !== -1) {\n  explanation = 'API 인증 정보(Authorization 헤더)에 문제가 있습니다.';\n  action = 'NVIDIA API Key 등 관련 Credential 값을 다시 확인해주세요.';\n} else if (lowerMsg.indexOf('resourceexhausted') !== -1 || lowerMsg.indexOf('503') !== -1) {\n  explanation = 'AI(NVIDIA) 서버가 혼잡해서 요청이 거절되었습니다.';\n  action = '잠시 후 다시 실행해주세요.';\n} else if (lowerMsg.indexOf('access_token') !== -1 && lowerMsg.indexOf('expired') !== -1) {\n  explanation = 'Threads 액세스 토큰이 만료되었습니다.';\n  action = '토큰을 재발급하고 60일 토큰 교환을 다시 진행해주세요.';\n} else if (lowerMsg.indexOf(\"json' property isn't an object\") !== -1) {\n  explanation = 'Code 노드 실행 모드 설정에 문제가 있습니다.';\n  action = '문제가 된 Code 노드의 모드가 runOnceForAllItems로 되어있는지 확인해주세요.';\n} else if (lowerMsg.indexOf('creation_id') !== -1 || lowerMsg.indexOf('threads_publish') !== -1) {\n  explanation = 'Threads 게시물 발행 단계에서 문제가 발생했습니다.';\n  action = '컨테이너 생성 응답에 id 값이 정상적으로 있는지 확인해주세요.';\n}\n\nconst message = '🚨 쿠팡 파트너스 자동 포스팅 오류\\n\\n' + explanation + '\\n\\n- 실패 단계: ' + friendlyStep + '\\n- 원본 에러: ' + errorMessage + '\\n- 대처 방법: ' + action + '\\n- 실행 링크: ' + (execution.url || '(없음)');\n\nreturn [{ json: { telegram_message: message } }];"
+      }
+    },
+    {
+      "id": "err-telegram-1",
+      "name": "텔레그램으로 알림 보내기",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [240, 300],
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "REPLACE_WITH_YOUR_TELEGRAM_CHAT_ID",
+        "text": "={{ $json.telegram_message }}",
+        "additionalFields": {}
+      },
+      "credentials": {
+        "telegramApi": {
+          "id": "",
+          "name": "Telegram Bot"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "오류 발생 감지": { "main": [[{ "node": "에러를 쉬운 말로 변환", "type": "main", "index": 0 }]] },
+    "에러를 쉬운 말로 변환": { "main": [[{ "node": "텔레그램으로 알림 보내기", "type": "main", "index": 0 }]] }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {},
+  "n8nLiveWorkflowId": "j8NT6Clw2sGilnnx",
+  "n8nLiveWorkflowUrl": "https://fastlane12.app.n8n.cloud/workflow/j8NT6Clw2sGilnnx"
+}

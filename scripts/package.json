@@ -1,0 +1,21 @@
+{
+  "name": "coupang-partners-link-automation",
+  "version": "0.2.0",
+  "private": true,
+  "description": "Logs into Coupang Partners (manual login), collects new recommended-product affiliate links, and appends them to a Google Sheet queue.",
+  "type": "commonjs",
+  "scripts": {
+    "install-browser": "playwright install chromium",
+    "run": "node generate-coupang-link.js",
+    "add": "node add-product.js",
+    "collect": "node collect-from-clipboard.js",
+    "serve": "node collect-server.js",
+    "test": "node --test lib/*.test.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "googleapis": "^144.0.0",
+    "playwright": "^1.48.0",
+    "sharp": "^0.33.5"
+  }
+}
