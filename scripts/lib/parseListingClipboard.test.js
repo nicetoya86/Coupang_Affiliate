@@ -90,8 +90,37 @@ test('북마클릿 {raw,urls} JSON이면 상품과 URL을 순서대로 매칭한
   assert.strictEqual(items[3].productUrl, 'https://www.coupang.com/vp/products/4444');
 });
 
-test('일반 텍스트(북마클릿 안 씀)면 productUrl은 빈 값이다', () => {
+test('일반 텍스트(북마클릿 안 씀)면 productUrl/imageUrl은 빈 값이다', () => {
   const items = parseListingPayload(REAL_SAMPLE);
   assert.strictEqual(items.length, 4);
   assert.strictEqual(items[0].productUrl, '');
+  assert.strictEqual(items[0].imageUrl, '');
+});
+
+test('북마클릿 {raw,urls,images} JSON이면 이미지도 순서대로 매칭한다', () => {
+  const payload = JSON.stringify({
+    raw: REAL_SAMPLE,
+    urls: [],
+    images: [
+      'https://thumbnail.coupangcdn.com/1111.jpg',
+      'https://thumbnail.coupangcdn.com/2222.jpg',
+      'https://thumbnail.coupangcdn.com/3333.jpg',
+      'https://thumbnail.coupangcdn.com/4444.jpg',
+    ],
+  });
+  const items = parseListingPayload(payload);
+  assert.strictEqual(items.length, 4);
+  assert.strictEqual(items[0].imageUrl, 'https://thumbnail.coupangcdn.com/1111.jpg');
+  assert.strictEqual(items[3].imageUrl, 'https://thumbnail.coupangcdn.com/4444.jpg');
+});
+
+test('images 배열이 카드 수보다 적으면 뒤쪽은 빈 값으로 채워진다', () => {
+  const payload = JSON.stringify({
+    raw: REAL_SAMPLE,
+    urls: [],
+    images: ['https://thumbnail.coupangcdn.com/1111.jpg'],
+  });
+  const items = parseListingPayload(payload);
+  assert.strictEqual(items[0].imageUrl, 'https://thumbnail.coupangcdn.com/1111.jpg');
+  assert.strictEqual(items[1].imageUrl, '');
 });

@@ -12,7 +12,7 @@
 
 require('dotenv').config();
 const { createSheetsClient, getExistingProductTitles, appendRows } = require('./lib/sheets');
-const { toSheetRow } = require('./lib/sheetRow');
+const { toSheetRow, nowKstIso } = require('./lib/sheetRow');
 const { readClipboardText } = require('./lib/clipboard');
 const { parseListingPayload } = require('./lib/parseListingClipboard');
 
@@ -42,7 +42,7 @@ async function main() {
   console.log(`[인식됨] 총 ${parsed.length}개 (신규 ${fresh.length} / 중복 ${dupCount})\n`);
   fresh.forEach((p, i) => {
     console.log(`${i + 1}. ${p.title}`);
-    console.log(`   판매가: ${p.discountPrice || '-'}  원가: ${p.originalPrice || '-'}  할인율: ${p.discountRate ?? '-'}%`);
+    console.log(`   판매가: ${p.discountPrice || '-'}  원가: ${p.originalPrice || '-'}  할인율: ${p.discountRate ?? '-'}%  이미지: ${p.imageUrl ? '있음' : '-'}`);
   });
 
   if (!commit) {
@@ -55,16 +55,15 @@ async function main() {
     return;
   }
 
-  const now = new Date().toISOString();
+  const now = nowKstIso();
   const rows = fresh.map((p) =>
     toSheetRow(
       {
         product_title: p.title,
         price: p.discountPrice,
         product_desc: p.title,
-        product_url: p.productUrl || '',
         affiliate_link: '',
-        image_url: '',
+        image_url: p.imageUrl || '',
       },
       now,
     ),

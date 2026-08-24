@@ -52,6 +52,7 @@
           <td>${it.originalPrice || '-'}</td>
           <td>${it.discountRate != null ? it.discountRate + '%' : '-'}</td>
           <td>${it.productUrl ? '✅' : '❌'}</td>
+          <td>${it.imageUrl ? '✅' : '❌'}</td>
           <td>${it.isDuplicate ? '중복' : '신규'}</td>
         </tr>
       `).join('');
@@ -59,7 +60,7 @@
       resultArea.innerHTML = `
         <div class="status">총 ${items.length}개 인식됨 (신규 ${freshCount} / 중복 ${dupCount})</div>
         <table>
-          <thead><tr><th>추가</th><th>상품명</th><th>판매가</th><th>원가</th><th>할인율</th><th>URL</th><th>상태</th></tr></thead>
+          <thead><tr><th>추가</th><th>상품명</th><th>판매가</th><th>원가</th><th>할인율</th><th>URL</th><th>이미지</th><th>상태</th></tr></thead>
           <tbody>${rows}</tbody>
         </table>
         <button id="commitBtn">체크된 상품 구글 시트에 추가</button>

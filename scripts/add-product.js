@@ -7,7 +7,7 @@
  *
  * 대화형: node add-product.js  (클립보드 인식값 기반으로 질문/답변)
  * 비대화형(예: 크롬 확장이 페이지에서 읽은 값 전달):
- *   node add-product.js --title "..." --price "..." --desc "..." --url "..." --image "https://..." [--link "https://link.coupang.com/..."] [--force]
+ *   node add-product.js --title "..." --price "..." --desc "..." --image "https://..." [--link "https://link.coupang.com/..."] [--force]
  */
 
 require('dotenv').config();
@@ -16,7 +16,7 @@ const { stdin, stdout } = require('node:process');
 const { createSheetsClient, getExistingProductTitles, appendRows } = require('./lib/sheets');
 const { createDriveClient, uploadPublicImage } = require('./lib/drive');
 const { composeProductImage } = require('./lib/composeImage');
-const { toSheetRow } = require('./lib/sheetRow');
+const { toSheetRow, nowKstIso } = require('./lib/sheetRow');
 const { readClipboardText } = require('./lib/clipboard');
 const { parseClipboardPayload } = require('./lib/parseClipboardProduct');
 
@@ -74,7 +74,6 @@ async function runNonInteractive(sheets, drive, cliArgs) {
   const originalPrice = cliArgs.original || '';
   const discountRate = cliArgs.rate ? Number(cliArgs.rate) : null;
   const productDesc = cliArgs.desc || productTitle;
-  const productUrl = cliArgs.url || '';
   const affiliateLink = cliArgs.link || '';
   if (affiliateLink && !affiliateLink.includes('link.coupang.com')) {
     throw new Error('제휴 링크가 link.coupang.com 형식이 아닙니다.');
@@ -91,12 +90,11 @@ async function runNonInteractive(sheets, drive, cliArgs) {
     product_title: productTitle,
     price: discountPrice,
     product_desc: productDesc,
-    product_url: productUrl,
     affiliate_link: affiliateLink,
     image_url: imageUrl,
   };
 
-  await appendRows(sheets, GOOGLE_SHEET_ID, GOOGLE_SHEET_NAME, [toSheetRow(candidate, new Date().toISOString())]);
+  await appendRows(sheets, GOOGLE_SHEET_ID, GOOGLE_SHEET_NAME, [toSheetRow(candidate, nowKstIso())]);
 
   console.log('[완료] 시트에 추가됨:');
   console.log(`  상품명: ${candidate.product_title}`);
@@ -134,7 +132,6 @@ async function runInteractive(sheets, drive) {
     const discountRateInput = (await rl.question(`할인율 % (숫자만, 예: 98, 없으면 엔터)${guess.discountRate != null ? ` (Enter=${guess.discountRate})` : ''}: `)).trim() || (guess.discountRate != null ? String(guess.discountRate) : '');
     const discountRate = discountRateInput ? Number(discountRateInput) : null;
     const productDesc = (await rl.question(`상품 설명 (없으면 상품명 그대로): `)).trim() || productTitle;
-    const productUrl = (await rl.question('상품 상세페이지 URL (없으면 엔터): ')).trim();
     const affiliateLink = (await rl.question('제휴 링크 (link.coupang.com/... , 없으면 엔터 - 나중에 시트에서 직접 채워넣기): ')).trim();
     if (affiliateLink && !affiliateLink.includes('link.coupang.com')) {
       throw new Error('제휴 링크가 link.coupang.com 형식이 아닙니다. 쿠팡 파트너스에서 생성한 링크를 붙여넣어주세요.');
@@ -153,12 +150,11 @@ async function runInteractive(sheets, drive) {
       product_title: productTitle,
       price: discountPrice,
       product_desc: productDesc,
-      product_url: productUrl,
       affiliate_link: affiliateLink,
       image_url: imageUrl,
     };
 
-    await appendRows(sheets, GOOGLE_SHEET_ID, GOOGLE_SHEET_NAME, [toSheetRow(candidate, new Date().toISOString())]);
+    await appendRows(sheets, GOOGLE_SHEET_ID, GOOGLE_SHEET_NAME, [toSheetRow(candidate, nowKstIso())]);
 
     console.log('\n[완료] 시트에 추가됨:');
     console.log(`  상품명: ${candidate.product_title}`);

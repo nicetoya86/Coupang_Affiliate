@@ -8,7 +8,6 @@ test('컬럼 순서대로 배열을 만든다', () => {
       product_title: '3in1 무선 핸디 청소기',
       price: '29,900원',
       product_desc: '강력한 흡입력',
-      product_url: 'https://www.coupang.com/vp/products/1234567890',
       affiliate_link: 'https://link.coupang.com/a/example',
     },
     '2026-08-05T00:00:00.000Z',

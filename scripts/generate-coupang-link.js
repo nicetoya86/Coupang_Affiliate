@@ -152,7 +152,6 @@ async function collectCandidate(context, page, drive, item, index) {
       product_title: productTitle,
       price: price.trim(),
       product_desc: productTitle,
-      product_url: '',
       affiliate_link: affiliateLink,
       image_url: imageUrl,
     };
@@ -215,7 +214,7 @@ async function main() {
         const item = items.nth(index);
         const candidate = await collectCandidate(context, page, drive, item, index);
         await appendRows(sheets, GOOGLE_SHEET_ID, GOOGLE_SHEET_NAME, [
-          toSheetRow(candidate, new Date().toISOString()),
+          toSheetRow(candidate, nowKstIso()),
         ]);
         collected += 1;
         console.log(`[완료] 시트에 추가: ${candidate.product_title}`);

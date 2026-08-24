@@ -13,7 +13,7 @@ const http = require('node:http');
 const fs = require('node:fs');
 const path = require('node:path');
 const { createSheetsClient, getExistingProductTitles, appendRows } = require('./lib/sheets');
-const { toSheetRow } = require('./lib/sheetRow');
+const { toSheetRow, nowKstIso } = require('./lib/sheetRow');
 const { parseListingPayload } = require('./lib/parseListingClipboard');
 
 const GOOGLE_SERVICE_ACCOUNT_KEY_FILE = process.env.GOOGLE_SERVICE_ACCOUNT_KEY_FILE;
@@ -80,16 +80,15 @@ const server = http.createServer(async (req, res) => {
         sendJson(res, 400, { error: '추가할 상품이 없습니다.' });
         return;
       }
-      const now = new Date().toISOString();
+      const now = nowKstIso();
       const rows = items.map((p) =>
         toSheetRow(
           {
             product_title: p.title,
             price: p.discountPrice,
             product_desc: p.title,
-            product_url: p.productUrl || '',
             affiliate_link: '',
-            image_url: '',
+            image_url: p.imageUrl || '',
           },
           now,
         ),

@@ -34,8 +34,9 @@
 - **구글 서비스계정 키 보안**: `GOOGLE_SERVICE_ACCOUNT_KEY_FILE`이 가리키는 JSON 파일은 절대 커밋/공유하지 마세요.
 - **상품 소스**: 검색이 아니라 상품 링크 페이지의 기본 추천상품 목록(약 24개, 골드박스/패션/로켓프레시 등 섹션으로 구성)을 그대로 씁니다.
 - **할인율 필터**: 카드 텍스트에서 `NN%` 패턴을 파싱해 `.env`의 `MIN_DISCOUNT_RATE`(기본 90) 이상인 상품만 "링크 생성" 단계로 넘깁니다. 할인율 표시가 없거나 파싱 안 되는 카드는 안전하게 제외됩니다 — 실제 카드에 할인율 배지가 없거나 다른 형식이면 `lib/discount.js`의 `parseDiscountRate` 정규식을 실제 페이지에 맞게 조정해야 합니다.
-- **`product_url`/`product_desc` 관련 알려진 한계**: 추천상품 카드에는 상세페이지로 가는 `<a href>`가 없습니다. "상품정보" 버튼으로 URL을 얻을 수는 있지만 WAF(Access Denied) 회피용 별도 처리가 필요하고, 그렇게 얻어도 실제 상세설명은 이미지 배너 위주라 텍스트가 거의 없어(조사 결과 반영) 이 경로는 구현하지 않았습니다. `product_url`은 항상 빈 문자열로 저장되고, `product_desc`는 `product_title`과 동일한 값이 저장됩니다.
-- **중복판별(dedup) 기준은 `product_title`**: 원래는 `product_url` 기준을 계획했으나 위 이유로 불가능해 상품명 문자열로 대체했습니다. 동명이인 상품(완전히 같은 이름의 다른 옵션)이 있으면 오탐 가능성이 있는 알려진 한계입니다.
+- **`product_desc` 관련 알려진 한계**: 추천상품 카드에는 상세페이지로 가는 `<a href>`가 없고, 실제 상세설명도 이미지 배너 위주라 텍스트가 거의 없어(조사 결과 반영) `product_desc`는 `product_title`과 동일한 값이 저장됩니다.
+- **중복판별(dedup) 기준은 `product_title`**: 원래는 상품 URL 기준을 계획했으나 위 이유로 불가능해 상품명 문자열로 대체했습니다. 동명이인 상품(완전히 같은 이름의 다른 옵션)이 있으면 오탐 가능성이 있는 알려진 한계입니다.
+- **2026-08-25: `product_url` 컬럼 삭제됨**: 시트에서 아예 뺐습니다. 항상 빈 값이었고(위 이유로 못 채움), AI 프롬프트에서도 "참고용"으로만 쓰였을 뿐 실질 효과가 없었습니다. `add-product.js`가 예전에 받던 `--url`/URL 질문도 함께 제거됐습니다.
 - **간헐적 실패(약 20~30%)**: "링크 생성" 버튼을 못 찾는 실패가 섹션 경계 근처에서 산발적으로 발생합니다(고정 상단 네비게이션과 스크롤 위치가 겹치는 것으로 추정). 스크린샷을 남기고 다음 후보로 넘어가는 정상 동작이며, 크래시하지 않습니다.
 - **ToS 리스크**: 쿠팡 파트너스는 자동화를 제한할 수 있습니다. 계정 정지 리스크를 인지하고 진행해주세요.
 - **n8n 연동은 별도**: 이 스크립트는 시트에 쓰는 것까지만 합니다. 시트를 읽어 Threads에 자동 게시하는 것은 n8n 워크플로우의 별도 브랜치가 담당합니다.
@@ -59,7 +60,7 @@ npm run install-browser   # Playwright용 Chromium 다운로드
 3. "사용자 인증 정보" → "사용자 인증 정보 만들기" → "서비스 계정" 생성
 4. 서비스계정 → "키" → "키 추가" → JSON 다운로드
 5. JSON 안의 `client_email`을 대상 구글시트에 "편집자"로 공유
-6. 시트 1행에 헤더 작성: `collected_at | product_title | price | product_desc | product_url | affiliate_link | image_url | posted`
+6. 시트 1행에 헤더 작성: `collected_at | product_title | price | product_desc | affiliate_link | image_url | posted`
 
 ## 3. 환경변수 설정
 
@@ -140,32 +141,47 @@ dedup/시트 행 스키마 같은 순수 로직만 검증합니다 (실제 브�
    자동 생성해주므로 별도 이미지 합성/업로드 단계를 안 거쳐도 됨.
 5. 다음 페이지가 있으면 다시 드래그 선택 + 복사 + `npm run collect -- --commit` 반복.
 
-### 7.0 (선택, 페이지에 따라 안 될 수 있음) 상품 URL도 같이 가져오기
+### 7.0 상품 URL·이미지도 같이 가져오기 (북마클릿, 2026-08-25 업데이트)
 
 > ⚠️ **2026-08-19 확인**: `/np/omp#` (판매자특가) 페이지는 카드가 `<a href>`가 아니라 `<div>` +
 > 배경이미지(CSS `background: url(...)`) + JS 클릭 라우팅으로만 되어있어서 **URL 자체를
-> DOM에서 못 가져옴** (실제 카드 HTML로 확인함, 이미지도 `<img>` 태그 아님). 이 페이지에서는
-> 아래 북마클릿을 써도 URL은 항상 빈 값 — 그냥 평소처럼 `Ctrl+C`만 써도 결과 동일함.
+> DOM에서 못 가져옴** (실제 카드 HTML로 확인함). URL은 이 페이지에서 영구적으로 빈 값 —
 > 제휴 링크 만들 때는 저장된 상품명으로 쿠팡에서 검색해 들어가면(그때는 주소창에 진짜 URL이
 > 뜸) 거기서 "링크 생성" 누르면 됨 — URL 사전수집 없이도 흐름은 그대로 유지됨.
 >
-> 아래 북마클릿 자체는 삭제하지 않음 — 다른 페이지(진짜 `<a href>`가 있는 목록)에서는 여전히
-> 유효할 수 있음.
+> **이미지는 다르게 처리함(2026-08-25)**: 같은 페이지라도 이미지는 CSS `background-image`로
+> 실제 브라우저가 렌더링하는 값이라, `getComputedStyle`로 읽으면 클래스명이 `cover_box`를
+> 포함한 요소에서 실제 URL을 뽑아낼 수 있다(클론이 아니라 라이브 DOM을 직접 조회 — 이게
+> URL 스크레이핑이 막힌 것과 이미지가 막히지 않는 이유의 차이). 실제 카드 outerHTML로
+> 확정된 구조: `<div class="styles_cover_box__..." style="background: url(...)">`.
+>
+> **2026-08-25 실전 테스트에서 발견된 버그와 수정**: 처음엔 `<img>` 태그를 먼저 찾고 없을
+> 때만 `cover_box`로 폴백했는데, 목록 텍스트 줄(예: "내일(수) 도착 보장") 안에 배송 배지
+> 아이콘(`<img src=".../icons/pdd-2p-tomorrow.png">`)이 실제로 껴있어서 그게 먼저 잡혀
+> 상품 사진 대신 아이콘 URL이 4개 다 똑같이 들어가는 문제가 실사용 중 발생함. `cover_box`
+> 배경이미지 스캔을 기본으로 바꾸고 `<img>` 스캔은 그것도 못 찾았을 때만 쓰는 최후
+> 폴백으로 순서를 바꿔서 고침. 추가로, 드래그 선택이 보통 사진 다음(배지/제목 줄)부터
+> 시작해서 사진 자체는 선택 밖인 경우가 많아 카드별 이미지가 하나씩 밀리는 문제도 있었음 —
+> 선택과 처음 겹치는 `cover_box` 바로 앞(문서 순서상 직전) 요소 1개를 자동으로 끼워 넣어
+> 보정함. 이 보정으로 4개 상품 정상 수집 확인됨.
 
-그냥 드래그+`Ctrl+C`만 하면 화면에 보이는 텍스트만 잡히고 상품 URL(`<a href>` 속성)은 못 잡힘.
-제휴 링크를 생성하려면 상품 상세페이지에 들어가야 하므로 URL이 필요함 — 아래 북마클릿을 쓰면
-텍스트+URL을 한번에 클립보드로 복사한다(URL이 실제로 있는 페이지에 한해서).
+그냥 드래그+`Ctrl+C`만 하면 화면에 보이는 텍스트만 잡히고 상품 URL/이미지는 못 잡힘.
+아래 북마클릿을 쓰면 텍스트+URL+이미지를 한번에 클립보드로 복사한다(각각 실제로 있는
+페이지에 한해서 — 없으면 빈 값으로 채워짐).
 
 1. 북마크 바에 새 북마크 추가 → 이름 "쿠팡 목록 수집", URL에 아래 한 줄을 그대로 붙여넣기:
    ```
-   javascript:(function(){var s=window.getSelection();var t=s.toString().trim();if(!s.rangeCount||!t){alert('먼저 상품 목록을 마우스로 드래그해 선택한 후 다시 클릭하세요.');return;}var f=s.getRangeAt(0).cloneContents();var a=f.querySelectorAll('a[href*="/vp/products/"]');var seen={};var urls=[];for(var i=0;i<a.length;i++){var h=a[i].getAttribute('href')||'';if(h.indexOf('http')!==0)h=location.origin+h;if(h&&!seen[h]){seen[h]=true;urls.push(h);}}var p=JSON.stringify({raw:t,urls:urls});navigator.clipboard.writeText(p).then(function(){alert('복사됨! (상품 URL '+urls.length+'개 포함) collect 페이지로 돌아가 붙여넣으세요.');},function(){alert('클립보드 복사 실패 - 브라우저 권한을 확인하세요.');});})();
+   javascript:(function(){var s=window.getSelection();var t=s.toString().trim();if(!s.rangeCount||!t){alert('먼저 상품 목록을 마우스로 드래그해 선택한 후 다시 클릭하세요.');return;}var r=s.getRangeAt(0);var f=r.cloneContents();var a=f.querySelectorAll('a[href*="/vp/products/"]');var seen={};var urls=[];for(var i=0;i<a.length;i++){var h=a[i].getAttribute('href')||'';if(h.indexOf('http')!==0)h=location.origin+h;if(h&&!seen[h]){seen[h]=true;urls.push(h);}}function bgUrl(el){var bg=getComputedStyle(el).backgroundImage;var m=bg&&bg.match(/url\((['"]?)(.*?)\1\)/);return m?m[2]:'';}var allCover=document.querySelectorAll('[class*="cover_box"], [class*="cover-box"]');var images=[];var preceding=null;var started=false;for(var k=0;k<allCover.length;k++){var el=allCover[k];if(r.intersectsNode(el)){if(!started&&preceding){var pUrl=bgUrl(preceding);if(pUrl)images.push(pUrl);}started=true;var url=bgUrl(el);if(url)images.push(url);}else if(!started){preceding=el;}}if(!images.length){var imgs=f.querySelectorAll('img');for(var j=0;j<imgs.length;j++){var src=imgs[j].getAttribute('src')||imgs[j].getAttribute('data-src')||'';if(src&&src.indexOf('http')!==0)src=location.origin+src;if(src)images.push(src);}}var p=JSON.stringify({raw:t,urls:urls,images:images});navigator.clipboard.writeText(p).then(function(){alert('복사됨! (URL '+urls.length+'개, 이미지 '+images.length+'개 포함) collect 페이지로 돌아가 붙여넣으세요.');},function(){alert('클립보드 복사 실패 - 브라우저 권한을 확인하세요.');});})();
    ```
 2. 쿠팡 목록 페이지에서 상품 카드 여러 개를 평소처럼 드래그로 선택.
-3. `Ctrl+C` 대신 북마크 바의 "쿠팡 목록 수집" 클릭 → 텍스트+URL이 JSON으로 클립보드에 복사됨.
-4. `npm run collect` 또는 `쿠팡상품등록.html`에 그대로 붙여넣기 — 자동으로 URL 있는 JSON인지
-   인식해서 각 상품에 URL을 순서대로 붙여줌 (웹 화면 미리보기 표의 "URL" 칸에 ✅/❌로 표시됨).
-5. 소스: `scripts/bookmarklet-listing.js`. 상품 개수와 인식된 URL 개수가 다르면(선택 범위가
-   카드 경계와 안 맞았거나 링크 구조가 바뀐 경우) 뒤쪽 상품부터 URL이 밀릴 수 있음 — 그럴 땐
+3. `Ctrl+C` 대신 북마크 바의 "쿠팡 목록 수집" 클릭 → 텍스트+URL+이미지가 JSON으로 클립보드에 복사됨.
+4. `npm run collect` 또는 `쿠팡상품등록.html`에 그대로 붙여넣기 — 자동으로 URL/이미지 있는
+   JSON인지 인식해서 각 상품에 순서대로 붙여줌 (웹 화면 미리보기 표의 "URL"/"이미지" 칸에
+   ✅/❌로 표시됨). `--commit`으로 시트에 쓰면 `image_url` 컬럼이 채워지고, n8n 워크플로우는
+   이 값이 있으면 본문 게시 자체를 `media_type: IMAGE`로 올린다(추가 설정 불필요 — 이미
+   그렇게 만들어져 있음).
+5. 소스: `scripts/bookmarklet-listing.js`. 상품 개수와 인식된 URL/이미지 개수가 다르면(선택
+   범위가 카드 경계와 안 맞았거나 마크업이 바뀐 경우) 뒤쪽 상품부터 밀릴 수 있음 — 그럴 땐
    드래그 범위를 좁혀서 다시 시도.
 
 ### 7.1 터미널 대신 웹 화면으로 (`npm run serve`)
@@ -205,7 +221,6 @@ npm run serve
 ## 알려진 한계
 
 - `product_desc`는 실제 상세설명이 아니라 `product_title`과 동일한 값입니다.
-- `product_url`은 항상 빈 문자열입니다 (위 "먼저 알아야 할 것" 참고).
 - dedup은 `product_title` 문자열 완전 일치 기준이라 동명 상품 오탐 가능성이 있습니다.
 - "링크 생성" 클릭 시 약 20~30% 확률로 버튼을 못 찾아 건너뛰는 경우가 있습니다 (섹션 경계 근처, 원인 추정: 고정 헤더와 스크롤 위치 충돌).
 - 제외 카테고리(기프트카드, 의료기기 등) 자동 필터링 없음 — 목록에 섞여 있으면 그대로 수집됩니다.

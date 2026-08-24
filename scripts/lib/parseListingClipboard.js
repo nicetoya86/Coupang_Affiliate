@@ -69,24 +69,26 @@ function parseListingClipboard(raw) {
     .filter((p) => p.title && (p.discountPrice || p.originalPrice));
 }
 
-// 북마클릿(bookmarklet-listing.js)이 넣은 {raw, urls} JSON이면 텍스트+URL을 순서대로 매칭하고,
-// 아니면(그냥 드래그+Ctrl+C만 한 경우) URL 없이 텍스트만 파싱한다.
-// urls는 선택 영역 안의 상품 링크를 DOM 순서대로 모은 것이라 items와 같은 순서라고 가정 - 카드
-// 개수와 URL 개수가 어긋나면(선택 범위가 틀어졌거나 링크 구조가 바뀌면) 뒤쪽부터 밀릴 수 있음.
+// 북마클릿(bookmarklet-listing.js)이 넣은 {raw, urls, images} JSON이면 텍스트+URL+이미지를
+// 순서대로 매칭하고, 아니면(그냥 드래그+Ctrl+C만 한 경우) URL/이미지 없이 텍스트만 파싱한다.
+// urls/images는 선택 영역 안에서 DOM 순서대로 모은 것이라 items와 같은 순서라고 가정 - 카드
+// 개수와 어긋나면(선택 범위가 틀어졌거나 마크업이 바뀌면) 뒤쪽부터 밀릴 수 있음.
 function parseListingPayload(clipboardText) {
   let raw = clipboardText || '';
   let urls = [];
+  let images = [];
   try {
     const parsed = JSON.parse(clipboardText);
     if (parsed && typeof parsed.raw === 'string') {
       raw = parsed.raw;
       urls = Array.isArray(parsed.urls) ? parsed.urls : [];
+      images = Array.isArray(parsed.images) ? parsed.images : [];
     }
   } catch (e) {
     // JSON이 아니면 순수 텍스트로 취급
   }
   const items = parseListingClipboard(raw);
-  return items.map((item, i) => ({ ...item, productUrl: urls[i] || '' }));
+  return items.map((item, i) => ({ ...item, productUrl: urls[i] || '', imageUrl: images[i] || '' }));
 }
 
 module.exports = { parseListingClipboard, parseListingPayload, isTitleCandidate };

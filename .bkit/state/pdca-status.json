@@ -1,6 +1,6 @@
 {
   "version": "2.0",
-  "lastUpdated": "2026-08-18T15:04:02.221Z",
+  "lastUpdated": "2026-08-24T16:57:27.236Z",
   "activeFeatures": [
     "coupang-threads-auto-posting",
     "scripts",
@@ -38,9 +38,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-07-22T16:25:26.291Z",
-        "lastUpdated": "2026-08-18T15:04:02.221Z"
+        "lastUpdated": "2026-08-24T16:57:27.236Z"
       },
-      "lastFile": "D:\\vibecording\\Coupang_Affiliate\\scripts\\lib\\parseListingClipboard.test.js"
+      "lastFile": "D:\\vibecording\\Coupang_Affiliate\\scripts\\add-product.js"
     },
     "scratchpad": {
       "phase": "do",
@@ -77,7 +77,7 @@
   "session": {
     "startedAt": "2026-07-20T15:29:58.618Z",
     "onboardingCompleted": false,
-    "lastActivity": "2026-08-18T15:04:02.221Z"
+    "lastActivity": "2026-08-24T16:57:27.236Z"
   },
   "history": [
     {
@@ -610,6 +610,156 @@
     },
     {
       "timestamp": "2026-08-18T15:04:02.221Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-08-24T16:02:48.981Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-08-24T16:02:59.475Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-08-24T16:03:04.380Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-08-24T16:03:08.591Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-08-24T16:03:17.304Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-08-24T16:03:35.097Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-08-24T16:36:32.900Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-08-24T16:48:41.964Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-08-24T16:48:46.816Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-08-24T16:48:51.764Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-08-24T16:48:56.762Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-08-24T16:49:01.665Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-08-24T16:49:06.417Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-08-24T16:49:17.317Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-08-24T16:56:14.259Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-08-24T16:56:20.384Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-08-24T16:56:25.605Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-08-24T16:56:33.588Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-08-24T16:56:38.426Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-08-24T16:56:47.284Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-08-24T16:56:56.914Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-08-24T16:57:02.672Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-08-24T16:57:11.362Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-08-24T16:57:17.488Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-08-24T16:57:27.236Z",
       "feature": "scripts",
       "phase": "do",
       "action": "updated"
