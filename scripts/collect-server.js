@@ -13,12 +13,37 @@ const http = require('node:http');
 const fs = require('node:fs');
 const path = require('node:path');
 const { createSheetsClient, getExistingProductTitles, appendRows } = require('./lib/sheets');
+const { composeAndUploadImage } = require('./lib/imagePipeline');
+const { composeProductImage } = require('./lib/composeImage');
+const { upsizeCoupangThumbnail } = require('./lib/coupangImageUrl');
 const { toSheetRow, nowKstIso } = require('./lib/sheetRow');
 const { parseListingPayload } = require('./lib/parseListingClipboard');
+
+// 미리보기 화면에서 실제 합성 결과(할인율/가격 배지)를 눈으로 확인할 수 있도록, 실제 업로드 없이
+// 로컬에서만 합성해 base64로 돌려준다. imageUrl 없거나 다운로드/합성 실패하면 조용히 빈 값.
+async function buildThumbnailPreview(item) {
+  if (!item.imageUrl) return '';
+  try {
+    const res = await fetch(upsizeCoupangThumbnail(item.imageUrl));
+    if (!res.ok) return '';
+    const imageBuffer = Buffer.from(await res.arrayBuffer());
+    const composed = await composeProductImage({
+      imageBuffer,
+      title: item.title,
+      originalPrice: item.originalPrice,
+      discountPrice: item.discountPrice,
+      discountRate: item.discountRate,
+    });
+    return `data:image/png;base64,${composed.toString('base64')}`;
+  } catch (e) {
+    return '';
+  }
+}
 
 const GOOGLE_SERVICE_ACCOUNT_KEY_FILE = process.env.GOOGLE_SERVICE_ACCOUNT_KEY_FILE;
 const GOOGLE_SHEET_ID = process.env.GOOGLE_SHEET_ID;
 const GOOGLE_SHEET_NAME = process.env.GOOGLE_SHEET_NAME || 'Sheet1';
+const IMGBB_API_KEY = process.env.IMGBB_API_KEY || '';
 const PORT = process.env.COLLECT_PORT || 5175;
 
 if (!GOOGLE_SERVICE_ACCOUNT_KEY_FILE || !GOOGLE_SHEET_ID) {
@@ -68,7 +93,11 @@ const server = http.createServer(async (req, res) => {
       const body = JSON.parse((await readBody(req)) || '{}');
       const parsed = parseListingPayload(body.text || '');
       const existingTitles = await getExistingProductTitles(sheets, GOOGLE_SHEET_ID, GOOGLE_SHEET_NAME);
-      const items = parsed.map((p) => ({ ...p, isDuplicate: existingTitles.includes(p.title) }));
+      const items = [];
+      for (const p of parsed) {
+        const thumbnailPreview = await buildThumbnailPreview(p);
+        items.push({ ...p, isDuplicate: existingTitles.includes(p.title), thumbnailPreview });
+      }
       sendJson(res, 200, { items });
       return;
     }
@@ -81,18 +110,26 @@ const server = http.createServer(async (req, res) => {
         return;
       }
       const now = nowKstIso();
-      const rows = items.map((p) =>
-        toSheetRow(
-          {
-            product_title: p.title,
-            price: p.discountPrice,
-            product_desc: p.title,
-            affiliate_link: '',
-            image_url: p.imageUrl || '',
-          },
-          now,
-        ),
-      );
+      const rows = [];
+      for (const p of items) {
+        const imageUrl = await composeAndUploadImage(
+          p.imageUrl,
+          { title: p.title, originalPrice: p.originalPrice, discountPrice: p.discountPrice, discountRate: p.discountRate },
+          IMGBB_API_KEY,
+        );
+        rows.push(
+          toSheetRow(
+            {
+              product_title: p.title,
+              price: p.discountPrice,
+              product_desc: p.title,
+              affiliate_link: '',
+              image_url: imageUrl,
+            },
+            now,
+          ),
+        );
+      }
       await appendRows(sheets, GOOGLE_SHEET_ID, GOOGLE_SHEET_NAME, rows);
       sendJson(res, 200, { added: rows.length });
       return;

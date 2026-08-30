@@ -10,6 +10,7 @@
   button { font-size: 14px; padding: 8px 16px; margin-top: 10px; margin-right: 8px; cursor: pointer; }
   table { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 13px; }
   th, td { border: 1px solid #ddd; padding: 6px 8px; text-align: left; }
+  td.thumb img { width: 80px; height: 80px; object-fit: contain; display: block; }
   tr.dup { color: #999; background: #f7f7f7; }
   .status { margin-top: 12px; font-size: 14px; }
   .status.error { color: #c00; }
@@ -19,7 +20,7 @@
 </head>
 <body>
   <h1>쿠팡 상품 수집</h1>
-  <p class="hint">터미널에서 <code>npm run serve</code>로 서버를 켜둔 상태여야 동작합니다. 쿠팡 목록 페이지에서 상품 카드 여러 개를 드래그로 선택해 복사(Ctrl+C)한 다음, 아래에 붙여넣고(Ctrl+V) "미리보기"를 누르세요.</p>
+  <p class="hint">터미널에서 <code>npm run serve</code>로 서버를 켜둔 상태여야 동작합니다. 쿠팡 목록 페이지에서 상품 카드 여러 개를 드래그로 선택해 복사(Ctrl+C)한 다음, 아래에 붙여넣고(Ctrl+V) "미리보기"를 누르세요. "쿠팡 목록 수집" 북마클릿으로 복사한 경우에만 썸네일 합성 미리보기가 뜹니다(이미지 URL이 있어야 합성 가능).</p>
 
   <textarea id="raw" placeholder="여기에 붙여넣기 (Ctrl+V)"></textarea>
   <div>
@@ -47,12 +48,12 @@
       const rows = items.map((it, idx) => `
         <tr class="${it.isDuplicate ? 'dup' : ''}">
           <td><input type="checkbox" data-idx="${idx}" ${it.isDuplicate ? 'disabled' : 'checked'}></td>
+          <td class="thumb">${it.thumbnailPreview ? `<img src="${it.thumbnailPreview}" alt="">` : (it.imageUrl ? '이미지있음(합성실패)' : '❌')}</td>
           <td>${it.title}</td>
           <td>${it.discountPrice || '-'}</td>
           <td>${it.originalPrice || '-'}</td>
           <td>${it.discountRate != null ? it.discountRate + '%' : '-'}</td>
           <td>${it.productUrl ? '✅' : '❌'}</td>
-          <td>${it.imageUrl ? '✅' : '❌'}</td>
           <td>${it.isDuplicate ? '중복' : '신규'}</td>
         </tr>
       `).join('');
@@ -60,7 +61,7 @@
       resultArea.innerHTML = `
         <div class="status">총 ${items.length}개 인식됨 (신규 ${freshCount} / 중복 ${dupCount})</div>
         <table>
-          <thead><tr><th>추가</th><th>상품명</th><th>판매가</th><th>원가</th><th>할인율</th><th>URL</th><th>이미지</th><th>상태</th></tr></thead>
+          <thead><tr><th>추가</th><th>썸네일 미리보기</th><th>상품명</th><th>판매가</th><th>원가</th><th>할인율</th><th>URL</th><th>상태</th></tr></thead>
           <tbody>${rows}</tbody>
         </table>
         <button id="commitBtn">체크된 상품 구글 시트에 추가</button>

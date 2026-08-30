@@ -12,6 +12,7 @@
 
 require('dotenv').config();
 const { createSheetsClient, getExistingProductTitles, appendRows } = require('./lib/sheets');
+const { composeAndUploadImage } = require('./lib/imagePipeline');
 const { toSheetRow, nowKstIso } = require('./lib/sheetRow');
 const { readClipboardText } = require('./lib/clipboard');
 const { parseListingPayload } = require('./lib/parseListingClipboard');
@@ -19,6 +20,7 @@ const { parseListingPayload } = require('./lib/parseListingClipboard');
 const GOOGLE_SERVICE_ACCOUNT_KEY_FILE = process.env.GOOGLE_SERVICE_ACCOUNT_KEY_FILE;
 const GOOGLE_SHEET_ID = process.env.GOOGLE_SHEET_ID;
 const GOOGLE_SHEET_NAME = process.env.GOOGLE_SHEET_NAME || 'Sheet1';
+const IMGBB_API_KEY = process.env.IMGBB_API_KEY || '';
 
 async function main() {
   const commit = process.argv.includes('--commit');
@@ -56,18 +58,26 @@ async function main() {
   }
 
   const now = nowKstIso();
-  const rows = fresh.map((p) =>
-    toSheetRow(
-      {
-        product_title: p.title,
-        price: p.discountPrice,
-        product_desc: p.title,
-        affiliate_link: '',
-        image_url: p.imageUrl || '',
-      },
-      now,
-    ),
-  );
+  const rows = [];
+  for (const p of fresh) {
+    const imageUrl = await composeAndUploadImage(
+      p.imageUrl,
+      { title: p.title, originalPrice: p.originalPrice, discountPrice: p.discountPrice, discountRate: p.discountRate },
+      IMGBB_API_KEY,
+    );
+    rows.push(
+      toSheetRow(
+        {
+          product_title: p.title,
+          price: p.discountPrice,
+          product_desc: p.title,
+          affiliate_link: '',
+          image_url: imageUrl,
+        },
+        now,
+      ),
+    );
+  }
 
   await appendRows(sheets, GOOGLE_SHEET_ID, GOOGLE_SHEET_NAME, rows);
   console.log(`\n[완료] ${rows.length}개 시트에 추가됨. 제휴 링크는 나중에 시트에서 직접 채워넣으세요.`);

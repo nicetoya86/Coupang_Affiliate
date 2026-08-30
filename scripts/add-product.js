@@ -2,7 +2,7 @@
  * 상품 등록 CLI
  *
  * 쿠팡 자동화(WAF 차단)를 전혀 쓰지 않고, 사람 또는 브라우저에서 직접 읽은 정보를
- * 입력받아 이미지 합성 + 드라이브 업로드 + 시트 append까지 자동으로 처리한다.
+ * 입력받아 이미지 합성 + imgbb 업로드 + 시트 append까지 자동으로 처리한다.
  * 링크 생성("링크 생성" 버튼 클릭)만은 여전히 쿠팡 파트너스 UI에서 직접 해야 한다.
  *
  * 대화형: node add-product.js  (클립보드 인식값 기반으로 질문/답변)
@@ -14,8 +14,7 @@ require('dotenv').config();
 const readline = require('node:readline/promises');
 const { stdin, stdout } = require('node:process');
 const { createSheetsClient, getExistingProductTitles, appendRows } = require('./lib/sheets');
-const { createDriveClient, uploadPublicImage } = require('./lib/drive');
-const { composeProductImage } = require('./lib/composeImage');
+const { composeAndUploadImage } = require('./lib/imagePipeline');
 const { toSheetRow, nowKstIso } = require('./lib/sheetRow');
 const { readClipboardText } = require('./lib/clipboard');
 const { parseClipboardPayload } = require('./lib/parseClipboardProduct');
@@ -23,7 +22,7 @@ const { parseClipboardPayload } = require('./lib/parseClipboardProduct');
 const GOOGLE_SERVICE_ACCOUNT_KEY_FILE = process.env.GOOGLE_SERVICE_ACCOUNT_KEY_FILE;
 const GOOGLE_SHEET_ID = process.env.GOOGLE_SHEET_ID;
 const GOOGLE_SHEET_NAME = process.env.GOOGLE_SHEET_NAME || 'Sheet1';
-const GOOGLE_DRIVE_FOLDER_ID = process.env.GOOGLE_DRIVE_FOLDER_ID || '';
+const IMGBB_API_KEY = process.env.IMGBB_API_KEY || '';
 
 function parseArgs(argv) {
   const args = {};
@@ -42,25 +41,12 @@ function parseArgs(argv) {
   return args;
 }
 
-// 이미지 다운로드 + 배지 합성 + 드라이브 업로드. imageSrc 없으면 빈 값 반환.
-async function processImage(drive, imageSrc, { title, originalPrice, discountPrice, discountRate }) {
-  if (!imageSrc) return '';
-  try {
-    const res = await fetch(imageSrc);
-    if (!res.ok) {
-      console.error(`[경고] 이미지 다운로드 실패 (status ${res.status}) - 이미지 없이 진행합니다.`);
-      return '';
-    }
-    const imageBuffer = Buffer.from(await res.arrayBuffer());
-    const composed = await composeProductImage({ imageBuffer, title, originalPrice, discountPrice, discountRate });
-    return await uploadPublicImage(drive, composed, `coupang-${Date.now()}.png`, GOOGLE_DRIVE_FOLDER_ID || undefined);
-  } catch (e) {
-    console.error(`[경고] 이미지 합성/업로드 실패: ${e.message} - 이미지 없이 진행합니다.`);
-    return '';
-  }
+// 이미지 다운로드 + 배지 합성 + imgbb 업로드. imageSrc 없으면 빈 값 반환.
+function processImage(imageSrc, meta) {
+  return composeAndUploadImage(imageSrc, meta, IMGBB_API_KEY);
 }
 
-async function runNonInteractive(sheets, drive, cliArgs) {
+async function runNonInteractive(sheets, cliArgs) {
   const productTitle = String(cliArgs.title).trim();
   if (!productTitle) throw new Error('상품명(--title)은 필수입니다.');
 
@@ -79,7 +65,7 @@ async function runNonInteractive(sheets, drive, cliArgs) {
     throw new Error('제휴 링크가 link.coupang.com 형식이 아닙니다.');
   }
 
-  const imageUrl = await processImage(drive, cliArgs.image || '', {
+  const imageUrl = await processImage(cliArgs.image || '', {
     title: productTitle,
     originalPrice,
     discountPrice,
@@ -103,7 +89,7 @@ async function runNonInteractive(sheets, drive, cliArgs) {
   console.log(`  제휴링크: ${candidate.affiliate_link || '(없음 - 시트에서 직접 채워넣을 것)'}`);
 }
 
-async function runInteractive(sheets, drive) {
+async function runInteractive(sheets) {
   const rl = readline.createInterface({ input: stdin, output: stdout });
 
   try {
@@ -139,7 +125,7 @@ async function runInteractive(sheets, drive) {
 
     const suffix = guess.imageUrl ? ' (Enter=북마클릿에서 인식된 이미지 사용)' : '';
     const imageSrc = (await rl.question(`상품 이미지 URL (우클릭 > 이미지 주소 복사, 없으면 엔터)${suffix}: `)).trim() || guess.imageUrl || '';
-    const imageUrl = await processImage(drive, imageSrc, {
+    const imageUrl = await processImage(imageSrc, {
       title: productTitle,
       originalPrice,
       discountPrice,
@@ -172,13 +158,12 @@ async function main() {
   }
 
   const sheets = createSheetsClient(GOOGLE_SERVICE_ACCOUNT_KEY_FILE);
-  const drive = createDriveClient(GOOGLE_SERVICE_ACCOUNT_KEY_FILE);
   const cliArgs = parseArgs(process.argv.slice(2));
 
   if (cliArgs.title) {
-    await runNonInteractive(sheets, drive, cliArgs);
+    await runNonInteractive(sheets, cliArgs);
   } else {
-    await runInteractive(sheets, drive);
+    await runInteractive(sheets);
   }
 }
 
