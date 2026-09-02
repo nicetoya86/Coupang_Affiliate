@@ -2,7 +2,7 @@
  * 상품 등록 CLI
  *
  * 쿠팡 자동화(WAF 차단)를 전혀 쓰지 않고, 사람 또는 브라우저에서 직접 읽은 정보를
- * 입력받아 이미지 합성 + imgbb 업로드 + 시트 append까지 자동으로 처리한다.
+ * 입력받아 이미지 합성 + Cloudinary 업로드 + 시트 append까지 자동으로 처리한다.
  * 링크 생성("링크 생성" 버튼 클릭)만은 여전히 쿠팡 파트너스 UI에서 직접 해야 한다.
  *
  * 대화형: node add-product.js  (클립보드 인식값 기반으로 질문/답변)
@@ -22,7 +22,10 @@ const { parseClipboardPayload } = require('./lib/parseClipboardProduct');
 const GOOGLE_SERVICE_ACCOUNT_KEY_FILE = process.env.GOOGLE_SERVICE_ACCOUNT_KEY_FILE;
 const GOOGLE_SHEET_ID = process.env.GOOGLE_SHEET_ID;
 const GOOGLE_SHEET_NAME = process.env.GOOGLE_SHEET_NAME || 'Sheet1';
-const IMGBB_API_KEY = process.env.IMGBB_API_KEY || '';
+const CLOUDINARY_CONFIG = {
+  cloudName: process.env.CLOUDINARY_CLOUD_NAME || '',
+  uploadPreset: process.env.CLOUDINARY_UPLOAD_PRESET || '',
+};
 
 function parseArgs(argv) {
   const args = {};
@@ -41,9 +44,9 @@ function parseArgs(argv) {
   return args;
 }
 
-// 이미지 다운로드 + 배지 합성 + imgbb 업로드. imageSrc 없으면 빈 값 반환.
+// 이미지 다운로드 + 배지 합성 + Cloudinary 업로드. imageSrc 없으면 빈 값 반환.
 function processImage(imageSrc, meta) {
-  return composeAndUploadImage(imageSrc, meta, IMGBB_API_KEY);
+  return composeAndUploadImage(imageSrc, meta, CLOUDINARY_CONFIG);
 }
 
 async function runNonInteractive(sheets, cliArgs) {

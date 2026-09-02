@@ -43,7 +43,10 @@ async function buildThumbnailPreview(item) {
 const GOOGLE_SERVICE_ACCOUNT_KEY_FILE = process.env.GOOGLE_SERVICE_ACCOUNT_KEY_FILE;
 const GOOGLE_SHEET_ID = process.env.GOOGLE_SHEET_ID;
 const GOOGLE_SHEET_NAME = process.env.GOOGLE_SHEET_NAME || 'Sheet1';
-const IMGBB_API_KEY = process.env.IMGBB_API_KEY || '';
+const CLOUDINARY_CONFIG = {
+  cloudName: process.env.CLOUDINARY_CLOUD_NAME || '',
+  uploadPreset: process.env.CLOUDINARY_UPLOAD_PRESET || '',
+};
 const PORT = process.env.COLLECT_PORT || 5175;
 
 if (!GOOGLE_SERVICE_ACCOUNT_KEY_FILE || !GOOGLE_SHEET_ID) {
@@ -115,7 +118,7 @@ const server = http.createServer(async (req, res) => {
         const imageUrl = await composeAndUploadImage(
           p.imageUrl,
           { title: p.title, originalPrice: p.originalPrice, discountPrice: p.discountPrice, discountRate: p.discountRate },
-          IMGBB_API_KEY,
+          CLOUDINARY_CONFIG,
         );
         rows.push(
           toSheetRow(
