@@ -7,13 +7,21 @@
       "name": "포스팅 실행 (테스트-수동)",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
-      "position": [-496, -112]
+      "position": [
+        -496,
+        -112
+      ]
     },
     {
       "parameters": {
         "assignments": {
           "assignments": [
-            { "id": "a2-0", "name": "threads_user_id", "value": "27629464336738548", "type": "string" }
+            {
+              "id": "a2-0",
+              "name": "threads_user_id",
+              "value": "27629464336738548",
+              "type": "string"
+            }
           ]
         },
         "options": {}
@@ -22,18 +30,57 @@
       "name": "설정값 (필수 입력)",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
-      "position": [-304, -112]
+      "position": [
+        -304,
+        -112
+      ]
     },
     {
       "parameters": {
         "assignments": {
           "assignments": [
-            { "id": "a3-0", "name": "product_title", "value": "3in1 무선 핸디 청소기", "type": "string" },
-            { "id": "a3-1", "name": "product_desc", "value": "강력한 흡입력과 가벼운 무게로 차량 시트 틈새, 소파, 책상 위까지 편하게 청소할 수 있는 무선 핸디 청소기. 완충 시 최대 40분 연속 사용 가능하며 미세먼지 필터가 장착되어 있음.", "type": "string" },
-            { "id": "a3-2", "name": "product_url", "value": "https://www.coupang.com/vp/products/1234567890", "type": "string" },
-            { "id": "a3-3", "name": "affiliate_link", "value": "https://link.coupang.com/a/exampleTest01", "type": "string" },
-            { "id": "a3-4", "name": "fixed_post_text", "value": "", "type": "string" },
-            { "id": "a3-5", "name": "image_url", "value": "", "type": "string" }
+            {
+              "id": "a3-0",
+              "name": "product_title",
+              "value": "3in1 무선 핸디 청소기",
+              "type": "string"
+            },
+            {
+              "id": "a3-1",
+              "name": "product_desc",
+              "value": "강력한 흡입력과 가벼운 무게로 차량 시트 틈새, 소파, 책상 위까지 편하게 청소할 수 있는 무선 핸디 청소기. 완충 시 최대 40분 연속 사용 가능하며 미세먼지 필터가 장착되어 있음.",
+              "type": "string"
+            },
+            {
+              "id": "a3-2",
+              "name": "product_url",
+              "value": "https://www.coupang.com/vp/products/1234567890",
+              "type": "string"
+            },
+            {
+              "id": "a3-3",
+              "name": "affiliate_link",
+              "value": "https://link.coupang.com/a/exampleTest01",
+              "type": "string"
+            },
+            {
+              "id": "a3-4",
+              "name": "fixed_post_text",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "a3-5",
+              "name": "image_url",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "a3-6",
+              "name": "price",
+              "value": "19,900원",
+              "type": "string"
+            }
           ]
         },
         "options": {}
@@ -42,7 +89,10 @@
       "name": "상품 정보 입력",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
-      "position": [-80, -112]
+      "position": [
+        -80,
+        -112
+      ]
     },
     {
       "parameters": {
@@ -52,17 +102,23 @@
       "name": "현재 토큰 불러오기",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [144, -112]
+      "position": [
+        144,
+        -112
+      ]
     },
     {
       "parameters": {
-        "jsCode": "let productInfo;\ntry {\n  productInfo = $('상품 정보 입력').first().json;\n} catch (e) {\n  try {\n    productInfo = $('상품 정보 입력 (자동)').first().json;\n  } catch (e2) {\n    productInfo = $('상품 정보 입력 (시트)').first().json;\n  }\n}\n\nconst prompt = `다음 쿠팡 상품 정보를 바탕으로 스레드(Threads)에 올릴 후킹형 게시물 본문을 작성해줘.\n\n[중요] 경제적 이해관계 표시 문구(\"이 게시물은 쿠팡 파트너스...\")는 네가 쓰지 마. 그 문구는 별도 시스템이 게시물 맨 앞에 자동으로 붙인다. 너는 오직 후킹 본문만 작성한다.\n\n[톤앤매너 - 가장 중요]\n1. 반드시 반말로 작성할 것. 단, 무례하거나 건방지게 들리지 않고 친한 친구에게 다정하게 알려주듯 부드럽고 다정한 반말 톤으로 쓸 것 (하대하는 명령조 금지)\n2. 광고 카피처럼 상품을 나열식으로 설명하지 말고, 친한 친구/지인한테만 살짝 귀띔해주는 듯한 편안한 대화체로 쓸 것 (예시: \"있지,\", \"나만 알기 아까워서 알려주는거든\", \"이거 아직 모르는 사람 많을걸\" 같은 친밀한 표현 활용)\n3. [매우 중요] 첫 문장을 문맥 없이 뜬금없는 감탄사나 표현(예: \"역시나\", \"그거 알아?\" 단독 사용 등)으로 시작하지 말 것. 대신 상대방이 공감할 만한 구체적인 상황이나 질문으로 자연스럽게 시작할 것 (예시: \"~할 때마다 불편했던 적 있지?\", \"~때마다 귀찮았던 거 있지 않아?\")\n3-1. [스레드 알고리즘 대응 - 첫 줄이 가장 중요] 첫 문장은 가능한 한 물음표로 끝나는 질문형으로 작성할 것. 스레드 알고리즘은 첫 줄에서 스크롤을 멈추는 비율을 가장 먼저 보기 때문에, 공감형 상황 제시 + 질문형 어미 조합을 최우선으로 할 것.\n4. [매우 중요] 절대 1인칭으로 상품을 직접 체험한 것처럼 단정하지 말 것. 아래 표현은 절대 사용 금지:\n   - \"~써보니\", \"~써봤는데\", \"~써본 결과\", \"~사용해보니\" (직접 체험 단정)\n   - \"~하더라\", \"~하더라고\" (회상형 어미 - 직접 목격/경험했다는 뉘앙스라 마찬가지로 금지)\n   대신 \"~하대\", \"~한다던데\", \"~하다던데\" 같은 전언(hearsay)형 표현이나, \"이런 고민 있지 않았어?\", \"~한 사람 많을걸\" 같은 공감형/추측형 표현만 사용할 것\n5. \"나만 모르면 손해 볼 것 같은\" 느낌을 주는 후킹 요소를 포함할 것\n\n[작성 규칙]\n6. 제휴 링크 상품에 대한 관심을 자연스럽게 유도하는 내용으로 작성할 것. 상품명이나 핵심 기능/장점은 숨기지 말고 자연스럽게 드러낼 것 — 정체를 의도적으로 숨기는 클릭베이트 방식은 스레드 알고리즘이 노출 억제 대상으로 분류할 위험이 있으므로 쓰지 말 것.\n6-1. 대신 \"이런 상황에 이게 왜 좋은지\", \"어떤 점이 편한지\" 같은 공감 포인트로 흥미를 끌 것 (정체 은폐가 아니라 공감/후킹으로 관심 유도).\n6-2. [필수] 마지막 문장은 읽는 사람의 진짜 의견이나 비슷한 경험을 묻는 질문형 한 문장으로 작성할 것 (예: 비슷한 고민 있었는지, 어떻게 해결했는지, 써본 적 있는지 등 직접적인 질문). \"팔로우해줘\", \"팔로우 해두면 편함\" 같은 팔로우 언급이나 \"구매는 댓글 링크 클릭\" 같은 직접적 상업 문구는 절대 쓰지 말 것 — 팔로우 유도나 상업적 문구는 스레드 알고리즘이 follow-bait·광고성 콘텐츠로 감지해 노출을 억제함. 매번 다른 질문으로 자연스럽게 쓸 것 (특정 예문을 그대로 반복하지 말 것).\n7. \"최고\", \"최저가\", \"1등\", \"무조건\" 등 객관적으로 입증하기 어려운 과장 표현은 쓰지 말 것\n8. 문장이 자연스럽고 문법적으로 말이 되도록 작성할 것 (어색하거나 의미가 불분명한 표현 금지). 반드시 완결된 문장으로 끝낼 것 (문장이 중간에 끊기지 않도록 주의)\n9. [필수] 이모지를 정확히 1~2개 반드시 포함할 것 (이모지가 하나도 없으면 안 됨). 줄바꿈도 적절히 사용해 가독성을 높일 것\n10. 전체 내용은 공백 포함 230바이트 이내로 작성할 것 (한글 기준 약 68~72자, 이모지·영문 혼용 시 그보다 적은 글자 수)\n11. [필수] 응답은 오직 JSON 객체 하나만 출력할 것. 사고 과정, 풀이 설명, 코드블록 표시(백틱) 등 그 어떤 부가 텍스트도 절대 출력하지 말 것. 첫 글자부터 반드시 { 로 시작해야 함:\n{\"post_text\": \"여기에 후킹 본문만, 경제적 이해관계 문구는 절대 포함하지 않음\", \"topic_tag\": \"이 상품을 대표하는 카테고리 단어 1개 (예: 청소, 주방, 뷰티, 인테리어 등). 반드시 띄어쓰기·마침표·특수문자 없이 한글 또는 영문 단어 하나로, #은 붙이지 말 것\"}\n\n[상품명]\n${productInfo.product_title}\n\n[상품 설명]\n${productInfo.product_desc}`;\n\nreturn [{\n  json: {\n    ai_request: {\n      model: 'nvidia/nemotron-3-ultra-550b-a55b',\n      messages: [\n        { role: 'system', content: 'detailed thinking off. Never output reasoning, explanation, or markdown code fences. Output must start with { and be valid JSON only.' },\n        { role: 'user', content: prompt }\n      ],\n      max_tokens: 900,\n      temperature: 0.9,\n      chat_template_kwargs: { enable_thinking: false }\n    }\n  }\n}];"
+        "jsCode": "let productInfo;\ntry {\n  productInfo = $('상품 정보 입력').first().json;\n} catch (e) {\n  try {\n    productInfo = $('상품 정보 입력 (자동)').first().json;\n  } catch (e2) {\n    productInfo = $('상품 정보 입력 (시트)').first().json;\n  }\n}\n\nconst prompt = `다음 쿠팡 상품 정보를 바탕으로 스레드(Threads)에 올릴 후킹형 게시물 본문을 작성해줘.\n\n[중요] 경제적 이해관계 표시 문구(\"이 게시물은 쿠팡 파트너스...\")는 네가 쓰지 마. 그 문구는 별도 시스템이 게시물 맨 앞에 자동으로 붙인다. 너는 오직 후킹 본문만 작성한다.\n\n[톤앤매너 - 가장 중요]\n1. 반드시 반말로 작성할 것. 단, 무례하거나 건방지게 들리지 않고 친한 친구에게 다정하게 알려주듯 부드럽고 다정한 반말 톤으로 쓸 것 (하대하는 명령조 금지)\n2. 광고 카피처럼 상품을 나열식으로 설명하지 말고, 친한 친구/지인한테만 살짝 귀홤해주는 듯한 편안한 대화체로 쓸 것 (예시: \"있지,\", \"나만 알기 아까워서 알려주는거든\", \"이거 아직 모르는 사람 많을걸\" 같은 친밀한 표현 활용)\n3. [매우 중요] 첫 문장을 문맥 없이 뜸금없는 감탄사나 표현(예: \"역시나\", \"그거 알아?\" 단독 사용 등)으로 시작하지 말 것. 대신 상대방이 공감할 만한 구체적인 상황이나 질문으로 자연스럽게 시작할 것 (예시: \"~할 때마다 불편했던 적 있지?\", \"~때마다 귀찮았던 거 있지 않아?\")\n3-1. [스레드 알고리즘 대응 - 첫 줄이 가장 중요] 첫 문장은 가능한 한 물음표로 끓나는 질문형으로 작성할 것. 스레드 알고리즘은 첫 줄에서 스크롤을 멈추는 비율을 가장 먼저 보기 때문에, 공감형 상황 제시 + 질문형 어미 조합을 최우선으로 할 것.\n4. [매우 중요] 절대 1인칭으로 상품을 직접 체험한 것처럼 단정하지 말 것. 아래 표현은 절대 사용 금지:\n   - \"~써보니\", \"~써봐는데\", \"~써본 결과\", \"~사용해보니\" (직접 체험 단정)\n   - \"~하더라\", \"~하더라고\" (회상형 어미 - 직접 목격/경험했다는 뉴앙스라 마찬가지로 금지)\n   대신 \"~하대\", \"~한다던데\", \"~하다던데\" 같은 전언(hearsay)형 표현이나, \"이런 고민 있지 않았어?\", \"~한 사람 많을걸\" 같은 공감형/추측형 표현만 사용할 것\n5. \"나만 모르면 손해 볼 것 같은\" 느낌을 주는 후킹 요소를 포함할 것\n\n[작성 규칙]\n6. 제휴 링크 상품에 대한 관심을 자연스럽게 유도하는 내용으로 작성할 것. 상품명이나 핵심 기능/장점은 숨기지 말고 자연스럽게 드러낼 것 — 정체를 의도적으로 숨기는 클릭베이트 방식은 스레드 알고리즘이 노출 억제 대상으로 분류할 위험이 있으므로 쓰지 말 것.\n6-1. 대신 \"이런 상황에 이게 왜 좋은지\", \"어떤 점이 편한지\" 같은 공감 포인트로 흥미를 끌 것 (정체 은폐가 아니라 공감/후킹으로 관심 유도).\n6-2. [필수] 마지막 문장은 읽는 사람의 진짜 의견이나 비슷한 경험을 묻는 질문형 한 문장으로 작성할 것 (예: 비슷한 고민 있었는지, 어떻게 해결했는지, 써본 적 있는지 등 직접적인 질문). \"팔로우해줘\", \"팔로우 해두면 편함\" 같은 팔로우 언급이나 \"구매는 댓글 링크 클릭\" 같은 직접적 상업 문구는 절대 쓰지 말 것 — 팔로우 유도나 상업적 문구는 스레드 알고리즘이 follow-bait·광고성 콘텐츠로 감지해 노출을 억제함. 매번 다른 질문으로 자연스럽게 쓸 것 (특정 예문을 그대로 반복하지 말 것).\n7. \"최고\", \"최저가\", \"1등\", \"무조건\" 등 객관적으로 입증하기 어려운 과장 표현은 쓰지 말 것\n8. 문장이 자연스럽고 문법적으로 말이 되도록 작성할 것 (어색하거나 의미가 불분명한 표현 금지). 반드시 완결된 문장으로 끝낼 것 (문장이 중간에 끓기지 않도록 주의)\n9. [필수] 이모지를 정확히 1~2개 반드시 포함할 것 (이모지가 하나도 없으면 안 됨). 줄바꿈도 적절히 사용해 가독성을 높일 것\n10. 전체 내용은 공백 포함 230바이트 이내로 작성할 것 (한글 기준 약 68~72자, 이모지·영문 혼용 시 그보다 적은 글자 수)\n11. [필수] 응답은 오직 JSON 객체 하나만 출력할 것. 사고 과정, 풀이 설명, 코드블록 표시(백틱) 등 그 어떤 부가 텍스트도 절대 출력하지 말 것. 첫 글자부터 반드시 { 로 시작해야 함:\n{\"post_text\": \"여기에 후킹 본문만, 경제적 이해관계 문구는 절대 포함하지 않음\", \"topic_tag\": \"이 상품을 대표하는 카테고리 단어 1개 (예: 청소, 주방, 뷰티, 인테리어 등). 반드시 띄어쓰기·마침표·특수문자 없이 한글 또는 영문 단어 하나로, #은 붙이지 말 것\"}\n\n[상품명]\n${productInfo.product_title}\n\n[상품 설명]\n${productInfo.product_desc}`;\n\nreturn [{\n  json: {\n    ai_request: {\n      model: 'nvidia/nemotron-3-ultra-550b-a55b',\n      messages: [\n        { role: 'system', content: 'detailed thinking off. Never output reasoning, explanation, or markdown code fences. Output must start with { and be valid JSON only.' },\n        { role: 'user', content: prompt }\n      ],\n      max_tokens: 900,\n      temperature: 0.9,\n      chat_template_kwargs: { enable_thinking: false }\n    }\n  }\n}];"
       },
       "id": "5203e41a-681d-4ef3-9f47-3281c963c297",
       "name": "NVIDIA 요청 만들기",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [368, -112]
+      "position": [
+        368,
+        -112
+      ]
     },
     {
       "parameters": {
@@ -71,7 +127,14 @@
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendHeaders": true,
-        "headerParameters": { "parameters": [ { "name": "content-type", "value": "application/json" } ] },
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "content-type",
+              "value": "application/json"
+            }
+          ]
+        },
         "sendBody": true,
         "specifyBody": "json",
         "jsonBody": "={{ JSON.stringify($json.ai_request) }}",
@@ -81,21 +144,33 @@
       "name": "스토리텔링 생성 (NVIDIA API)",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [592, -112],
-      "retryOnFail": true,
+      "position": [
+        592,
+        -112
+      ],
+      "retryOnFail": false,
       "maxTries": 3,
       "waitBetweenTries": 5000,
-      "credentials": { "httpHeaderAuth": { "id": "56YhNhObNZth0VLD", "name": "NVIDIA API Key" } }
+      "onError": "continueErrorOutput",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "56YhNhObNZth0VLD",
+          "name": "NVIDIA API Key"
+        }
+      }
     },
     {
       "parameters": {
-        "jsCode": "const DISCLOSURE = '이 게시물은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.';\n\nfunction sanitizeTopicTag(raw) {\n  if (!raw) return '생활꿀템';\n  let t = String(raw).trim().replace(/^#/, '').replace(/[\\s.&]/g, '');\n  if (!t) return '생활꿀템';\n  return t.slice(0, 50);\n}\n\nlet productInfo;\nlet isSheetSource = false;\ntry {\n  productInfo = $('상품 정보 입력').first().json;\n} catch (e) {\n  try {\n    productInfo = $('상품 정보 입력 (자동)').first().json;\n  } catch (e2) {\n    productInfo = $('상품 정보 입력 (시트)').first().json;\n    isSheetSource = true;\n  }\n}\nconst tokenInfo = $('현재 토큰 불러오기').first().json;\n\nlet config;\ntry {\n  config = $('설정값 (필수 입력)').first().json;\n} catch (e) {\n  config = null;\n}\nconst threadsUserId = (config && config.threads_user_id) || productInfo.threads_user_id;\n\nlet storyText;\nlet rawTopicTag = null;\nif (productInfo.fixed_post_text) {\n  storyText = productInfo.fixed_post_text;\n} else {\n  const aiResponse = $input.first().json;\n  const messageContent = aiResponse.choices && aiResponse.choices[0] && aiResponse.choices[0].message\n    ? aiResponse.choices[0].message.content\n    : null;\n  const finishReason = aiResponse.choices && aiResponse.choices[0] ? aiResponse.choices[0].finish_reason : null;\n\n  if (!messageContent) {\n    throw new Error('NVIDIA API 응답에서 텍스트를 찾을 수 없습니다. 응답: ' + JSON.stringify(aiResponse));\n  }\n\n  let jsonSlice = messageContent.trim();\n  const firstBrace = jsonSlice.indexOf('{');\n  const lastBrace = jsonSlice.lastIndexOf('}');\n  if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {\n    jsonSlice = jsonSlice.slice(firstBrace, lastBrace + 1);\n  }\n\n  // NVIDIA 모델이 이스케이프 시퀀스에 공백을 끼워넣는 경우가 있음 (예: \\\\n -> \\\\ n). JSON.parse 전에 복구.\n  jsonSlice = jsonSlice.replace(/\\\\\\s+([nrtbf\"\\\\/])/g, '\\\\$1');\n\n  try {\n    const parsed = JSON.parse(jsonSlice);\n    storyText = parsed.post_text;\n    rawTopicTag = parsed.topic_tag;\n  } catch (e) {\n    throw new Error('NVIDIA 응답이 유효한 JSON이 아닙니다 (finish_reason=' + finishReason + '). 모델이 사고 과정을 출력했거나 응답이 잘렸을 가능성이 큽니다. 원문(300자): ' + messageContent.slice(0, 300));\n  }\n\n  if (!storyText) {\n    throw new Error('post_text를 추출하지 못했습니다. 원문: ' + jsonSlice.slice(0, 300));\n  }\n}\n\nstoryText = storyText.split(DISCLOSURE).join('').trim();\n\nif (storyText.length > 480) {\n  throw new Error('생성된 post_text가 너무 깁니다 (' + storyText.length + '자). Threads 500자 제한 초과 위험으로 게시를 중단합니다: ' + storyText.slice(0, 200));\n}\n\nconst postText = storyText;\nconst commentText = `${DISCLOSURE}\\n\\n${productInfo.affiliate_link}`;\nconst topicTag = sanitizeTopicTag(rawTopicTag);\n\nreturn [{\n  json: {\n    post_text: postText,\n    comment_text: commentText,\n    access_token: tokenInfo.access_token,\n    threads_user_id: threadsUserId,\n    affiliate_link: productInfo.affiliate_link,\n    image_url: productInfo.image_url || '',\n    is_sheet_source: isSheetSource,\n    topic_tag: topicTag\n  }\n}];"
+        "jsCode": "const DISCLOSURE = '이 게시물은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.';\n\nconst PRICE_POINTER_POOL = [\n  '가격이랑 링크는 댓글에 있음',\n  '정확한 가격이랑 링크는 댓글 확인',\n  '가격은 댓글에 적어둠',\n  '자세한 가격이랑 링크는 댓글에',\n  '가격이랑 구매 링크는 댓글에 있음'\n];\n\nconst LINK_ONLY_POINTER_POOL = [\n  '링크는 댓글에 있음',\n  '구매 링크는 댓글 확인',\n  '자세한 건 댓글 링크에서',\n  '링크는 댓글에 따로 적어둠'\n];\n\nconst PRICE_TEASE_POOL = [\n  '가격 보고 나도 좀 놀람',\n  '이 가격에 이 정도면 나쁘지 않은 듯',\n  '가격표 보면 왜 인기인지 알 듯',\n  '혹시 몰라서 가격도 같이 적어둠',\n  '가격 확인하고 필요하면 링크 눌러봐'\n];\n\nconst GENERIC_TEASE_POOL = [\n  '궁금하면 링크 눌러봐',\n  '필요하면 아래 링크로 확인해봐',\n  '관심있으면 링크로 구경해봐',\n  '자세한 건 링크에서 볼 수 있음'\n];\n\nfunction pick(pool) {\n  return pool[Math.floor(Math.random() * pool.length)];\n}\n\nfunction sanitizeTopicTag(raw) {\n  if (!raw) return '생활꿀템';\n  let t = String(raw).trim().replace(/^#/, '').replace(/[\\s.&]/g, '');\n  if (!t) return '생활꿀템';\n  return t.slice(0, 50);\n}\n\nlet productInfo;\nlet isSheetSource = false;\ntry {\n  productInfo = $('상품 정보 입력').first().json;\n} catch (e) {\n  try {\n    productInfo = $('상품 정보 입력 (자동)').first().json;\n  } catch (e2) {\n    productInfo = $('상품 정보 입력 (시트)').first().json;\n    isSheetSource = true;\n  }\n}\nconst tokenInfo = $('현재 토큰 불러오기').first().json;\n\nlet config;\ntry {\n  config = $('설정값 (필수 입력)').first().json;\n} catch (e) {\n  config = null;\n}\nconst threadsUserId = (config && config.threads_user_id) || productInfo.threads_user_id;\n\nlet storyText;\nlet rawTopicTag = null;\nif (productInfo.fixed_post_text) {\n  storyText = productInfo.fixed_post_text;\n} else {\n  const aiResponse = $input.first().json;\n  const messageContent = aiResponse.choices && aiResponse.choices[0] && aiResponse.choices[0].message\n    ? aiResponse.choices[0].message.content\n    : null;\n  const finishReason = aiResponse.choices && aiResponse.choices[0] ? aiResponse.choices[0].finish_reason : null;\n\n  if (!messageContent) {\n    throw new Error('NVIDIA API 응답에서 텍스트를 찾을 수 없습니다. 응답: ' + JSON.stringify(aiResponse));\n  }\n\n  let jsonSlice = messageContent.trim();\n  const firstBrace = jsonSlice.indexOf('{');\n  const lastBrace = jsonSlice.lastIndexOf('}');\n  if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {\n    jsonSlice = jsonSlice.slice(firstBrace, lastBrace + 1);\n  }\n\n  jsonSlice = jsonSlice.replace(/\\\\\\s+([nrtbf\"\\\\\\/])/g, '\\\\$1');\n\n  try {\n    const parsed = JSON.parse(jsonSlice);\n    storyText = parsed.post_text;\n    rawTopicTag = parsed.topic_tag;\n  } catch (e) {\n    throw new Error('NVIDIA 응답이 유효한 JSON이 아닙니다 (finish_reason=' + finishReason + '). 모델이 사고 과정을 출력했거나 응답이 잘렸을 가능성이 큽니다. 원문(300자): ' + messageContent.slice(0, 300));\n  }\n\n  if (!storyText) {\n    throw new Error('post_text를 추출하지 못했습니다. 원문: ' + jsonSlice.slice(0, 300));\n  }\n}\n\nstoryText = storyText.split(DISCLOSURE).join('').trim();\n\nconst hasPrice = !!productInfo.price;\nconst pointer = hasPrice ? pick(PRICE_POINTER_POOL) : pick(LINK_ONLY_POINTER_POOL);\nconst postText = `${storyText}\\n\\n${pointer}`;\n\nif (postText.length > 480) {\n  throw new Error('생성된 post_text가 너무 깁니다 (' + postText.length + '자). Threads 500자 제한 초과 위험으로 게시를 중단합니다: ' + postText.slice(0, 200));\n}\n\nconst priceLine = hasPrice ? `현재 가격: ${productInfo.price}\\n` : '';\nconst tease = hasPrice ? pick(PRICE_TEASE_POOL) : pick(GENERIC_TEASE_POOL);\nconst commentText = `${DISCLOSURE}\\n\\n${priceLine}${tease}\\n${productInfo.affiliate_link}`;\nconst topicTag = sanitizeTopicTag(rawTopicTag);\n\nreturn [{\n  json: {\n    post_text: postText,\n    comment_text: commentText,\n    access_token: tokenInfo.access_token,\n    threads_user_id: threadsUserId,\n    affiliate_link: productInfo.affiliate_link,\n    image_url: productInfo.image_url || '',\n    is_sheet_source: isSheetSource,\n    topic_tag: topicTag\n  }\n}];"
       },
       "id": "fbeb4bbc-77b0-4cb0-8e4b-ba4508e327e6",
       "name": "응답 파싱 및 댓글 텍스트 구성",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [816, -112]
+      "position": [
+        816,
+        -112
+      ]
     },
     {
       "parameters": {
@@ -104,11 +179,26 @@
         "sendQuery": true,
         "queryParameters": {
           "parameters": [
-            { "name": "media_type", "value": "={{ $json.image_url ? 'IMAGE' : 'TEXT' }}" },
-            { "name": "text", "value": "={{ $json.post_text }}" },
-            { "name": "image_url", "value": "={{ $json.image_url }}" },
-            { "name": "access_token", "value": "={{ $json.access_token }}" },
-            { "name": "topic_tag", "value": "={{ $json.topic_tag }}" }
+            {
+              "name": "media_type",
+              "value": "={{ $json.image_url ? 'IMAGE' : 'TEXT' }}"
+            },
+            {
+              "name": "text",
+              "value": "={{ $json.post_text }}"
+            },
+            {
+              "name": "image_url",
+              "value": "={{ $json.image_url }}"
+            },
+            {
+              "name": "access_token",
+              "value": "={{ $json.access_token }}"
+            },
+            {
+              "name": "topic_tag",
+              "value": "={{ $json.topic_tag }}"
+            }
           ]
         },
         "options": {}
@@ -117,19 +207,27 @@
       "name": "본문 컨테이너 생성",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [1024, -112],
-      "retryOnFail": true,
+      "position": [
+        1024,
+        -112
+      ],
+      "retryOnFail": false,
       "maxTries": 3,
       "waitBetweenTries": 5000,
       "onError": "continueErrorOutput"
     },
     {
-      "parameters": { "amount": 30 },
+      "parameters": {
+        "amount": 30
+      },
       "id": "ee7a495b-6d07-4a7a-9bb3-f097eacce574",
       "name": "대기 30초 (본문)",
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
-      "position": [1248, -112],
+      "position": [
+        1248,
+        -112
+      ],
       "webhookId": "a9"
     },
     {
@@ -139,8 +237,14 @@
         "sendQuery": true,
         "queryParameters": {
           "parameters": [
-            { "name": "creation_id", "value": "={{ $json.id }}" },
-            { "name": "access_token", "value": "={{ $('응답 파싱 및 댓글 텍스트 구성').first().json.access_token }}" }
+            {
+              "name": "creation_id",
+              "value": "={{ $json.id }}"
+            },
+            {
+              "name": "access_token",
+              "value": "={{ $('응답 파싱 및 댓글 텍스트 구성').first().json.access_token }}"
+            }
           ]
         },
         "options": {}
@@ -149,7 +253,10 @@
       "name": "본문 게시",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [1472, -112]
+      "position": [
+        1472,
+        -112
+      ]
     },
     {
       "parameters": {
@@ -158,10 +265,22 @@
         "sendQuery": true,
         "queryParameters": {
           "parameters": [
-            { "name": "media_type", "value": "TEXT" },
-            { "name": "text", "value": "={{ $('응답 파싱 및 댓글 텍스트 구성').first().json.comment_text }}" },
-            { "name": "reply_to_id", "value": "={{ $('본문 게시').first().json.id }}" },
-            { "name": "access_token", "value": "={{ $('응답 파싱 및 댓글 텍스트 구성').first().json.access_token }}" }
+            {
+              "name": "media_type",
+              "value": "TEXT"
+            },
+            {
+              "name": "text",
+              "value": "={{ $('응답 파싱 및 댓글 텍스트 구성').first().json.comment_text }}"
+            },
+            {
+              "name": "reply_to_id",
+              "value": "={{ $('본문 게시').first().json.id }}"
+            },
+            {
+              "name": "access_token",
+              "value": "={{ $('응답 파싱 및 댓글 텍스트 구성').first().json.access_token }}"
+            }
           ]
         },
         "options": {}
@@ -170,15 +289,23 @@
       "name": "댓글 컨테이너 생성",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [1920, -112]
+      "position": [
+        1920,
+        -112
+      ]
     },
     {
-      "parameters": { "amount": 30 },
+      "parameters": {
+        "amount": 30
+      },
       "id": "801aab0d-56e3-4b76-b91d-439874e2e316",
       "name": "대기 30초 (댓글)",
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
-      "position": [2128, -112],
+      "position": [
+        2128,
+        -112
+      ],
       "webhookId": "a12"
     },
     {
@@ -188,8 +315,14 @@
         "sendQuery": true,
         "queryParameters": {
           "parameters": [
-            { "name": "creation_id", "value": "={{ $json.id }}" },
-            { "name": "access_token", "value": "={{ $('응답 파싱 및 댓글 텍스트 구성').first().json.access_token }}" }
+            {
+              "name": "creation_id",
+              "value": "={{ $json.id }}"
+            },
+            {
+              "name": "access_token",
+              "value": "={{ $('응답 파싱 및 댓글 텍스트 구성').first().json.access_token }}"
+            }
           ]
         },
         "options": {}
@@ -198,15 +331,29 @@
       "name": "댓글 게시 (제휴링크)",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [2352, -112]
+      "position": [
+        2352,
+        -112
+      ]
     },
     {
-      "parameters": { "rule": { "interval": [ { "daysInterval": 50 } ] } },
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "daysInterval": 50
+            }
+          ]
+        }
+      },
       "id": "ed178190-48b8-4588-97fd-c573b5336dd0",
       "name": "50일마다 자동 실행",
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.2,
-      "position": [-496, 352]
+      "position": [
+        -496,
+        352
+      ]
     },
     {
       "parameters": {
@@ -216,7 +363,10 @@
       "name": "현재 토큰 불러오기 (갱신용)",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [-256, 352]
+      "position": [
+        -256,
+        352
+      ]
     },
     {
       "parameters": {
@@ -224,8 +374,14 @@
         "sendQuery": true,
         "queryParameters": {
           "parameters": [
-            { "name": "grant_type", "value": "th_refresh_token" },
-            { "name": "access_token", "value": "={{ $json.access_token }}" }
+            {
+              "name": "grant_type",
+              "value": "th_refresh_token"
+            },
+            {
+              "name": "access_token",
+              "value": "={{ $json.access_token }}"
+            }
           ]
         },
         "options": {}
@@ -234,7 +390,10 @@
       "name": "토큰 갱신 요청",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [-16, 352]
+      "position": [
+        -16,
+        352
+      ]
     },
     {
       "parameters": {
@@ -244,42 +403,75 @@
       "name": "새 토큰 저장",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [208, 352]
+      "position": [
+        208,
+        352
+      ]
     },
     {
-      "parameters": { "amount": 30 },
+      "parameters": {
+        "amount": 30
+      },
       "id": "b7f2e491-3c5a-4d6e-8f1b-2a9d4c6e8b3f",
       "name": "대기 30초 (게시 확인)",
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
-      "position": [1696, -112],
+      "position": [
+        1696,
+        -112
+      ],
       "webhookId": "ef9292a9-41ca-4c7f-9f13-8e55caa8317e",
       "notes": "본문 게시 직후 바로 reply_to_id를 참조하면 Threads 백엔드에 아직 전파되지 않아 답글이 아닌 독립 피드 게시물로 처리될 수 있어 추가된 지연"
     },
     {
-      "parameters": { "httpMethod": "POST", "path": "coupang-product-intake", "responseMode": "responseNode", "options": {} },
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "coupang-product-intake",
+        "responseMode": "responseNode",
+        "options": {}
+      },
       "id": "3afa2510-5558-4bfe-aef6-bbc0db2e4577",
       "name": "쿠팡 상품 자동 수집 (Webhook)",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
-      "position": [-496, 912],
+      "position": [
+        -496,
+        912
+      ],
       "webhookId": "301baa1f-c371-435a-96ef-8e23640ba88b"
     },
     {
       "parameters": {
-        "jsCode": "const staticData = $getWorkflowStaticData('global');\nif (!staticData.posted_products) {\n  staticData.posted_products = [];\n}\n\nconst body = $input.first().json.body || {};\nconst productUrl = body.product_url || '';\nconst affiliateLink = body.affiliate_link || '';\n\nfunction extractProductId(url) {\n  if (!url) return null;\n  const match = String(url).match(/products\\/(\\d+)/);\n  return match ? match[1] : null;\n}\n\nconst productId = extractProductId(productUrl) || productUrl || affiliateLink;\n\nif (!productId) {\n  throw new Error('product_url 또는 affiliate_link가 없습니다. 웹훅 페이로드를 확인해주세요.');\n}\n\nconst isDuplicate = staticData.posted_products.indexOf(productId) !== -1;\n\nreturn [{\n  json: {\n    is_duplicate: isDuplicate,\n    product_id: productId,\n    product_title: body.product_title || '',\n    product_desc: body.product_desc || '',\n    product_url: productUrl,\n    affiliate_link: affiliateLink,\n    image_url: body.image_url || ''\n  }\n}];"
+        "jsCode": "const staticData = $getWorkflowStaticData('global');\nif (!staticData.posted_products) {\n  staticData.posted_products = [];\n}\n\nconst body = $input.first().json.body || {};\nconst productUrl = body.product_url || '';\nconst affiliateLink = body.affiliate_link || '';\n\nfunction extractProductId(url) {\n  if (!url) return null;\n  const match = String(url).match(/products\\/(\\d+)/);\n  return match ? match[1] : null;\n}\n\nconst productId = extractProductId(productUrl) || productUrl || affiliateLink;\n\nif (!productId) {\n  throw new Error('product_url 또는 affiliate_link가 없습니다. 웹훅 페이로드를 확인해주세요.');\n}\n\nconst isDuplicate = staticData.posted_products.indexOf(productId) !== -1;\n\nreturn [{\n  json: {\n    is_duplicate: isDuplicate,\n    product_id: productId,\n    product_title: body.product_title || '',\n    product_desc: body.product_desc || '',\n    product_url: productUrl,\n    affiliate_link: affiliateLink,\n    image_url: body.image_url || '',\n    price: body.price || ''\n  }\n}];"
       },
       "id": "4ea6c52d-9d05-4596-99db-c0c4db0cc1c5",
       "name": "중복 상품 확인",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [-256, 912]
+      "position": [
+        -256,
+        912
+      ]
     },
     {
       "parameters": {
         "conditions": {
-          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 1 },
-          "conditions": [ { "leftValue": "={{ $json.is_duplicate }}", "operator": { "type": "boolean", "operation": "equals" }, "rightValue": true } ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.is_duplicate }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              },
+              "rightValue": true
+            }
+          ],
           "combinator": "and"
         },
         "options": {}
@@ -288,30 +480,74 @@
       "name": "중복이면 건너뛰기",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
-      "position": [-16, 912]
+      "position": [
+        -16,
+        912
+      ]
     },
     {
       "parameters": {
         "respondWith": "json",
         "responseBody": "={{ { status: \"duplicate\", message: \"이미 게시된 상품입니다\", product_id: $json.product_id } }}",
-        "options": { "responseCode": 200 }
+        "options": {
+          "responseCode": 200
+        }
       },
       "id": "fb1cfc77-87ab-4f18-8f3c-7ca6c11b1bde",
       "name": "응답: 중복 상품",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.5,
-      "position": [208, 800]
+      "position": [
+        208,
+        800
+      ]
     },
     {
       "parameters": {
         "assignments": {
           "assignments": [
-            { "id": "auto-0", "name": "product_title", "value": "={{ $json.product_title }}", "type": "string" },
-            { "id": "auto-1", "name": "product_desc", "value": "={{ $json.product_desc }}", "type": "string" },
-            { "id": "auto-2", "name": "product_url", "value": "={{ $json.product_url }}", "type": "string" },
-            { "id": "auto-3", "name": "affiliate_link", "value": "={{ $json.affiliate_link }}", "type": "string" },
-            { "id": "auto-4", "name": "threads_user_id", "value": "27629464336738548", "type": "string" },
-            { "id": "auto-5", "name": "image_url", "value": "={{ $json.image_url }}", "type": "string" }
+            {
+              "id": "auto-0",
+              "name": "product_title",
+              "value": "={{ $json.product_title }}",
+              "type": "string"
+            },
+            {
+              "id": "auto-1",
+              "name": "product_desc",
+              "value": "={{ $json.product_desc }}",
+              "type": "string"
+            },
+            {
+              "id": "auto-2",
+              "name": "product_url",
+              "value": "={{ $json.product_url }}",
+              "type": "string"
+            },
+            {
+              "id": "auto-3",
+              "name": "affiliate_link",
+              "value": "={{ $json.affiliate_link }}",
+              "type": "string"
+            },
+            {
+              "id": "auto-4",
+              "name": "threads_user_id",
+              "value": "27629464336738548",
+              "type": "string"
+            },
+            {
+              "id": "auto-5",
+              "name": "image_url",
+              "value": "={{ $json.image_url }}",
+              "type": "string"
+            },
+            {
+              "id": "auto-6",
+              "name": "price",
+              "value": "={{ $json.price }}",
+              "type": "string"
+            }
           ]
         },
         "options": {}
@@ -320,7 +556,10 @@
       "name": "상품 정보 입력 (자동)",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
-      "position": [208, 1008]
+      "position": [
+        208,
+        1008
+      ]
     },
     {
       "parameters": {
@@ -330,13 +569,30 @@
       "name": "게시 기록 저장 (중복방지)",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [3056, -112]
+      "position": [
+        3056,
+        -112
+      ]
     },
     {
       "parameters": {
         "conditions": {
-          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 1 },
-          "conditions": [ { "leftValue": "={{ $execution.mode }}", "operator": { "type": "string", "operation": "equals" }, "rightValue": "webhook" } ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $execution.mode }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              },
+              "rightValue": "webhook"
+            }
+          ],
           "combinator": "and"
         },
         "options": {}
@@ -345,56 +601,135 @@
       "name": "웹훅 실행인가",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
-      "position": [3280, -112]
+      "position": [
+        3280,
+        -112
+      ]
     },
     {
       "parameters": {
         "respondWith": "json",
         "responseBody": "={{ { status: \"posted\", product_id: $json.recorded_product_id, total_posted_count: $json.total_posted_count } }}",
-        "options": { "responseCode": 200 }
+        "options": {
+          "responseCode": 200
+        }
       },
       "id": "9a56ed6c-89c6-4d93-8037-97374a8d565b",
       "name": "응답: 게시 완료",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.5,
-      "position": [3504, -208]
+      "position": [
+        3504,
+        -208
+      ]
     },
     {
-      "parameters": { "rule": { "interval": [ { "field": "hours", "hoursInterval": 6 } ] } },
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 6
+            }
+          ]
+        }
+      },
       "id": "5a2e8130-ac28-4709-8bb4-098086a36244",
       "name": "6시간마다 시트 확인",
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.2,
-      "position": [-496, 1408]
+      "position": [
+        -496,
+        1408
+      ]
     },
     {
       "parameters": {
         "authentication": "serviceAccount",
-        "documentId": { "__rl": true, "mode": "id", "value": "1K_howGdnGcBgiHlCXTpvU0LnYAsGvsUe0Iwkjc3t-JA" },
-        "sheetName": { "__rl": true, "mode": "name", "value": "시트1" },
-        "filtersUI": { "values": [ { "lookupColumn": "posted" } ] },
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "1K_howGdnGcBgiHlCXTpvU0LnYAsGvsUe0Iwkjc3t-JA"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "시트1"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "posted"
+            }
+          ]
+        },
         "options": {}
       },
       "id": "ebc0366a-56c5-4405-8a4d-3424ff29b6c6",
       "name": "시트 큐에서 미게시 상품 조회",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
-      "position": [-256, 1408],
-      "retryOnFail": true,
+      "position": [
+        -256,
+        1408
+      ],
+      "retryOnFail": false,
       "maxTries": 3,
       "waitBetweenTries": 2000,
-      "credentials": { "googleApi": { "id": "yD53zrsOtfHqSvxT", "name": "Google Sheets - Coupang Queue" } }
+      "onError": "continueErrorOutput",
+      "credentials": {
+        "googleApi": {
+          "id": "yD53zrsOtfHqSvxT",
+          "name": "Google Sheets - Coupang Queue"
+        }
+      }
     },
     {
       "parameters": {
         "assignments": {
           "assignments": [
-            { "id": "s1-0", "name": "product_title", "value": "={{ $json.product_title }}", "type": "string" },
-            { "id": "s1-1", "name": "product_desc", "value": "={{ $json.product_desc }}", "type": "string" },
-            { "id": "s1-2", "name": "product_url", "value": "={{ $json.product_url }}", "type": "string" },
-            { "id": "s1-3", "name": "affiliate_link", "value": "={{ $json.affiliate_link }}", "type": "string" },
-            { "id": "s1-4", "name": "threads_user_id", "value": "27629464336738548", "type": "string" },
-            { "id": "s1-5", "name": "image_url", "value": "={{ $json.image_url }}", "type": "string" }
+            {
+              "id": "s1-0",
+              "name": "product_title",
+              "value": "={{ $json.product_title }}",
+              "type": "string"
+            },
+            {
+              "id": "s1-1",
+              "name": "product_desc",
+              "value": "={{ $json.product_desc }}",
+              "type": "string"
+            },
+            {
+              "id": "s1-2",
+              "name": "product_url",
+              "value": "={{ $json.product_url }}",
+              "type": "string"
+            },
+            {
+              "id": "s1-3",
+              "name": "affiliate_link",
+              "value": "={{ $json.affiliate_link }}",
+              "type": "string"
+            },
+            {
+              "id": "s1-4",
+              "name": "threads_user_id",
+              "value": "27629464336738548",
+              "type": "string"
+            },
+            {
+              "id": "s1-5",
+              "name": "image_url",
+              "value": "={{ $json.image_url }}",
+              "type": "string"
+            },
+            {
+              "id": "s1-6",
+              "name": "price",
+              "value": "={{ $json.price }}",
+              "type": "string"
+            }
           ]
         },
         "options": {}
@@ -403,13 +738,30 @@
       "name": "상품 정보 입력 (시트)",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
-      "position": [-16, 1408]
+      "position": [
+        -16,
+        1408
+      ]
     },
     {
       "parameters": {
         "conditions": {
-          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 1 },
-          "conditions": [ { "leftValue": "={{ $('응답 파싱 및 댓글 텍스트 구성').first().json.is_sheet_source }}", "operator": { "type": "boolean", "operation": "equals" }, "rightValue": true } ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $('응답 파싱 및 댓글 텍스트 구성').first().json.is_sheet_source }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              },
+              "rightValue": true
+            }
+          ],
           "combinator": "and"
         },
         "options": {}
@@ -418,14 +770,25 @@
       "name": "시트 소스 판단",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
-      "position": [2592, -112]
+      "position": [
+        2592,
+        -112
+      ]
     },
     {
       "parameters": {
         "authentication": "serviceAccount",
         "operation": "update",
-        "documentId": { "__rl": true, "mode": "id", "value": "1K_howGdnGcBgiHlCXTpvU0LnYAsGvsUe0Iwkjc3t-JA" },
-        "sheetName": { "__rl": true, "mode": "name", "value": "시트1" },
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "1K_howGdnGcBgiHlCXTpvU0LnYAsGvsUe0Iwkjc3t-JA"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "시트1"
+        },
         "columns": {
           "mappingMode": "defineBelow",
           "value": {
@@ -433,17 +796,101 @@
             "posted": "TRUE",
             "media_id": "={{ $('본문 게시').first().json.id }}"
           },
-          "matchingColumns": ["affiliate_link"],
+          "matchingColumns": [
+            "affiliate_link"
+          ],
           "schema": [
-            { "id": "collected_at", "displayName": "collected_at", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": true },
-            { "id": "product_title", "displayName": "product_title", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": true },
-            { "id": "price", "displayName": "price", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": true },
-            { "id": "product_desc", "displayName": "product_desc", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": true },
-            { "id": "affiliate_link", "displayName": "affiliate_link", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false },
-            { "id": "image_url", "displayName": "image_url", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": true },
-            { "id": "posted", "displayName": "posted", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false },
-            { "id": "media_id", "displayName": "media_id", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false },
-            { "id": "row_number", "displayName": "row_number", "required": false, "defaultMatch": false, "display": true, "type": "number", "canBeUsedToMatch": true, "readOnly": true, "removed": true }
+            {
+              "id": "collected_at",
+              "displayName": "collected_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "product_title",
+              "displayName": "product_title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "price",
+              "displayName": "price",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "product_desc",
+              "displayName": "product_desc",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "affiliate_link",
+              "displayName": "affiliate_link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "image_url",
+              "displayName": "image_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "posted",
+              "displayName": "posted",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "media_id",
+              "displayName": "media_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
           ],
           "attemptToConvertTypes": false,
           "convertFieldsToString": false
@@ -454,11 +901,20 @@
       "name": "시트에 게시완료 표시",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
-      "position": [2832, -304],
-      "retryOnFail": true,
+      "position": [
+        2832,
+        -304
+      ],
+      "retryOnFail": false,
       "maxTries": 3,
       "waitBetweenTries": 2000,
-      "credentials": { "googleApi": { "id": "yD53zrsOtfHqSvxT", "name": "Google Sheets - Coupang Queue" } }
+      "onError": "continueErrorOutput",
+      "credentials": {
+        "googleApi": {
+          "id": "yD53zrsOtfHqSvxT",
+          "name": "Google Sheets - Coupang Queue"
+        }
+      }
     },
     {
       "parameters": {
@@ -468,22 +924,41 @@
       "name": "제휴링크 있는 상품만 선택",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [-144, 1504]
+      "position": [
+        -144,
+        1504
+      ]
     },
     {
       "id": "ce1b2c77-ec77-4ec6-bf74-dd81ff8e2ad0",
       "name": "매일 노출수 확인",
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.2,
-      "position": [-496, 1900],
-      "parameters": { "rule": { "interval": [ { "field": "days", "triggerAtHour": 9, "triggerAtMinute": 0 } ] } }
+      "position": [
+        -496,
+        1900
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "days",
+              "triggerAtHour": 9,
+              "triggerAtMinute": 0
+            }
+          ]
+        }
+      }
     },
     {
       "id": "cc57167d-9555-4657-a2cc-450b35b92e08",
       "name": "현재 토큰 불러오기 (조회수용)",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [-256, 1900],
+      "position": [
+        -256,
+        1900
+      ],
       "parameters": {
         "mode": "runOnceForAllItems",
         "jsCode": "const staticData = $getWorkflowStaticData('global');\nconst SEED_TOKEN = 'THAATF6FQV3HxBYmFtZA0xMcHdPeHJNWWhxLUU0VnFGMzEwQWxkXzVtYlZA6ZA1RHR0RhV2t2cTBOc0Npa2VrdXJ4LWphSnAzUGg4ZAHJhVlBlNEMwY2d1TkpLY3B0Tk5nakxONURKUUpxWlRneU00MUVxUXhTUXM2dWZAaTmhlY2NTdEtuUXlCSkE3aVNkTTlhZAWsZD';\n\nif (!staticData.access_token || staticData.seed_token_used !== SEED_TOKEN) {\n  if (!SEED_TOKEN || SEED_TOKEN.indexOf('PASTE_') === 0) {\n    throw new Error('토큰이 없습니다. 이 노드 코드 안의 SEED_TOKEN 값을 실제 60일 토큰으로 한 번만 바꿔주세요.');\n  }\n  staticData.access_token = SEED_TOKEN;\n  staticData.seed_token_used = SEED_TOKEN;\n}\n\nreturn [{ json: { access_token: staticData.access_token } }];"
@@ -494,26 +969,52 @@
       "name": "게시완료 상품 조회 (노출수용)",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
-      "position": [-16, 1900],
+      "position": [
+        -16,
+        1900
+      ],
       "parameters": {
         "resource": "sheet",
         "operation": "read",
         "authentication": "serviceAccount",
-        "documentId": { "__rl": true, "mode": "id", "value": "1K_howGdnGcBgiHlCXTpvU0LnYAsGvsUe0Iwkjc3t-JA" },
-        "sheetName": { "__rl": true, "mode": "name", "value": "시트1" },
-        "filtersUI": { "values": [ { "lookupColumn": "posted", "lookupValue": "={{ true }}" } ] },
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "1K_howGdnGcBgiHlCXTpvU0LnYAsGvsUe0Iwkjc3t-JA"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "시트1"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "posted",
+              "lookupValue": "={{ true }}"
+            }
+          ]
+        },
         "combineFilters": "AND",
         "returnFirstMatch": false,
         "options": {}
       },
-      "credentials": { "googleApi": { "id": "yD53zrsOtfHqSvxT", "name": "Google Sheets - Coupang Queue" } }
+      "credentials": {
+        "googleApi": {
+          "id": "yD53zrsOtfHqSvxT",
+          "name": "Google Sheets - Coupang Queue"
+        }
+      }
     },
     {
       "id": "0299d521-48cc-4cf9-b495-06ce6e60e530",
       "name": "media_id 있는 행만 필터링",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [208, 1900],
+      "position": [
+        208,
+        1900
+      ],
       "parameters": {
         "mode": "runOnceForAllItems",
         "jsCode": "return items.filter(item => item.json.media_id && item.json.media_id.toString().trim() !== '');"
@@ -524,23 +1025,38 @@
       "name": "Loop Over Items",
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
-      "position": [432, 1900],
-      "parameters": { "batchSize": 1, "options": {} }
+      "position": [
+        432,
+        1900
+      ],
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      }
     },
     {
       "id": "0e94fafe-56e7-4aef-b8d1-530175ac96bf",
       "name": "노출수 조회 (Threads Insights)",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [656, 1800],
+      "position": [
+        656,
+        1800
+      ],
       "parameters": {
         "method": "GET",
         "url": "=https://graph.threads.net/v1.0/{{ $json.media_id }}/insights",
         "sendQuery": true,
         "queryParameters": {
           "parameters": [
-            { "name": "metric", "value": "views" },
-            { "name": "access_token", "value": "={{ $('현재 토큰 불러오기 (조회수용)').first().json.access_token }}" }
+            {
+              "name": "metric",
+              "value": "views"
+            },
+            {
+              "name": "access_token",
+              "value": "={{ $('현재 토큰 불러오기 (조회수용)').first().json.access_token }}"
+            }
           ]
         },
         "options": {}
@@ -551,7 +1067,10 @@
       "name": "views 값 파싱",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [880, 1800],
+      "position": [
+        880,
+        1800
+      ],
       "parameters": {
         "mode": "runOnceForAllItems",
         "jsCode": "const mediaId = $('media_id 있는 행만 필터링').item.json.media_id;\nconst insights = $json;\nconst viewsMetric = (insights.data || []).find(d => d.name === 'views');\nconst views = viewsMetric && viewsMetric.values && viewsMetric.values[0] ? viewsMetric.values[0].value : null;\nreturn [{ json: { media_id: mediaId, views } }];"
@@ -562,38 +1081,97 @@
       "name": "시트에 views 기록",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
-      "position": [1104, 1800],
+      "position": [
+        1104,
+        1800
+      ],
       "parameters": {
         "resource": "sheet",
         "operation": "update",
         "authentication": "serviceAccount",
-        "documentId": { "__rl": true, "mode": "id", "value": "1K_howGdnGcBgiHlCXTpvU0LnYAsGvsUe0Iwkjc3t-JA" },
-        "sheetName": { "__rl": true, "mode": "name", "value": "시트1" },
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "1K_howGdnGcBgiHlCXTpvU0LnYAsGvsUe0Iwkjc3t-JA"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "시트1"
+        },
         "columns": {
           "mappingMode": "defineBelow",
-          "value": { "media_id": "={{ $json.media_id }}", "views": "={{ $json.views }}" },
+          "value": {
+            "media_id": "={{ $json.media_id }}",
+            "views": "={{ $json.views }}"
+          },
           "schema": [
-            { "id": "media_id", "displayName": "media_id", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true },
-            { "id": "views", "displayName": "views", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": false }
+            {
+              "id": "media_id",
+              "displayName": "media_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "views",
+              "displayName": "views",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            }
           ],
-          "matchingColumns": ["media_id"]
+          "matchingColumns": [
+            "media_id"
+          ]
         },
         "options": {}
       },
-      "credentials": { "googleApi": { "id": "yD53zrsOtfHqSvxT", "name": "Google Sheets - Coupang Queue" } }
+      "retryOnFail": false,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "onError": "continueErrorOutput",
+      "credentials": {
+        "googleApi": {
+          "id": "yD53zrsOtfHqSvxT",
+          "name": "Google Sheets - Coupang Queue"
+        }
+      }
     },
     {
       "id": "75e77c9c-6d68-4994-bdc1-252ab8b2e731",
       "name": "실패시 시트소스 판단",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
-      "position": [1024, 140],
+      "position": [
+        1024,
+        140
+      ],
       "parameters": {
         "conditions": {
-          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 1 },
-          "conditions": [ { "leftValue": "={{ $('응답 파싱 및 댓글 텍스트 구성').first().json.is_sheet_source }}", "operator": { "type": "boolean", "operation": "equals" }, "rightValue": true } ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $('응답 파싱 및 댓글 텍스트 구성').first().json.is_sheet_source }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              },
+              "rightValue": true
+            }
+          ],
           "combinator": "and"
-        }
+        },
+        "options": {}
       }
     },
     {
@@ -601,28 +1179,52 @@
       "name": "시트에 실패 표시",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
-      "position": [1024, 340],
+      "position": [
+        1024,
+        340
+      ],
       "parameters": {
         "resource": "sheet",
         "authentication": "serviceAccount",
         "operation": "update",
-        "documentId": { "__rl": true, "mode": "id", "value": "1K_howGdnGcBgiHlCXTpvU0LnYAsGvsUe0Iwkjc3t-JA" },
-        "sheetName": { "__rl": true, "mode": "name", "value": "시트1" },
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "1K_howGdnGcBgiHlCXTpvU0LnYAsGvsUe0Iwkjc3t-JA"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "시트1"
+        },
         "columns": {
           "mappingMode": "defineBelow",
-          "value": { "affiliate_link": "={{ $('응답 파싱 및 댓글 텍스트 구성').first().json.affiliate_link }}", "posted": "FAILED" },
-          "matchingColumns": ["affiliate_link"]
+          "value": {
+            "affiliate_link": "={{ $('응답 파싱 및 댓글 텍스트 구성').first().json.affiliate_link }}",
+            "posted": "FAILED"
+          },
+          "matchingColumns": [
+            "affiliate_link"
+          ]
         },
         "options": {}
       },
-      "credentials": { "googleApi": { "id": "yD53zrsOtfHqSvxT", "name": "Google Sheets - Coupang Queue" } }
+      "credentials": {
+        "googleApi": {
+          "id": "yD53zrsOtfHqSvxT",
+          "name": "Google Sheets - Coupang Queue"
+        }
+      }
     },
     {
       "id": "c98f75ee-38d8-4cd3-83c3-11514b08731f",
       "name": "실패 알림 (텔레그램)",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
-      "position": [1264, 440],
+      "position": [
+        1264,
+        440
+      ],
       "parameters": {
         "resource": "message",
         "operation": "sendMessage",
@@ -635,49 +1237,1603 @@
       "retryOnFail": false,
       "maxTries": 2,
       "waitBetweenTries": 2000,
-      "credentials": { "telegramApi": { "id": "ygcjpxuhUsuRUGsD", "name": "Telegram account" } }
+      "credentials": {
+        "telegramApi": {
+          "id": "ygcjpxuhUsuRUGsD",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "id": "23612041-cab6-4250-a021-ec1552cbd5f3",
+      "name": "대기 (조회수 순차 갱신)",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1104,
+        2000
+      ],
+      "parameters": {
+        "amount": 3
+      },
+      "webhookId": "0c7ba2e8-23e6-44d1-acfe-fbafec1ba1c7"
+    },
+    {
+      "id": "bd02378f-f0d9-4b5d-bd8d-eebabe9860a9",
+      "name": "NVIDIA 재시도 카운트 증가",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        592,
+        100
+      ],
+      "parameters": {
+        "jsCode": "return [{ json: { ...$json, _retryCount: ($json._retryCount || 0) + 1 } }];"
+      }
+    },
+    {
+      "id": "504c31dd-1f06-4692-b456-988d7899bf3f",
+      "name": "NVIDIA 재시도 가능?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        592,
+        260
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json._retryCount }}",
+              "operator": {
+                "type": "number",
+                "operation": "lte"
+              },
+              "rightValue": 3
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "bca40296-a383-4914-b903-d4d6ff4450b5",
+      "name": "NVIDIA 재시도 대기",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        592,
+        420
+      ],
+      "parameters": {
+        "amount": 5
+      },
+      "webhookId": "0be6fd63-3223-4343-855e-b4bf545d428f"
+    },
+    {
+      "id": "8dd6bc16-0c71-4d11-ba7b-1367581c42ef",
+      "name": "스토리텔링 생성 (재시도)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        592,
+        580
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://integrate.api.nvidia.com/v1/chat/completions",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "content-type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.ai_request) }}",
+        "options": {}
+      },
+      "onError": "continueErrorOutput",
+      "retryOnFail": false,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "56YhNhObNZth0VLD",
+          "name": "NVIDIA API Key"
+        }
+      }
+    },
+    {
+      "id": "d196b785-d346-4ae5-90de-29eb3aee6705",
+      "name": "NVIDIA 복구 알림 (텔레그램)",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        816,
+        580
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "523002062",
+        "text": "✅ [NVIDIA 스토리텔링 생성] 일시적 오류 재시도 후 정상 처리됨",
+        "additionalFields": {}
+      },
+      "webhookId": "cadc545b-a6d4-484f-9275-6e6983ec9a59",
+      "credentials": {
+        "telegramApi": {
+          "id": "ygcjpxuhUsuRUGsD",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "id": "ad0a6648-a3ac-4289-8718-33454c53c13a",
+      "name": "NVIDIA 재시도 소진 (에러)",
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        400,
+        260
+      ],
+      "parameters": {
+        "errorType": "errorMessage",
+        "errorMessage": "NVIDIA 스토리텔링 생성 3회 재시도 모두 실패"
+      }
+    },
+    {
+      "id": "adcd1d95-93dc-449a-b274-7403439ca7f5",
+      "name": "본문생성 재시도 카운트 증가",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1024,
+        620
+      ],
+      "parameters": {
+        "jsCode": "return [{ json: { ...$json, _retryCount: ($json._retryCount || 0) + 1 } }];"
+      }
+    },
+    {
+      "id": "eb2d65bb-3cc3-4955-9c87-fe9761b9803d",
+      "name": "본문생성 재시도 가능?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1024,
+        780
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json._retryCount }}",
+              "operator": {
+                "type": "number",
+                "operation": "lte"
+              },
+              "rightValue": 3
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "9a12a6e7-e5b0-4898-b51c-1ebc3cc3fcde",
+      "name": "본문생성 재시도 대기",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1024,
+        940
+      ],
+      "parameters": {
+        "amount": 5
+      },
+      "webhookId": "009d5c85-8ff6-4024-94cb-35c40ee6d0d5"
+    },
+    {
+      "id": "a29d7104-e039-4b0c-ab30-553eb680958f",
+      "name": "본문 컨테이너 생성 (재시도)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1024,
+        1100
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.threads.net/v1.0/{{ $json.threads_user_id }}/threads",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "media_type",
+              "value": "={{ $json.image_url ? 'IMAGE' : 'TEXT' }}"
+            },
+            {
+              "name": "text",
+              "value": "={{ $json.post_text }}"
+            },
+            {
+              "name": "image_url",
+              "value": "={{ $json.image_url }}"
+            },
+            {
+              "name": "access_token",
+              "value": "={{ $json.access_token }}"
+            },
+            {
+              "name": "topic_tag",
+              "value": "={{ $json.topic_tag }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "onError": "continueErrorOutput",
+      "retryOnFail": false
+    },
+    {
+      "id": "090e0a3f-c444-4d96-a25d-76327bb73da0",
+      "name": "본문생성 복구 알림 (텔레그램)",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1248,
+        1100
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "523002062",
+        "text": "✅ [본문 컨테이너 생성] 일시적 오류 재시도 후 정상 처리됨",
+        "additionalFields": {}
+      },
+      "webhookId": "8f8c9d4e-11bc-4d62-80f2-7f0d8a6e5123",
+      "credentials": {
+        "telegramApi": {
+          "id": "ygcjpxuhUsuRUGsD",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "id": "6066d991-dbe0-4018-9b28-627d60872616",
+      "name": "시트조회 재시도 카운트 증가",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -256,
+        1560
+      ],
+      "parameters": {
+        "jsCode": "return [{ json: { ...$json, _retryCount: ($json._retryCount || 0) + 1 } }];"
+      }
+    },
+    {
+      "id": "bd949821-7d9d-4b62-8046-fb28427aa2b9",
+      "name": "시트조회 재시도 가능?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -256,
+        1720
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json._retryCount }}",
+              "operator": {
+                "type": "number",
+                "operation": "lte"
+              },
+              "rightValue": 3
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "6cafea48-3ad1-45c5-8ab1-efdeb1ce42dd",
+      "name": "시트조회 재시도 대기",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -256,
+        1880
+      ],
+      "parameters": {
+        "amount": 2
+      },
+      "webhookId": "990da595-e7b8-4d8f-86d4-f99e1b789fb7"
+    },
+    {
+      "id": "2a31a985-c7c7-4590-9762-a1e550071551",
+      "name": "시트 큐에서 미게시 상품 조회 (재시도)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -256,
+        2040
+      ],
+      "parameters": {
+        "authentication": "serviceAccount",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "1K_howGdnGcBgiHlCXTpvU0LnYAsGvsUe0Iwkjc3t-JA"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "시트1"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "posted"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "onError": "continueErrorOutput",
+      "retryOnFail": false,
+      "credentials": {
+        "googleApi": {
+          "id": "yD53zrsOtfHqSvxT",
+          "name": "Google Sheets - Coupang Queue"
+        }
+      }
+    },
+    {
+      "id": "57a682ca-8f6f-4918-af08-128a74697dc0",
+      "name": "시트조회 복구 알림 (텔레그램)",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -32,
+        2040
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "523002062",
+        "text": "✅ [시트 큐 미게시 상품 조회] 일시적 오류 재시도 후 정상 처리됨",
+        "additionalFields": {}
+      },
+      "webhookId": "12b27ca2-9cc8-418a-8bf7-9bec54aec060",
+      "credentials": {
+        "telegramApi": {
+          "id": "ygcjpxuhUsuRUGsD",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "id": "9b6be28a-ec92-4509-b8e5-fe452115a100",
+      "name": "시트조회 재시도 소진 (에러)",
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        -480,
+        1720
+      ],
+      "parameters": {
+        "errorType": "errorMessage",
+        "errorMessage": "시트 큐 미게시 상품 조회 3회 재시도 모두 실패"
+      }
+    },
+    {
+      "id": "7b0ada0d-8bdd-478f-a711-a9313c3805a7",
+      "name": "게시완료표시 재시도 카운트 증가",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2832,
+        100
+      ],
+      "parameters": {
+        "jsCode": "return [{ json: { ...$json, _retryCount: ($json._retryCount || 0) + 1 } }];"
+      }
+    },
+    {
+      "id": "2cbb0878-3f1d-40ae-8798-3bdf8339f98d",
+      "name": "게시완료표시 재시도 가능?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2832,
+        260
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json._retryCount }}",
+              "operator": {
+                "type": "number",
+                "operation": "lte"
+              },
+              "rightValue": 3
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "ab3e3317-7330-4b7e-82b6-ec2c4d8f0703",
+      "name": "게시완료표시 재시도 대기",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2832,
+        420
+      ],
+      "parameters": {
+        "amount": 2
+      },
+      "webhookId": "6653958f-e881-41f7-8fc1-fbf38d921dba"
+    },
+    {
+      "id": "3aa50feb-52ea-4d15-92d2-281a6abc338a",
+      "name": "시트에 게시완료 표시 (재시도)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2832,
+        580
+      ],
+      "parameters": {
+        "resource": "sheet",
+        "authentication": "serviceAccount",
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "1K_howGdnGcBgiHlCXTpvU0LnYAsGvsUe0Iwkjc3t-JA"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "시트1"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "affiliate_link": "={{ $('응답 파싱 및 댓글 텍스트 구성').first().json.affiliate_link }}",
+            "posted": "TRUE",
+            "media_id": "={{ $('본문 게시').first().json.id }}"
+          },
+          "matchingColumns": [
+            "affiliate_link"
+          ],
+          "schema": [
+            {
+              "id": "affiliate_link",
+              "displayName": "affiliate_link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "posted",
+              "displayName": "posted",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "media_id",
+              "displayName": "media_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "onError": "continueErrorOutput",
+      "retryOnFail": false,
+      "credentials": {
+        "googleApi": {
+          "id": "yD53zrsOtfHqSvxT",
+          "name": "Google Sheets - Coupang Queue"
+        }
+      }
+    },
+    {
+      "id": "d640d4a1-6117-472c-be65-353504a9d17e",
+      "name": "게시완료표시 복구 알림 (텔레그램)",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        3056,
+        580
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "523002062",
+        "text": "✅ [시트에 게시완료 표시] 일시적 오류 재시도 후 정상 처리됨",
+        "additionalFields": {}
+      },
+      "webhookId": "3f7a0600-9021-46a9-9ddb-6578ec80de00",
+      "credentials": {
+        "telegramApi": {
+          "id": "ygcjpxuhUsuRUGsD",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "id": "6f1650af-0c4b-4d88-b8cc-3fb16504bb20",
+      "name": "게시완료표시 재시도 소진 (에러)",
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        2608,
+        260
+      ],
+      "parameters": {
+        "errorType": "errorMessage",
+        "errorMessage": "시트에 게시완료 표시 3회 재시도 모두 실패"
+      }
+    },
+    {
+      "id": "b0da7785-2a83-4706-9958-d79b96fbc5d4",
+      "name": "views기록 재시도 카운트 증가",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1104,
+        2160
+      ],
+      "parameters": {
+        "jsCode": "return [{ json: { ...$json, _retryCount: ($json._retryCount || 0) + 1 } }];"
+      }
+    },
+    {
+      "id": "14194e6c-0562-4271-b619-b2e4f8125298",
+      "name": "views기록 재시도 가능?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1104,
+        2320
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json._retryCount }}",
+              "operator": {
+                "type": "number",
+                "operation": "lte"
+              },
+              "rightValue": 3
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "31d154fc-aea7-4a1d-b9ec-bd789ba90d6f",
+      "name": "views기록 재시도 대기",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1104,
+        2480
+      ],
+      "parameters": {
+        "amount": 3
+      },
+      "webhookId": "fc2e07f2-296f-465e-9b25-8cb7047b3bb6"
+    },
+    {
+      "id": "24c0c665-e210-44a2-b6cc-76b9a6376993",
+      "name": "시트에 views 기록 (재시도)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1104,
+        2640
+      ],
+      "parameters": {
+        "resource": "sheet",
+        "operation": "update",
+        "authentication": "serviceAccount",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "1K_howGdnGcBgiHlCXTpvU0LnYAsGvsUe0Iwkjc3t-JA"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "시트1"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "media_id": "={{ $json.media_id }}",
+            "views": "={{ $json.views }}"
+          },
+          "schema": [
+            {
+              "id": "media_id",
+              "displayName": "media_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "views",
+              "displayName": "views",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            }
+          ],
+          "matchingColumns": [
+            "media_id"
+          ]
+        },
+        "options": {}
+      },
+      "onError": "continueErrorOutput",
+      "retryOnFail": false,
+      "credentials": {
+        "googleApi": {
+          "id": "yD53zrsOtfHqSvxT",
+          "name": "Google Sheets - Coupang Queue"
+        }
+      }
+    },
+    {
+      "id": "4b2f906b-26b3-4a30-844f-5f964fb7881e",
+      "name": "views기록 복구 알림 (텔레그램)",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1328,
+        2640
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "523002062",
+        "text": "✅ [시트에 views 기록] 일시적 오류 재시도 후 정상 처리됨",
+        "additionalFields": {}
+      },
+      "webhookId": "6602dfb9-08eb-42ba-940f-36cb31db7595",
+      "credentials": {
+        "telegramApi": {
+          "id": "ygcjpxuhUsuRUGsD",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "id": "5ae75575-ab81-43e1-bb20-b69243b58998",
+      "name": "views기록 재시도 소진 (에러)",
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        880,
+        2320
+      ],
+      "parameters": {
+        "errorType": "errorMessage",
+        "errorMessage": "시트에 views 기록 3회 재시도 모두 실패"
+      }
     }
   ],
   "connections": {
-    "포스팅 실행 (테스트-수동)": { "main": [ [ { "node": "설정값 (필수 입력)", "type": "main", "index": 0 } ] ] },
-    "설정값 (필수 입력)": { "main": [ [ { "node": "상품 정보 입력", "type": "main", "index": 0 } ] ] },
-    "상품 정보 입력": { "main": [ [ { "node": "현재 토큰 불러오기", "type": "main", "index": 0 } ] ] },
-    "현재 토큰 불러오기": { "main": [ [ { "node": "NVIDIA 요청 만들기", "type": "main", "index": 0 } ] ] },
-    "NVIDIA 요청 만들기": { "main": [ [ { "node": "스토리텔링 생성 (NVIDIA API)", "type": "main", "index": 0 } ] ] },
-    "스토리텔링 생성 (NVIDIA API)": { "main": [ [ { "node": "응답 파싱 및 댓글 텍스트 구성", "type": "main", "index": 0 } ] ] },
-    "응답 파싱 및 댓글 텍스트 구성": { "main": [ [ { "node": "본문 컨테이너 생성", "type": "main", "index": 0 } ] ] },
-    "본문 컨테이너 생성": { "main": [ [ { "node": "대기 30초 (본문)", "type": "main", "index": 0 } ], [ { "node": "실패시 시트소스 판단", "type": "main", "index": 0 } ] ] },
-    "댓글 컨테이너 생성": { "main": [ [ { "node": "대기 30초 (댓글)", "type": "main", "index": 0 } ] ] },
-    "50일마다 자동 실행": { "main": [ [ { "node": "현재 토큰 불러오기 (갱신용)", "type": "main", "index": 0 } ] ] },
-    "현재 토큰 불러오기 (갱신용)": { "main": [ [ { "node": "토큰 갱신 요청", "type": "main", "index": 0 } ] ] },
-    "토큰 갱신 요청": { "main": [ [ { "node": "새 토큰 저장", "type": "main", "index": 0 } ] ] },
-    "본문 게시": { "main": [ [ { "node": "대기 30초 (게시 확인)", "type": "main", "index": 0 } ] ] },
-    "대기 30초 (게시 확인)": { "main": [ [ { "node": "댓글 컨테이너 생성", "type": "main", "index": 0 } ] ] },
-    "대기 30초 (본문)": { "main": [ [ { "node": "본문 게시", "type": "main", "index": 0 } ] ] },
-    "대기 30초 (댓글)": { "main": [ [ { "node": "댓글 게시 (제휴링크)", "type": "main", "index": 0 } ] ] },
-    "쿠팡 상품 자동 수집 (Webhook)": { "main": [ [ { "node": "중복 상품 확인", "type": "main", "index": 0 } ] ] },
-    "중복 상품 확인": { "main": [ [ { "node": "중복이면 건너뛰기", "type": "main", "index": 0 } ] ] },
-    "중복이면 건너뛰기": { "main": [ [ { "node": "응답: 중복 상품", "type": "main", "index": 0 } ], [ { "node": "상품 정보 입력 (자동)", "type": "main", "index": 0 } ] ] },
-    "상품 정보 입력 (자동)": { "main": [ [ { "node": "현재 토큰 불러오기", "type": "main", "index": 0 } ] ] },
-    "게시 기록 저장 (중복방지)": { "main": [ [ { "node": "웹훅 실행인가", "type": "main", "index": 0 } ] ] },
-    "웹훅 실행인가": { "main": [ [ { "node": "응답: 게시 완료", "type": "main", "index": 0 } ] ] },
-    "6시간마다 시트 확인": { "main": [ [ { "node": "시트 큐에서 미게시 상품 조회", "type": "main", "index": 0 } ] ] },
-    "상품 정보 입력 (시트)": { "main": [ [ { "node": "현재 토큰 불러오기", "type": "main", "index": 0 } ] ] },
-    "댓글 게시 (제휴링크)": { "main": [ [ { "node": "시트 소스 판단", "type": "main", "index": 0 } ] ] },
-    "시트 소스 판단": { "main": [ [ { "node": "시트에 게시완료 표시", "type": "main", "index": 0 } ], [ { "node": "게시 기록 저장 (중복방지)", "type": "main", "index": 0 } ] ] },
-    "시트에 게시완료 표시": { "main": [ [ { "node": "게시 기록 저장 (중복방지)", "type": "main", "index": 0 } ] ] },
-    "시트 큐에서 미게시 상품 조회": { "main": [ [ { "node": "제휴링크 있는 상품만 선택", "type": "main", "index": 0 } ] ] },
-    "제휴링크 있는 상품만 선택": { "main": [ [ { "node": "상품 정보 입력 (시트)", "type": "main", "index": 0 } ] ] },
-    "매일 노출수 확인": { "main": [ [ { "node": "현재 토큰 불러오기 (조회수용)", "type": "main", "index": 0 } ] ] },
-    "현재 토큰 불러오기 (조회수용)": { "main": [ [ { "node": "게시완료 상품 조회 (노출수용)", "type": "main", "index": 0 } ] ] },
-    "게시완료 상품 조회 (노출수용)": { "main": [ [ { "node": "media_id 있는 행만 필터링", "type": "main", "index": 0 } ] ] },
-    "media_id 있는 행만 필터링": { "main": [ [ { "node": "Loop Over Items", "type": "main", "index": 0 } ] ] },
-    "Loop Over Items": { "main": [ null, [ { "node": "노출수 조회 (Threads Insights)", "type": "main", "index": 0 } ] ] },
-    "노출수 조회 (Threads Insights)": { "main": [ [ { "node": "views 값 파싱", "type": "main", "index": 0 } ] ] },
-    "views 값 파싱": { "main": [ [ { "node": "시트에 views 기록", "type": "main", "index": 0 } ] ] },
-    "시트에 views 기록": { "main": [ [ { "node": "Loop Over Items", "type": "main", "index": 0 } ] ] },
-    "실패시 시트소스 판단": { "main": [ [ { "node": "시트에 실패 표시", "type": "main", "index": 0 } ], [ { "node": "실패 알림 (텔레그램)", "type": "main", "index": 0 } ] ] },
-    "시트에 실패 표시": { "main": [ [ { "node": "실패 알림 (텔레그램)", "type": "main", "index": 0 } ] ] }
+    "포스팅 실행 (테스트-수동)": {
+      "main": [
+        [
+          {
+            "node": "설정값 (필수 입력)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "설정값 (필수 입력)": {
+      "main": [
+        [
+          {
+            "node": "상품 정보 입력",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "상품 정보 입력": {
+      "main": [
+        [
+          {
+            "node": "현재 토큰 불러오기",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "현재 토큰 불러오기": {
+      "main": [
+        [
+          {
+            "node": "NVIDIA 요청 만들기",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "NVIDIA 요청 만들기": {
+      "main": [
+        [
+          {
+            "node": "스토리텔링 생성 (NVIDIA API)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "스토리텔링 생성 (NVIDIA API)": {
+      "main": [
+        [
+          {
+            "node": "응답 파싱 및 댓글 텍스트 구성",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "NVIDIA 재시도 카운트 증가",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "응답 파싱 및 댓글 텍스트 구성": {
+      "main": [
+        [
+          {
+            "node": "본문 컨테이너 생성",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "본문 컨테이너 생성": {
+      "main": [
+        [
+          {
+            "node": "대기 30초 (본문)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "본문생성 재시도 카운트 증가",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "댓글 컨테이너 생성": {
+      "main": [
+        [
+          {
+            "node": "대기 30초 (댓글)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "50일마다 자동 실행": {
+      "main": [
+        [
+          {
+            "node": "현재 토큰 불러오기 (갱신용)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "현재 토큰 불러오기 (갱신용)": {
+      "main": [
+        [
+          {
+            "node": "토큰 갱신 요청",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "토큰 갱신 요청": {
+      "main": [
+        [
+          {
+            "node": "새 토큰 저장",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "본문 게시": {
+      "main": [
+        [
+          {
+            "node": "대기 30초 (게시 확인)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "대기 30초 (게시 확인)": {
+      "main": [
+        [
+          {
+            "node": "댓글 컨테이너 생성",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "대기 30초 (본문)": {
+      "main": [
+        [
+          {
+            "node": "본문 게시",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "대기 30초 (댓글)": {
+      "main": [
+        [
+          {
+            "node": "댓글 게시 (제휴링크)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "쿠팡 상품 자동 수집 (Webhook)": {
+      "main": [
+        [
+          {
+            "node": "중복 상품 확인",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "중복 상품 확인": {
+      "main": [
+        [
+          {
+            "node": "중복이면 건너뛰기",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "중복이면 건너뛰기": {
+      "main": [
+        [
+          {
+            "node": "응답: 중복 상품",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "상품 정보 입력 (자동)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "상품 정보 입력 (자동)": {
+      "main": [
+        [
+          {
+            "node": "현재 토큰 불러오기",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "게시 기록 저장 (중복방지)": {
+      "main": [
+        [
+          {
+            "node": "웹훅 실행인가",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "웹훅 실행인가": {
+      "main": [
+        [
+          {
+            "node": "응답: 게시 완료",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "6시간마다 시트 확인": {
+      "main": [
+        [
+          {
+            "node": "시트 큐에서 미게시 상품 조회",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "상품 정보 입력 (시트)": {
+      "main": [
+        [
+          {
+            "node": "현재 토큰 불러오기",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "댓글 게시 (제휴링크)": {
+      "main": [
+        [
+          {
+            "node": "시트 소스 판단",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "시트 소스 판단": {
+      "main": [
+        [
+          {
+            "node": "시트에 게시완료 표시",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "게시 기록 저장 (중복방지)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "시트에 게시완료 표시": {
+      "main": [
+        [
+          {
+            "node": "게시 기록 저장 (중복방지)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "게시완료표시 재시도 카운트 증가",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "시트 큐에서 미게시 상품 조회": {
+      "main": [
+        [
+          {
+            "node": "제휴링크 있는 상품만 선택",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "시트조회 재시도 카운트 증가",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "제휴링크 있는 상품만 선택": {
+      "main": [
+        [
+          {
+            "node": "상품 정보 입력 (시트)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "매일 노출수 확인": {
+      "main": [
+        [
+          {
+            "node": "현재 토큰 불러오기 (조회수용)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "현재 토큰 불러오기 (조회수용)": {
+      "main": [
+        [
+          {
+            "node": "게시완료 상품 조회 (노출수용)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "게시완료 상품 조회 (노출수용)": {
+      "main": [
+        [
+          {
+            "node": "media_id 있는 행만 필터링",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "media_id 있는 행만 필터링": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        null,
+        [
+          {
+            "node": "노출수 조회 (Threads Insights)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "노출수 조회 (Threads Insights)": {
+      "main": [
+        [
+          {
+            "node": "views 값 파싱",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "views 값 파싱": {
+      "main": [
+        [
+          {
+            "node": "시트에 views 기록",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "실패시 시트소스 판단": {
+      "main": [
+        [
+          {
+            "node": "시트에 실패 표시",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "실패 알림 (텔레그램)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "시트에 실패 표시": {
+      "main": [
+        [
+          {
+            "node": "실패 알림 (텔레그램)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "시트에 views 기록": {
+      "main": [
+        [
+          {
+            "node": "대기 (조회수 순차 갱신)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "views기록 재시도 카운트 증가",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "대기 (조회수 순차 갱신)": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "NVIDIA 재시도 카운트 증가": {
+      "main": [
+        [
+          {
+            "node": "NVIDIA 재시도 가능?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "NVIDIA 재시도 가능?": {
+      "main": [
+        [
+          {
+            "node": "NVIDIA 재시도 대기",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "NVIDIA 재시도 소진 (에러)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "NVIDIA 재시도 대기": {
+      "main": [
+        [
+          {
+            "node": "스토리텔링 생성 (재시도)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "스토리텔링 생성 (재시도)": {
+      "main": [
+        [
+          {
+            "node": "NVIDIA 복구 알림 (텔레그램)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "NVIDIA 재시도 카운트 증가",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "NVIDIA 복구 알림 (텔레그램)": {
+      "main": [
+        [
+          {
+            "node": "응답 파싱 및 댓글 텍스트 구성",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "본문생성 재시도 카운트 증가": {
+      "main": [
+        [
+          {
+            "node": "본문생성 재시도 가능?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "본문생성 재시도 가능?": {
+      "main": [
+        [
+          {
+            "node": "본문생성 재시도 대기",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "실패시 시트소스 판단",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "본문생성 재시도 대기": {
+      "main": [
+        [
+          {
+            "node": "본문 컨테이너 생성 (재시도)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "본문 컨테이너 생성 (재시도)": {
+      "main": [
+        [
+          {
+            "node": "본문생성 복구 알림 (텔레그램)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "본문생성 재시도 카운트 증가",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "본문생성 복구 알림 (텔레그램)": {
+      "main": [
+        [
+          {
+            "node": "대기 30초 (본문)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "시트조회 재시도 카운트 증가": {
+      "main": [
+        [
+          {
+            "node": "시트조회 재시도 가능?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "시트조회 재시도 가능?": {
+      "main": [
+        [
+          {
+            "node": "시트조회 재시도 대기",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "시트조회 재시도 소진 (에러)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "시트조회 재시도 대기": {
+      "main": [
+        [
+          {
+            "node": "시트 큐에서 미게시 상품 조회 (재시도)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "시트 큐에서 미게시 상품 조회 (재시도)": {
+      "main": [
+        [
+          {
+            "node": "시트조회 복구 알림 (텔레그램)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "시트조회 재시도 카운트 증가",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "시트조회 복구 알림 (텔레그램)": {
+      "main": [
+        [
+          {
+            "node": "제휴링크 있는 상품만 선택",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "게시완료표시 재시도 카운트 증가": {
+      "main": [
+        [
+          {
+            "node": "게시완료표시 재시도 가능?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "게시완료표시 재시도 가능?": {
+      "main": [
+        [
+          {
+            "node": "게시완료표시 재시도 대기",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "게시완료표시 재시도 소진 (에러)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "게시완료표시 재시도 대기": {
+      "main": [
+        [
+          {
+            "node": "시트에 게시완료 표시 (재시도)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "시트에 게시완료 표시 (재시도)": {
+      "main": [
+        [
+          {
+            "node": "게시완료표시 복구 알림 (텔레그램)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "게시완료표시 재시도 카운트 증가",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "게시완료표시 복구 알림 (텔레그램)": {
+      "main": [
+        [
+          {
+            "node": "게시 기록 저장 (중복방지)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "views기록 재시도 카운트 증가": {
+      "main": [
+        [
+          {
+            "node": "views기록 재시도 가능?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "views기록 재시도 가능?": {
+      "main": [
+        [
+          {
+            "node": "views기록 재시도 대기",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "views기록 재시도 소진 (에러)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "views기록 재시도 대기": {
+      "main": [
+        [
+          {
+            "node": "시트에 views 기록 (재시도)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "시트에 views 기록 (재시도)": {
+      "main": [
+        [
+          {
+            "node": "views기록 복구 알림 (텔레그램)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "views기록 재시도 카운트 증가",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "views기록 복구 알림 (텔레그램)": {
+      "main": [
+        [
+          {
+            "node": "대기 (조회수 순차 갱신)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
   },
   "active": true,
   "settings": {
