@@ -161,7 +161,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const DISCLOSURE = '이 게시물은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.';\n\nconst PRICE_POINTER_POOL = [\n  '가격이랑 링크는 댓글에 있음',\n  '정확한 가격이랑 링크는 댓글 확인',\n  '가격은 댓글에 적어둠',\n  '자세한 가격이랑 링크는 댓글에',\n  '가격이랑 구매 링크는 댓글에 있음'\n];\n\nconst LINK_ONLY_POINTER_POOL = [\n  '링크는 댓글에 있음',\n  '구매 링크는 댓글 확인',\n  '자세한 건 댓글 링크에서',\n  '링크는 댓글에 따로 적어둠'\n];\n\nconst PRICE_TEASE_POOL = [\n  '가격 보고 나도 좀 놀람',\n  '이 가격에 이 정도면 나쁘지 않은 듯',\n  '가격표 보면 왜 인기인지 알 듯',\n  '혹시 몰라서 가격도 같이 적어둠',\n  '가격 확인하고 필요하면 링크 눌러봐'\n];\n\nconst GENERIC_TEASE_POOL = [\n  '궁금하면 링크 눌러봐',\n  '필요하면 아래 링크로 확인해봐',\n  '관심있으면 링크로 구경해봐',\n  '자세한 건 링크에서 볼 수 있음'\n];\n\nfunction pick(pool) {\n  return pool[Math.floor(Math.random() * pool.length)];\n}\n\nfunction sanitizeTopicTag(raw) {\n  if (!raw) return '생활꿀템';\n  let t = String(raw).trim().replace(/^#/, '').replace(/[\\s.&]/g, '');\n  if (!t) return '생활꿀템';\n  return t.slice(0, 50);\n}\n\nlet productInfo;\nlet isSheetSource = false;\ntry {\n  productInfo = $('상품 정보 입력').first().json;\n} catch (e) {\n  try {\n    productInfo = $('상품 정보 입력 (자동)').first().json;\n  } catch (e2) {\n    productInfo = $('상품 정보 입력 (시트)').first().json;\n    isSheetSource = true;\n  }\n}\nconst tokenInfo = $('현재 토큰 불러오기').first().json;\n\nlet config;\ntry {\n  config = $('설정값 (필수 입력)').first().json;\n} catch (e) {\n  config = null;\n}\nconst threadsUserId = (config && config.threads_user_id) || productInfo.threads_user_id;\n\nlet storyText;\nlet rawTopicTag = null;\nif (productInfo.fixed_post_text) {\n  storyText = productInfo.fixed_post_text;\n} else {\n  const aiResponse = $input.first().json;\n  const messageContent = aiResponse.choices && aiResponse.choices[0] && aiResponse.choices[0].message\n    ? aiResponse.choices[0].message.content\n    : null;\n  const finishReason = aiResponse.choices && aiResponse.choices[0] ? aiResponse.choices[0].finish_reason : null;\n\n  if (!messageContent) {\n    throw new Error('NVIDIA API 응답에서 텍스트를 찾을 수 없습니다. 응답: ' + JSON.stringify(aiResponse));\n  }\n\n  let jsonSlice = messageContent.trim();\n  const firstBrace = jsonSlice.indexOf('{');\n  const lastBrace = jsonSlice.lastIndexOf('}');\n  if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {\n    jsonSlice = jsonSlice.slice(firstBrace, lastBrace + 1);\n  }\n\n  jsonSlice = jsonSlice.replace(/\\\\\\s+([nrtbf\"\\\\\\/])/g, '\\\\$1');\n\n  try {\n    const parsed = JSON.parse(jsonSlice);\n    storyText = parsed.post_text;\n    rawTopicTag = parsed.topic_tag;\n  } catch (e) {\n    throw new Error('NVIDIA 응답이 유효한 JSON이 아닙니다 (finish_reason=' + finishReason + '). 모델이 사고 과정을 출력했거나 응답이 잘렸을 가능성이 큽니다. 원문(300자): ' + messageContent.slice(0, 300));\n  }\n\n  if (!storyText) {\n    throw new Error('post_text를 추출하지 못했습니다. 원문: ' + jsonSlice.slice(0, 300));\n  }\n}\n\nstoryText = storyText.split(DISCLOSURE).join('').trim();\n\nconst hasPrice = !!productInfo.price;\nconst pointer = hasPrice ? pick(PRICE_POINTER_POOL) : pick(LINK_ONLY_POINTER_POOL);\nconst postText = `${storyText}\\n\\n${pointer}`;\n\nif (postText.length > 480) {\n  throw new Error('생성된 post_text가 너무 깁니다 (' + postText.length + '자). Threads 500자 제한 초과 위험으로 게시를 중단합니다: ' + postText.slice(0, 200));\n}\n\nconst priceLine = hasPrice ? `현재 가격: ${productInfo.price}\\n` : '';\nconst tease = hasPrice ? pick(PRICE_TEASE_POOL) : pick(GENERIC_TEASE_POOL);\nconst commentText = `${DISCLOSURE}\\n\\n${priceLine}${tease}\\n${productInfo.affiliate_link}`;\nconst topicTag = sanitizeTopicTag(rawTopicTag);\n\nreturn [{\n  json: {\n    post_text: postText,\n    comment_text: commentText,\n    access_token: tokenInfo.access_token,\n    threads_user_id: threadsUserId,\n    affiliate_link: productInfo.affiliate_link,\n    image_url: productInfo.image_url || '',\n    is_sheet_source: isSheetSource,\n    topic_tag: topicTag\n  }\n}];"
+        "jsCode": "const DISCLOSURE = '이 게시물은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.';\n\nconst PRICE_POINTER_POOL = [\n  '가격이랑 링크는 댓글에 있음',\n  '정확한 가격이랑 링크는 댓글 확인',\n  '가격은 댓글에 적어둠',\n  '자세한 가격이랑 링크는 댓글에',\n  '가격이랑 구매 링크는 댓글에 있음'\n];\n\nconst LINK_ONLY_POINTER_POOL = [\n  '링크는 댓글에 있음',\n  '구매 링크는 댓글 확인',\n  '자세한 건 댓글 링크에서',\n  '링크는 댓글에 따로 적어둠'\n];\n\nconst PRICE_TEASE_POOL = [\n  '가격 보고 나도 좀 놀람',\n  '이 가격에 이 정도면 나쁘지 않은 듯',\n  '가격표 보면 왜 인기인지 알 듯',\n  '혹시 몰라서 가격도 같이 적어둠',\n  '가격 확인하고 필요하면 링크 눌러봐'\n];\n\nconst GENERIC_TEASE_POOL = [\n  '궁금하면 링크 눌러봐',\n  '필요하면 아래 링크로 확인해봐',\n  '관심있으면 링크로 구경해봐',\n  '자세한 건 링크에서 볼 수 있음'\n];\n\nfunction pick(pool) {\n  return pool[Math.floor(Math.random() * pool.length)];\n}\n\nfunction sanitizeTopicTag(raw) {\n  if (!raw) return '생활꿀템';\n  let t = String(raw).trim().replace(/^#/, '').replace(/[\\s.&]/g, '');\n  if (!t) return '생활꿀템';\n  return t.slice(0, 50);\n}\n\nlet productInfo;\nlet isSheetSource = false;\ntry {\n  productInfo = $('상품 정보 입력').first().json;\n} catch (e) {\n  try {\n    productInfo = $('상품 정보 입력 (자동)').first().json;\n  } catch (e2) {\n    productInfo = $('상품 정보 입력 (시트)').first().json;\n    isSheetSource = true;\n  }\n}\nconst tokenInfo = $('현재 토큰 불러오기').first().json;\n\nlet config;\ntry {\n  config = $('설정값 (필수 입력)').first().json;\n} catch (e) {\n  config = null;\n}\nconst threadsUserId = (config && config.threads_user_id) || productInfo.threads_user_id;\n\nlet storyText;\nlet rawTopicTag = null;\nif (productInfo.fixed_post_text) {\n  storyText = productInfo.fixed_post_text;\n} else {\n  let aiResponse;\n  try {\n    aiResponse = $('스토리텔링 생성 (재시도)').first().json;\n  } catch (e) {\n    aiResponse = $('스토리텔링 생성 (NVIDIA API)').first().json;\n  }\n  const messageContent = aiResponse.choices && aiResponse.choices[0] && aiResponse.choices[0].message\n    ? aiResponse.choices[0].message.content\n    : null;\n  const finishReason = aiResponse.choices && aiResponse.choices[0] ? aiResponse.choices[0].finish_reason : null;\n\n  if (!messageContent) {\n    throw new Error('NVIDIA API 응답에서 텍스트를 찾을 수 없습니다. 응답: ' + JSON.stringify(aiResponse));\n  }\n\n  let jsonSlice = messageContent.trim();\n  const firstBrace = jsonSlice.indexOf('{');\n  const lastBrace = jsonSlice.lastIndexOf('}');\n  if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {\n    jsonSlice = jsonSlice.slice(firstBrace, lastBrace + 1);\n  }\n\n  jsonSlice = jsonSlice.replace(/\\\\s+([nrtbf\"\\\\\\/])/g, '\\\\$1');\n\n  try {\n    const parsed = JSON.parse(jsonSlice);\n    storyText = parsed.post_text;\n    rawTopicTag = parsed.topic_tag;\n  } catch (e) {\n    throw new Error('NVIDIA 응답이 유효한 JSON이 아닙니다 (finish_reason=' + finishReason + '). 모델이 사고 과정을 출력했거나 응답이 잘렸을 가능성이 큽니다. 원문(300자): ' + messageContent.slice(0, 300));\n  }\n\n  if (!storyText) {\n    throw new Error('post_text를 추출하지 못했습니다. 원문: ' + jsonSlice.slice(0, 300));\n  }\n}\n\nstoryText = storyText.split(DISCLOSURE).join('').trim();\n\nconst hasPrice = !!productInfo.price;\nconst pointer = hasPrice ? pick(PRICE_POINTER_POOL) : pick(LINK_ONLY_POINTER_POOL);\nconst postText = `${storyText}\\n\\n${pointer}`;\n\nif (postText.length > 480) {\n  throw new Error('생성된 post_text가 너무 깁니다 (' + postText.length + '자). Threads 500자 제한 초과 위험으로 게시를 중단합니다: ' + postText.slice(0, 200));\n}\n\nconst priceLine = hasPrice ? `현재 가격: ${productInfo.price}\\n` : '';\nconst tease = hasPrice ? pick(PRICE_TEASE_POOL) : pick(GENERIC_TEASE_POOL);\nconst commentText = `${DISCLOSURE}\\n\\n${priceLine}${tease}\\n${productInfo.affiliate_link}`;\nconst topicTag = sanitizeTopicTag(rawTopicTag);\n\nreturn [{\n  json: {\n    post_text: postText,\n    comment_text: commentText,\n    access_token: tokenInfo.access_token,\n    threads_user_id: threadsUserId,\n    affiliate_link: productInfo.affiliate_link,\n    image_url: productInfo.image_url || '',\n    is_sheet_source: isSheetSource,\n    topic_tag: topicTag\n  }\n}];"
       },
       "id": "fbeb4bbc-77b0-4cb0-8e4b-ba4508e327e6",
       "name": "응답 파싱 및 댓글 텍스트 구성",
@@ -239,7 +239,7 @@
           "parameters": [
             {
               "name": "creation_id",
-              "value": "={{ $json.id }}"
+              "value": "={{ (function(){ try { return $('본문 컨테이너 생성 (재시도)').first().json.id; } catch(e) { try { return $('본문 컨테이너 생성').first().json.id; } catch(e2) { return $json.id; } } })() }}"
             },
             {
               "name": "access_token",
@@ -292,7 +292,10 @@
       "position": [
         1920,
         -112
-      ]
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -334,7 +337,10 @@
       "position": [
         2352,
         -112
-      ]
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -1884,7 +1890,7 @@
         2480
       ],
       "parameters": {
-        "amount": 3
+        "amount": 65
       },
       "webhookId": "fc2e07f2-296f-465e-9b25-8cb7047b3bb6"
     },
@@ -2536,22 +2542,16 @@
             "node": "NVIDIA 복구 알림 (텔레그램)",
             "type": "main",
             "index": 0
+          },
+          {
+            "node": "응답 파싱 및 댓글 텍스트 구성",
+            "type": "main",
+            "index": 0
           }
         ],
         [
           {
             "node": "NVIDIA 재시도 카운트 증가",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "NVIDIA 복구 알림 (텔레그램)": {
-      "main": [
-        [
-          {
-            "node": "응답 파싱 및 댓글 텍스트 구성",
             "type": "main",
             "index": 0
           }
@@ -2674,22 +2674,16 @@
             "node": "시트조회 복구 알림 (텔레그램)",
             "type": "main",
             "index": 0
+          },
+          {
+            "node": "제휴링크 있는 상품만 선택",
+            "type": "main",
+            "index": 0
           }
         ],
         [
           {
             "node": "시트조회 재시도 카운트 증가",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "시트조회 복구 알림 (텔레그램)": {
-      "main": [
-        [
-          {
-            "node": "제휴링크 있는 상품만 선택",
             "type": "main",
             "index": 0
           }
