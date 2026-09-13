@@ -25,7 +25,7 @@
             {
               "id": "a2-1",
               "name": "account_id",
-              "value": "acc_general",
+              "value": "account_A",
               "type": "string"
             }
           ]
@@ -102,7 +102,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const staticData = $getWorkflowStaticData('global');\n\nlet config;\ntry {\n  config = $('설정값 (필수 입력)').first().json;\n} catch (e) {\n  config = null;\n}\nconst item = $input.first().json;\nconst accountId = (config && config.account_id) || item.account_id || item.threads_user_id || 'default';\n\nif (!staticData.tokens) staticData.tokens = {};\n\nif (!staticData.tokens[accountId] && staticData.access_token) {\n  staticData.tokens[accountId] = staticData.access_token;\n}\n\nif (!staticData.tokens[accountId]) {\n  throw new Error(`[${accountId}] 토큰이 없습니다. n8n에서 이 노드를 대상으로 1회 수동 시딩이 필요합니다 (staticData.tokens.${accountId}).`);\n}\n\nreturn [{ json: { access_token: staticData.tokens[accountId], account_id: accountId } }];"
+        "jsCode": "const staticData = $getWorkflowStaticData('global');\n\nlet config;\ntry {\n  config = $('설정값 (필수 입력)').first().json;\n} catch (e) {\n  config = null;\n}\nconst item = $input.first().json;\nconst accountId = (config && config.account_id) || item.account_id || item.threads_user_id || 'default';\n\nif (!staticData.tokens) staticData.tokens = {};\n\n// acc_general → account_A 개명 이전 데이터 승계 (1회성 브릿지, 이후엔 무해)\nif (!staticData.tokens[accountId] && accountId === 'account_A' && staticData.tokens['acc_general']) {\n  staticData.tokens[accountId] = staticData.tokens['acc_general'];\n}\n\nif (!staticData.tokens[accountId] && staticData.access_token) {\n  staticData.tokens[accountId] = staticData.access_token;\n}\n\nif (!staticData.tokens[accountId]) {\n  throw new Error(`[${accountId}] 토큰이 없습니다. n8n에서 이 노드를 대상으로 1회 수동 시딩이 필요합니다 (staticData.tokens.${accountId}).`);\n}\n\nreturn [{ json: { access_token: staticData.tokens[accountId], account_id: accountId } }];"
       },
       "id": "e4a2a738-44a3-44c5-83af-49009c671693",
       "name": "현재 토큰 불러오기",
@@ -369,7 +369,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const staticData = $getWorkflowStaticData('global');\nconst item = $input.first().json;\nconst accountId = item.account_id || item.threads_user_id || 'default';\n\nif (!staticData.tokens) staticData.tokens = {};\n\nif (!staticData.tokens[accountId] && staticData.access_token) {\n  staticData.tokens[accountId] = staticData.access_token;\n}\n\nif (!staticData.tokens[accountId]) {\n  throw new Error(`[${accountId}] 토큰이 없습니다. n8n에서 이 노드를 대상으로 1회 수동 시딩이 필요합니다 (staticData.tokens.${accountId}).`);\n}\n\nreturn [{ json: { access_token: staticData.tokens[accountId], account_id: accountId } }];"
+        "jsCode": "const staticData = $getWorkflowStaticData('global');\nconst item = $input.first().json;\nconst accountId = item.account_id || item.threads_user_id || 'default';\n\nif (!staticData.tokens) staticData.tokens = {};\n\n// acc_general → account_A 개명 이전 데이터 승계 (1회성 브릿지, 이후엔 무해)\nif (!staticData.tokens[accountId] && accountId === 'account_A' && staticData.tokens['acc_general']) {\n  staticData.tokens[accountId] = staticData.tokens['acc_general'];\n}\n\nif (!staticData.tokens[accountId] && staticData.access_token) {\n  staticData.tokens[accountId] = staticData.access_token;\n}\n\nif (!staticData.tokens[accountId]) {\n  throw new Error(`[${accountId}] 토큰이 없습니다. n8n에서 이 노드를 대상으로 1회 수동 시딩이 필요합니다 (staticData.tokens.${accountId}).`);\n}\n\nreturn [{ json: { access_token: staticData.tokens[accountId], account_id: accountId } }];"
       },
       "id": "cfbfcecc-480a-41c4-b24a-76e9f80f7a6f",
       "name": "현재 토큰 불러오기 (갱신용)",
@@ -563,7 +563,7 @@
             {
               "id": "auto-7",
               "name": "account_id",
-              "value": "={{ $json.account_id || 'acc_general' }}",
+              "value": "={{ $json.account_id || 'account_A' }}",
               "type": "string"
             }
           ]
@@ -751,7 +751,7 @@
             {
               "id": "s1-7",
               "name": "account_id",
-              "value": "={{ $json.account_id || 'acc_general' }}",
+              "value": "={{ $json.account_id || 'account_A' }}",
               "type": "string"
             }
           ]
@@ -986,7 +986,7 @@
       ],
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "const staticData = $getWorkflowStaticData('global');\nconst item = $input.first().json;\nconst accountId = item.account_id || item.threads_user_id || 'default';\n\nif (!staticData.tokens) staticData.tokens = {};\n\nif (!staticData.tokens[accountId] && staticData.access_token) {\n  staticData.tokens[accountId] = staticData.access_token;\n}\n\nif (!staticData.tokens[accountId]) {\n  throw new Error(`[${accountId}] 토큰이 없습니다. n8n에서 이 노드를 대상으로 1회 수동 시딩이 필요합니다 (staticData.tokens.${accountId}).`);\n}\n\nreturn [{ json: { access_token: staticData.tokens[accountId], account_id: accountId } }];"
+        "jsCode": "const staticData = $getWorkflowStaticData('global');\nconst item = $input.first().json;\nconst accountId = item.account_id || item.threads_user_id || 'default';\n\nif (!staticData.tokens) staticData.tokens = {};\n\n// acc_general → account_A 개명 이전 데이터 승계 (1회성 브릿지, 이후엔 무해)\nif (!staticData.tokens[accountId] && accountId === 'account_A' && staticData.tokens['acc_general']) {\n  staticData.tokens[accountId] = staticData.tokens['acc_general'];\n}\n\nif (!staticData.tokens[accountId] && staticData.access_token) {\n  staticData.tokens[accountId] = staticData.access_token;\n}\n\nif (!staticData.tokens[accountId]) {\n  throw new Error(`[${accountId}] 토큰이 없습니다. n8n에서 이 노드를 대상으로 1회 수동 시딩이 필요합니다 (staticData.tokens.${accountId}).`);\n}\n\nreturn [{ json: { access_token: staticData.tokens[accountId], account_id: accountId } }];"
       }
     },
     {
@@ -2025,7 +2025,7 @@
         480
       ],
       "parameters": {
-        "jsCode": "const ACCOUNTS = [\n  { account_id: 'acc_general', threads_user_id: '27629464336738548' }\n  // 계정 추가 시 이 배열에 { account_id, threads_user_id } 객체만 추가하면 됨 (상품 분류 및 계정 매핑 코드의 ACCOUNT_MAP과 동일하게 유지)\n];\n\nreturn ACCOUNTS.map(a => ({ json: a }));"
+        "jsCode": "const ACCOUNTS = [\n  { account_id: 'account_A', threads_user_id: '27629464336738548' },\n  { account_id: 'account_B', threads_user_id: '27802565872778237' }\n  // 계정 추가 시 이 배열에 { account_id, threads_user_id } 객체만 추가하면 됨 (상품 분류 및 계정 매핑 코드의 ACCOUNT_MAP과 동일하게 유지)\n];\n\nreturn ACCOUNTS.map(a => ({ json: a }));"
       }
     },
     {
@@ -2052,7 +2052,7 @@
         912
       ],
       "parameters": {
-        "jsCode": "// 계정 추가 시 이 배열에 { account_id, threads_user_id, keywords } 객체를 추가하세요.\n// 예시(비활성, 실제 계정 준비되면 아래 형태로 추가):\n// { account_id: 'acc_kitchen', threads_user_id: 'PASTE_ACTUAL_ID', keywords: ['주방', '조리', '냄비', '프라이팬', '청소기'] },\n// { account_id: 'acc_camp', threads_user_id: 'PASTE_ACTUAL_ID', keywords: ['캠핑', '텐트', '아웃도어', '등산'] },\nconst ACCOUNT_MAP = [\n  { account_id: 'acc_general', threads_user_id: '27629464336738548', keywords: [] } // fallback, 항상 마지막\n];\n\nconst body = $input.first().json.body || {};\nconst text = `${body.product_title || ''} ${body.product_desc || ''}`.toLowerCase();\n\nlet matched = ACCOUNT_MAP.find(a =>\n  a.keywords.length && a.keywords.some(k => text.includes(k))\n);\nif (!matched) {\n  matched = ACCOUNT_MAP.find(a => a.keywords.length === 0);\n}\n\nreturn [{\n  json: {\n    ...$input.first().json,\n    account_id: matched.account_id,\n    threads_user_id: matched.threads_user_id\n  }\n}];"
+        "jsCode": "// account_B 상품 분류 키워드 확정되면 아래 주석 해제하고 keywords 채우기:\n// { account_id: 'account_B', threads_user_id: '27802565872778237', keywords: ['키워드1', '키워드2'] },\nconst ACCOUNT_MAP = [\n  { account_id: 'account_A', threads_user_id: '27629464336738548', keywords: [] } // fallback, 항상 마지막\n];\n\nconst body = $input.first().json.body || {};\nconst text = `${body.product_title || ''} ${body.product_desc || ''}`.toLowerCase();\n\nlet matched = ACCOUNT_MAP.find(a =>\n  a.keywords.length && a.keywords.some(k => text.includes(k))\n);\nif (!matched) {\n  matched = ACCOUNT_MAP.find(a => a.keywords.length === 0);\n}\n\nreturn [{\n  json: {\n    ...$input.first().json,\n    account_id: matched.account_id,\n    threads_user_id: matched.threads_user_id\n  }\n}];"
       }
     },
     {
