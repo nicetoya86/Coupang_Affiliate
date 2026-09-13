@@ -21,6 +21,12 @@
               "name": "threads_user_id",
               "value": "27629464336738548",
               "type": "string"
+            },
+            {
+              "id": "a2-1",
+              "name": "account_id",
+              "value": "acc_general",
+              "type": "string"
             }
           ]
         },
@@ -96,7 +102,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const staticData = $getWorkflowStaticData('global');\nconst SEED_TOKEN = 'THAATF6FQV3HxBYmFtZA0xMcHdPeHJNWWhxLUU0VnFGMzEwQWxkXzVtYlZA6ZA1RHR0RhV2t2cTBOc0Npa2VrdXJ4LWphSnAzUGg4ZAHJhVlBlNEMwY2d1TkpLY3B0Tk5nakxONURKUUpxWlRneU00MUVxUXhTUXM2dWZAaTmhlY2NTdEtuUXlCSkE3aVNkTTlhZAWsZD';\n\nif (!staticData.access_token || staticData.seed_token_used !== SEED_TOKEN) {\n  if (!SEED_TOKEN || SEED_TOKEN.indexOf('PASTE_') === 0) {\n    throw new Error('토큰이 없습니다. 이 노드 코드 안의 SEED_TOKEN 값을 실제 60일 토큰으로 한 번만 바꿔주세요.');\n  }\n  staticData.access_token = SEED_TOKEN;\n  staticData.seed_token_used = SEED_TOKEN;\n}\n\nreturn [{ json: { access_token: staticData.access_token } }];"
+        "jsCode": "const staticData = $getWorkflowStaticData('global');\n\nlet config;\ntry {\n  config = $('설정값 (필수 입력)').first().json;\n} catch (e) {\n  config = null;\n}\nconst item = $input.first().json;\nconst accountId = (config && config.account_id) || item.account_id || item.threads_user_id || 'default';\n\nif (!staticData.tokens) staticData.tokens = {};\n\nif (!staticData.tokens[accountId] && staticData.access_token) {\n  staticData.tokens[accountId] = staticData.access_token;\n}\n\nif (!staticData.tokens[accountId]) {\n  throw new Error(`[${accountId}] 토큰이 없습니다. n8n에서 이 노드를 대상으로 1회 수동 시딩이 필요합니다 (staticData.tokens.${accountId}).`);\n}\n\nreturn [{ json: { access_token: staticData.tokens[accountId], account_id: accountId } }];"
       },
       "id": "e4a2a738-44a3-44c5-83af-49009c671693",
       "name": "현재 토큰 불러오기",
@@ -161,7 +167,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const DISCLOSURE = '이 게시물은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.';\n\nconst PRICE_POINTER_POOL = [\n  '가격이랑 링크는 댓글에 있음',\n  '정확한 가격이랑 링크는 댓글 확인',\n  '가격은 댓글에 적어둠',\n  '자세한 가격이랑 링크는 댓글에',\n  '가격이랑 구매 링크는 댓글에 있음'\n];\n\nconst LINK_ONLY_POINTER_POOL = [\n  '링크는 댓글에 있음',\n  '구매 링크는 댓글 확인',\n  '자세한 건 댓글 링크에서',\n  '링크는 댓글에 따로 적어둠'\n];\n\nconst PRICE_TEASE_POOL = [\n  '가격 보고 나도 좀 놀람',\n  '이 가격에 이 정도면 나쁘지 않은 듯',\n  '가격표 보면 왜 인기인지 알 듯',\n  '혹시 몰라서 가격도 같이 적어둠',\n  '가격 확인하고 필요하면 링크 눌러봐'\n];\n\nconst GENERIC_TEASE_POOL = [\n  '궁금하면 링크 눌러봐',\n  '필요하면 아래 링크로 확인해봐',\n  '관심있으면 링크로 구경해봐',\n  '자세한 건 링크에서 볼 수 있음'\n];\n\nfunction pick(pool) {\n  return pool[Math.floor(Math.random() * pool.length)];\n}\n\nfunction sanitizeTopicTag(raw) {\n  if (!raw) return '생활꿀템';\n  let t = String(raw).trim().replace(/^#/, '').replace(/[\\s.&]/g, '');\n  if (!t) return '생활꿀템';\n  return t.slice(0, 50);\n}\n\nlet productInfo;\nlet isSheetSource = false;\ntry {\n  productInfo = $('상품 정보 입력').first().json;\n} catch (e) {\n  try {\n    productInfo = $('상품 정보 입력 (자동)').first().json;\n  } catch (e2) {\n    productInfo = $('상품 정보 입력 (시트)').first().json;\n    isSheetSource = true;\n  }\n}\nconst tokenInfo = $('현재 토큰 불러오기').first().json;\n\nlet config;\ntry {\n  config = $('설정값 (필수 입력)').first().json;\n} catch (e) {\n  config = null;\n}\nconst threadsUserId = (config && config.threads_user_id) || productInfo.threads_user_id;\n\nlet storyText;\nlet rawTopicTag = null;\nif (productInfo.fixed_post_text) {\n  storyText = productInfo.fixed_post_text;\n} else {\n  let aiResponse;\n  try {\n    aiResponse = $('스토리텔링 생성 (재시도)').first().json;\n  } catch (e) {\n    aiResponse = $('스토리텔링 생성 (NVIDIA API)').first().json;\n  }\n  const messageContent = aiResponse.choices && aiResponse.choices[0] && aiResponse.choices[0].message\n    ? aiResponse.choices[0].message.content\n    : null;\n  const finishReason = aiResponse.choices && aiResponse.choices[0] ? aiResponse.choices[0].finish_reason : null;\n\n  if (!messageContent) {\n    throw new Error('NVIDIA API 응답에서 텍스트를 찾을 수 없습니다. 응답: ' + JSON.stringify(aiResponse));\n  }\n\n  let jsonSlice = messageContent.trim();\n  const firstBrace = jsonSlice.indexOf('{');\n  const lastBrace = jsonSlice.lastIndexOf('}');\n  if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {\n    jsonSlice = jsonSlice.slice(firstBrace, lastBrace + 1);\n  }\n\n  jsonSlice = jsonSlice.replace(/\\\\s+([nrtbf\"\\\\\\/])/g, '\\\\$1');\n\n  try {\n    const parsed = JSON.parse(jsonSlice);\n    storyText = parsed.post_text;\n    rawTopicTag = parsed.topic_tag;\n  } catch (e) {\n    throw new Error('NVIDIA 응답이 유효한 JSON이 아닙니다 (finish_reason=' + finishReason + '). 모델이 사고 과정을 출력했거나 응답이 잘렸을 가능성이 큽니다. 원문(300자): ' + messageContent.slice(0, 300));\n  }\n\n  if (!storyText) {\n    throw new Error('post_text를 추출하지 못했습니다. 원문: ' + jsonSlice.slice(0, 300));\n  }\n}\n\nstoryText = storyText.split(DISCLOSURE).join('').trim();\n\nconst hasPrice = !!productInfo.price;\nconst pointer = hasPrice ? pick(PRICE_POINTER_POOL) : pick(LINK_ONLY_POINTER_POOL);\nconst postText = `${storyText}\\n\\n${pointer}`;\n\nif (postText.length > 480) {\n  throw new Error('생성된 post_text가 너무 깁니다 (' + postText.length + '자). Threads 500자 제한 초과 위험으로 게시를 중단합니다: ' + postText.slice(0, 200));\n}\n\nconst priceLine = hasPrice ? `현재 가격: ${productInfo.price}\\n` : '';\nconst tease = hasPrice ? pick(PRICE_TEASE_POOL) : pick(GENERIC_TEASE_POOL);\nconst commentText = `${DISCLOSURE}\\n\\n${priceLine}${tease}\\n${productInfo.affiliate_link}`;\nconst topicTag = sanitizeTopicTag(rawTopicTag);\n\nreturn [{\n  json: {\n    post_text: postText,\n    comment_text: commentText,\n    access_token: tokenInfo.access_token,\n    threads_user_id: threadsUserId,\n    affiliate_link: productInfo.affiliate_link,\n    image_url: productInfo.image_url || '',\n    is_sheet_source: isSheetSource,\n    topic_tag: topicTag\n  }\n}];"
+        "jsCode": "const DISCLOSURE = '이 게시물은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.';\n\nconst PRICE_POINTER_POOL = [\n  '가격이랑 링크는 댓글에 있음',\n  '정확한 가격이랑 링크는 댓글 확인',\n  '가격은 댓글에 적어둠',\n  '자세한 가격이랑 링크는 댓글에',\n  '가격이랑 구매 링크는 댓글에 있음'\n];\n\nconst LINK_ONLY_POINTER_POOL = [\n  '링크는 댓글에 있음',\n  '구매 링크는 댓글 확인',\n  '자세한 건 댓글 링크에서',\n  '링크는 댓글에 따로 적어둠'\n];\n\nconst PRICE_TEASE_POOL = [\n  '가격 보고 나도 좀 놀람',\n  '이 가격에 이 정도면 나쁘지 않은 듯',\n  '가격표 보면 왜 인기인지 알 듯',\n  '혹시 몰라서 가격도 같이 적어둠',\n  '가격 확인하고 필요하면 링크 눌러봐'\n];\n\nconst GENERIC_TEASE_POOL = [\n  '궁금하면 링크 눌러봐',\n  '필요하면 아래 링크로 확인해봐',\n  '관심있으면 링크로 구경해봐',\n  '자세한 건 링크에서 볼 수 있음'\n];\n\nfunction pick(pool) {\n  return pool[Math.floor(Math.random() * pool.length)];\n}\n\nfunction sanitizeTopicTag(raw) {\n  if (!raw) return '생활꿀템';\n  let t = String(raw).trim().replace(/^#/, '').replace(/[\\s.&]/g, '');\n  if (!t) return '생활꿀템';\n  return t.slice(0, 50);\n}\n\nlet productInfo;\nlet isSheetSource = false;\ntry {\n  productInfo = $('상품 정보 입력').first().json;\n} catch (e) {\n  try {\n    productInfo = $('상품 정보 입력 (자동)').first().json;\n  } catch (e2) {\n    productInfo = $('상품 정보 입력 (시트)').first().json;\n    isSheetSource = true;\n  }\n}\nconst tokenInfo = $('현재 토큰 불러오기').first().json;\n\nlet config;\ntry {\n  config = $('설정값 (필수 입력)').first().json;\n} catch (e) {\n  config = null;\n}\nconst threadsUserId = (config && config.threads_user_id) || productInfo.threads_user_id;\nconst accountId = (config && config.account_id) || productInfo.account_id || '';\n\nlet storyText;\nlet rawTopicTag = null;\nif (productInfo.fixed_post_text) {\n  storyText = productInfo.fixed_post_text;\n} else {\n  let aiResponse;\n  try {\n    aiResponse = $('스토리텔링 생성 (재시도)').first().json;\n  } catch (e) {\n    aiResponse = $('스토리텔링 생성 (NVIDIA API)').first().json;\n  }\n  const messageContent = aiResponse.choices && aiResponse.choices[0] && aiResponse.choices[0].message\n    ? aiResponse.choices[0].message.content\n    : null;\n  const finishReason = aiResponse.choices && aiResponse.choices[0] ? aiResponse.choices[0].finish_reason : null;\n\n  if (!messageContent) {\n    throw new Error('NVIDIA API 응답에서 텍스트를 찾을 수 없습니다. 응답: ' + JSON.stringify(aiResponse));\n  }\n\n  let jsonSlice = messageContent.trim();\n  const firstBrace = jsonSlice.indexOf('{');\n  const lastBrace = jsonSlice.lastIndexOf('}');\n  if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {\n    jsonSlice = jsonSlice.slice(firstBrace, lastBrace + 1);\n  }\n\n  jsonSlice = jsonSlice.replace(/\\\\\\s+([nrtbf\"\\\\\\\\\\/])/g, '\\\\\\\\$1');\n  jsonSlice = jsonSlice.replace(/\\\\(?![\"\\\\\\\\\\/bfnrtu])/g, '');\n\n  try {\n    const parsed = JSON.parse(jsonSlice);\n    storyText = parsed.post_text;\n    rawTopicTag = parsed.topic_tag;\n  } catch (e) {\n    throw new Error('NVIDIA 응답이 유효한 JSON이 아닙니다 (finish_reason=' + finishReason + '). 모델이 사고 과정을 출력했거나 응답이 잘렸을 가능성이 큽니다. 원문(300자): ' + messageContent.slice(0, 300));\n  }\n\n  if (!storyText) {\n    throw new Error('post_text를 추출하지 못했습니다. 원문: ' + jsonSlice.slice(0, 300));\n  }\n}\n\nstoryText = storyText.split(DISCLOSURE).join('').trim();\n\nconst hasPrice = !!productInfo.price;\nconst pointer = hasPrice ? pick(PRICE_POINTER_POOL) : pick(LINK_ONLY_POINTER_POOL);\nconst postText = `${storyText}\\n\\n${pointer}`;\n\nif (postText.length > 480) {\n  throw new Error('생성된 post_text가 너무 깁니다 (' + postText.length + '자). Threads 500자 제한 초과 위험으로 게시를 중단합니다: ' + postText.slice(0, 200));\n}\n\nconst priceLine = hasPrice ? `현재 가격: ${productInfo.price}\\n` : '';\nconst tease = hasPrice ? pick(PRICE_TEASE_POOL) : pick(GENERIC_TEASE_POOL);\nconst commentText = `${DISCLOSURE}\\n\\n${priceLine}${tease}\\n${productInfo.affiliate_link}`;\nconst topicTag = sanitizeTopicTag(rawTopicTag);\n\nreturn [{\n  json: {\n    post_text: postText,\n    comment_text: commentText,\n    access_token: tokenInfo.access_token,\n    threads_user_id: threadsUserId,\n    account_id: accountId,\n    affiliate_link: productInfo.affiliate_link,\n    image_url: productInfo.image_url || '',\n    is_sheet_source: isSheetSource,\n    topic_tag: topicTag\n  }\n}];"
       },
       "id": "fbeb4bbc-77b0-4cb0-8e4b-ba4508e327e6",
       "name": "응답 파싱 및 댓글 텍스트 구성",
@@ -363,7 +369,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const staticData = $getWorkflowStaticData('global');\nconst SEED_TOKEN = 'THAATF6FQV3HxBYmFtZA0xMcHdPeHJNWWhxLUU0VnFGMzEwQWxkXzVtYlZA6ZA1RHR0RhV2t2cTBOc0Npa2VrdXJ4LWphSnAzUGg4ZAHJhVlBlNEMwY2d1TkpLY3B0Tk5nakxONURKUUpxWlRneU00MUVxUXhTUXM2dWZAaTmhlY2NTdEtuUXlCSkE3aVNkTTlhZAWsZD';\n\nif (!staticData.access_token || staticData.seed_token_used !== SEED_TOKEN) {\n  if (!SEED_TOKEN || SEED_TOKEN.indexOf('PASTE_') === 0) {\n    throw new Error('토큰이 없습니다. 이 노드 코드 안의 SEED_TOKEN 값을 실제 60일 토큰으로 한 번만 바꿔주세요.');\n  }\n  staticData.access_token = SEED_TOKEN;\n  staticData.seed_token_used = SEED_TOKEN;\n}\n\nreturn [{ json: { access_token: staticData.access_token } }];"
+        "jsCode": "const staticData = $getWorkflowStaticData('global');\nconst item = $input.first().json;\nconst accountId = item.account_id || item.threads_user_id || 'default';\n\nif (!staticData.tokens) staticData.tokens = {};\n\nif (!staticData.tokens[accountId] && staticData.access_token) {\n  staticData.tokens[accountId] = staticData.access_token;\n}\n\nif (!staticData.tokens[accountId]) {\n  throw new Error(`[${accountId}] 토큰이 없습니다. n8n에서 이 노드를 대상으로 1회 수동 시딩이 필요합니다 (staticData.tokens.${accountId}).`);\n}\n\nreturn [{ json: { access_token: staticData.tokens[accountId], account_id: accountId } }];"
       },
       "id": "cfbfcecc-480a-41c4-b24a-76e9f80f7a6f",
       "name": "현재 토큰 불러오기 (갱신용)",
@@ -403,7 +409,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const staticData = $getWorkflowStaticData('global');\nconst response = $input.first().json;\n\nif (!response.access_token) {\n  throw new Error('토큰 갱신 응답에 access_token이 없습니다. 응답: ' + JSON.stringify(response));\n}\n\nstaticData.access_token = response.access_token;\nstaticData.refreshed_at = new Date().toISOString();\nstaticData.expires_at = new Date(Date.now() + (response.expires_in || 0) * 1000).toISOString();\n\nreturn [{\n  json: {\n    message: '토큰 갱신 완료',\n    new_expires_at: staticData.expires_at\n  }\n}];"
+        "jsCode": "const staticData = $getWorkflowStaticData('global');\nconst response = $input.first().json;\nconst accountId = $('현재 토큰 불러오기 (갱신용)').first().json.account_id || 'default';\n\nif (!response.access_token) {\n  throw new Error(`[${accountId}] 토큰 갱신 응답에 access_token이 없습니다. 응답: ` + JSON.stringify(response));\n}\n\nif (!staticData.tokens) staticData.tokens = {};\nstaticData.tokens[accountId] = response.access_token;\nif (!staticData.refreshed_at) staticData.refreshed_at = {};\nif (!staticData.expires_at) staticData.expires_at = {};\nstaticData.refreshed_at[accountId] = new Date().toISOString();\nstaticData.expires_at[accountId] = new Date(Date.now() + (response.expires_in || 0) * 1000).toISOString();\n\nreturn [{\n  json: {\n    message: `[${accountId}] 토큰 갱신 완료`,\n    account_id: accountId,\n    new_expires_at: staticData.expires_at[accountId]\n  }\n}];"
       },
       "id": "24b9a52f-27cb-4cfb-97fb-eba67eddde76",
       "name": "새 토큰 저장",
@@ -448,7 +454,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const staticData = $getWorkflowStaticData('global');\nif (!staticData.posted_products) {\n  staticData.posted_products = [];\n}\n\nconst body = $input.first().json.body || {};\nconst productUrl = body.product_url || '';\nconst affiliateLink = body.affiliate_link || '';\n\nfunction extractProductId(url) {\n  if (!url) return null;\n  const match = String(url).match(/products\\/(\\d+)/);\n  return match ? match[1] : null;\n}\n\nconst productId = extractProductId(productUrl) || productUrl || affiliateLink;\n\nif (!productId) {\n  throw new Error('product_url 또는 affiliate_link가 없습니다. 웹훅 페이로드를 확인해주세요.');\n}\n\nconst isDuplicate = staticData.posted_products.indexOf(productId) !== -1;\n\nreturn [{\n  json: {\n    is_duplicate: isDuplicate,\n    product_id: productId,\n    product_title: body.product_title || '',\n    product_desc: body.product_desc || '',\n    product_url: productUrl,\n    affiliate_link: affiliateLink,\n    image_url: body.image_url || '',\n    price: body.price || ''\n  }\n}];"
+        "jsCode": "const staticData = $getWorkflowStaticData('global');\nif (!staticData.posted_products) {\n  staticData.posted_products = [];\n}\n\nconst body = $input.first().json.body || {};\nconst productUrl = body.product_url || '';\nconst affiliateLink = body.affiliate_link || '';\n\nfunction extractProductId(url) {\n  if (!url) return null;\n  const match = String(url).match(/products\\/(\\d+)/);\n  return match ? match[1] : null;\n}\n\nconst productId = extractProductId(productUrl) || productUrl || affiliateLink;\n\nif (!productId) {\n  throw new Error('product_url 또는 affiliate_link가 없습니다. 웹훅 페이로드를 확인해주세요.');\n}\n\nconst isDuplicate = staticData.posted_products.indexOf(productId) !== -1;\n\nreturn [{\n  json: {\n    is_duplicate: isDuplicate,\n    product_id: productId,\n    product_title: body.product_title || '',\n    product_desc: body.product_desc || '',\n    product_url: productUrl,\n    affiliate_link: affiliateLink,\n    image_url: body.image_url || '',\n    price: body.price || '',\n    account_id: $input.first().json.account_id || '',\n    threads_user_id: $input.first().json.threads_user_id || ''\n  }\n}];"
       },
       "id": "4ea6c52d-9d05-4596-99db-c0c4db0cc1c5",
       "name": "중복 상품 확인",
@@ -539,7 +545,7 @@
             {
               "id": "auto-4",
               "name": "threads_user_id",
-              "value": "27629464336738548",
+              "value": "={{ $json.threads_user_id || '27629464336738548' }}",
               "type": "string"
             },
             {
@@ -552,6 +558,12 @@
               "id": "auto-6",
               "name": "price",
               "value": "={{ $json.price }}",
+              "type": "string"
+            },
+            {
+              "id": "auto-7",
+              "name": "account_id",
+              "value": "={{ $json.account_id || 'acc_general' }}",
               "type": "string"
             }
           ]
@@ -721,7 +733,7 @@
             {
               "id": "s1-4",
               "name": "threads_user_id",
-              "value": "27629464336738548",
+              "value": "={{ $json.threads_user_id || '27629464336738548' }}",
               "type": "string"
             },
             {
@@ -734,6 +746,12 @@
               "id": "s1-6",
               "name": "price",
               "value": "={{ $json.price }}",
+              "type": "string"
+            },
+            {
+              "id": "s1-7",
+              "name": "account_id",
+              "value": "={{ $json.account_id || 'acc_general' }}",
               "type": "string"
             }
           ]
@@ -800,7 +818,8 @@
           "value": {
             "affiliate_link": "={{ $('응답 파싱 및 댓글 텍스트 구성').first().json.affiliate_link }}",
             "posted": "TRUE",
-            "media_id": "={{ $('본문 게시').first().json.id }}"
+            "media_id": "={{ $('본문 게시').first().json.id }}",
+            "account_id": "={{ $('응답 파싱 및 댓글 텍스트 구성').first().json.account_id }}"
           },
           "matchingColumns": [
             "affiliate_link"
@@ -967,7 +986,7 @@
       ],
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "const staticData = $getWorkflowStaticData('global');\nconst SEED_TOKEN = 'THAATF6FQV3HxBYmFtZA0xMcHdPeHJNWWhxLUU0VnFGMzEwQWxkXzVtYlZA6ZA1RHR0RhV2t2cTBOc0Npa2VrdXJ4LWphSnAzUGg4ZAHJhVlBlNEMwY2d1TkpLY3B0Tk5nakxONURKUUpxWlRneU00MUVxUXhTUXM2dWZAaTmhlY2NTdEtuUXlCSkE3aVNkTTlhZAWsZD';\n\nif (!staticData.access_token || staticData.seed_token_used !== SEED_TOKEN) {\n  if (!SEED_TOKEN || SEED_TOKEN.indexOf('PASTE_') === 0) {\n    throw new Error('토큰이 없습니다. 이 노드 코드 안의 SEED_TOKEN 값을 실제 60일 토큰으로 한 번만 바꿔주세요.');\n  }\n  staticData.access_token = SEED_TOKEN;\n  staticData.seed_token_used = SEED_TOKEN;\n}\n\nreturn [{ json: { access_token: staticData.access_token } }];"
+        "jsCode": "const staticData = $getWorkflowStaticData('global');\nconst item = $input.first().json;\nconst accountId = item.account_id || item.threads_user_id || 'default';\n\nif (!staticData.tokens) staticData.tokens = {};\n\nif (!staticData.tokens[accountId] && staticData.access_token) {\n  staticData.tokens[accountId] = staticData.access_token;\n}\n\nif (!staticData.tokens[accountId]) {\n  throw new Error(`[${accountId}] 토큰이 없습니다. n8n에서 이 노드를 대상으로 1회 수동 시딩이 필요합니다 (staticData.tokens.${accountId}).`);\n}\n\nreturn [{ json: { access_token: staticData.tokens[accountId], account_id: accountId } }];"
       }
     },
     {
@@ -1051,7 +1070,7 @@
       ],
       "parameters": {
         "method": "GET",
-        "url": "=https://graph.threads.net/v1.0/{{ $json.media_id }}/insights",
+        "url": "=https://graph.threads.net/v1.0/{{ $('media_id 있는 행만 필터링').item.json.media_id }}/insights",
         "sendQuery": true,
         "queryParameters": {
           "parameters": [
@@ -1995,6 +2014,46 @@
         "errorType": "errorMessage",
         "errorMessage": "시트에 views 기록 3회 재시도 모두 실패"
       }
+    },
+    {
+      "id": "b6745dab-0b27-44f8-81ff-8c32aac7157d",
+      "name": "계정 목록 조회 (갱신용)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -496,
+        480
+      ],
+      "parameters": {
+        "jsCode": "const ACCOUNTS = [\n  { account_id: 'acc_general', threads_user_id: '27629464336738548' }\n  // 계정 추가 시 이 배열에 { account_id, threads_user_id } 객체만 추가하면 됨 (상품 분류 및 계정 매핑 코드의 ACCOUNT_MAP과 동일하게 유지)\n];\n\nreturn ACCOUNTS.map(a => ({ json: a }));"
+      }
+    },
+    {
+      "id": "247e9924-7485-4fdb-a936-ee7ebfb8f01a",
+      "name": "계정별 토큰 갱신 루프",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -256,
+        480
+      ],
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      }
+    },
+    {
+      "id": "027a7643-5169-47cd-b79c-47870598522e",
+      "name": "상품 분류 및 계정 매핑",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -376,
+        912
+      ],
+      "parameters": {
+        "jsCode": "// 계정 추가 시 이 배열에 { account_id, threads_user_id, keywords } 객체를 추가하세요.\n// 예시(비활성, 실제 계정 준비되면 아래 형태로 추가):\n// { account_id: 'acc_kitchen', threads_user_id: 'PASTE_ACTUAL_ID', keywords: ['주방', '조리', '냄비', '프라이팬', '청소기'] },\n// { account_id: 'acc_camp', threads_user_id: 'PASTE_ACTUAL_ID', keywords: ['캠핑', '텐트', '아웃도어', '등산'] },\nconst ACCOUNT_MAP = [\n  { account_id: 'acc_general', threads_user_id: '27629464336738548', keywords: [] } // fallback, 항상 마지막\n];\n\nconst body = $input.first().json.body || {};\nconst text = `${body.product_title || ''} ${body.product_desc || ''}`.toLowerCase();\n\nlet matched = ACCOUNT_MAP.find(a =>\n  a.keywords.length && a.keywords.some(k => text.includes(k))\n);\nif (!matched) {\n  matched = ACCOUNT_MAP.find(a => a.keywords.length === 0);\n}\n\nreturn [{\n  json: {\n    ...$input.first().json,\n    account_id: matched.account_id,\n    threads_user_id: matched.threads_user_id\n  }\n}];"
+      }
     }
   ],
   "connections": {
@@ -2111,17 +2170,6 @@
         ]
       ]
     },
-    "50일마다 자동 실행": {
-      "main": [
-        [
-          {
-            "node": "현재 토큰 불러오기 (갱신용)",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "현재 토큰 불러오기 (갱신용)": {
       "main": [
         [
@@ -2182,17 +2230,6 @@
         [
           {
             "node": "댓글 게시 (제휴링크)",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "쿠팡 상품 자동 수집 (Webhook)": {
-      "main": [
-        [
-          {
-            "node": "중복 상품 확인",
             "type": "main",
             "index": 0
           }
@@ -2359,28 +2396,6 @@
         ]
       ]
     },
-    "매일 노출수 확인": {
-      "main": [
-        [
-          {
-            "node": "현재 토큰 불러오기 (조회수용)",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "현재 토큰 불러오기 (조회수용)": {
-      "main": [
-        [
-          {
-            "node": "게시완료 상품 조회 (노출수용)",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "게시완료 상품 조회 (노출수용)": {
       "main": [
         [
@@ -2397,18 +2412,6 @@
         [
           {
             "node": "Loop Over Items",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Loop Over Items": {
-      "main": [
-        null,
-        [
-          {
-            "node": "노출수 조회 (Threads Insights)",
             "type": "main",
             "index": 0
           }
@@ -2822,6 +2825,107 @@
         [
           {
             "node": "대기 (조회수 순차 갱신)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "매일 노출수 확인": {
+      "main": [
+        [
+          {
+            "node": "게시완료 상품 조회 (노출수용)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        null,
+        [
+          {
+            "node": "현재 토큰 불러오기 (조회수용)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "현재 토큰 불러오기 (조회수용)": {
+      "main": [
+        [
+          {
+            "node": "노출수 조회 (Threads Insights)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "50일마다 자동 실행": {
+      "main": [
+        [
+          {
+            "node": "계정 목록 조회 (갱신용)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "계정 목록 조회 (갱신용)": {
+      "main": [
+        [
+          {
+            "node": "계정별 토큰 갱신 루프",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "계정별 토큰 갱신 루프": {
+      "main": [
+        null,
+        [
+          {
+            "node": "현재 토큰 불러오기 (갱신용)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "새 토큰 저장": {
+      "main": [
+        [
+          {
+            "node": "계정별 토큰 갱신 루프",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "쿠팡 상품 자동 수집 (Webhook)": {
+      "main": [
+        [
+          {
+            "node": "상품 분류 및 계정 매핑",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "상품 분류 및 계정 매핑": {
+      "main": [
+        [
+          {
+            "node": "중복 상품 확인",
             "type": "main",
             "index": 0
           }

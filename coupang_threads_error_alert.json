@@ -2,53 +2,138 @@
   "name": "쿠팡 파트너스 - 오류 알림 (텔레그램)",
   "nodes": [
     {
-      "id": "err-trigger-1",
+      "id": "4c6415f7-dcd8-45e4-a1a4-e99305307120",
       "name": "오류 발생 감지",
       "type": "n8n-nodes-base.errorTrigger",
       "typeVersion": 1,
-      "position": [-200, 300],
+      "position": [
+        0,
+        0
+      ],
       "parameters": {}
     },
     {
-      "id": "err-code-1",
+      "id": "a83cd09d-552f-4f7c-9d5a-18f0016a8d2c",
       "name": "에러를 쉬운 말로 변환",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [20, 300],
+      "position": [
+        448,
+        0
+      ],
       "parameters": {
         "mode": "runOnceForAllItems",
         "language": "javaScript",
-        "jsCode": "const nodeNameMap = {\n  '현재 토큰 불러오기': 'Threads 로그인 정보 확인',\n  '현재 토큰 불러오기 (갱신용)': 'Threads 로그인 정보 확인 (자동 갱신)',\n  'NVIDIA 요청 만들기': '게시글 문구 준비',\n  '스토리텔링 생성 (NVIDIA API)': 'AI 게시글 문구 생성',\n  '응답 파싱 및 댓글 텍스트 구성': '게시글/댓글 문구 정리',\n  '본문 컨테이너 생성': 'Threads 게시글 준비',\n  '본문 게시': 'Threads 게시글 올리기',\n  '댓글 컨테이너 생성': 'Threads 댓글 준비',\n  '댓글 게시 (제휴링크)': 'Threads 댓글(제휴링크) 올리기',\n  '토큰 갱신 요청': 'Threads 로그인 정보 갱신',\n  '새 토큰 저장': 'Threads 로그인 정보 저장'\n};\n\nconst input = $input.first().json;\nconst execution = input.execution || {};\nconst errorObj = execution.error || {};\nconst errorMessage = errorObj.message || '알 수 없는 오류';\nconst lastNode = execution.lastNodeExecuted || '알 수 없는 단계';\nconst friendlyStep = nodeNameMap[lastNode] || lastNode;\nconst lowerMsg = String(errorMessage).toLowerCase();\n\nlet explanation = '\"' + friendlyStep + '\" 단계에서 오류가 발생했습니다.';\nlet action = '실행 기록(n8n Executions)을 확인해주세요.';\n\nif (lowerMsg.indexOf('authorization') !== -1) {\n  explanation = 'API 인증 정보(Authorization 헤더)에 문제가 있습니다.';\n  action = 'NVIDIA API Key 등 관련 Credential 값을 다시 확인해주세요.';\n} else if (lowerMsg.indexOf('resourceexhausted') !== -1 || lowerMsg.indexOf('503') !== -1) {\n  explanation = 'AI(NVIDIA) 서버가 혼잡해서 요청이 거절되었습니다.';\n  action = '잠시 후 다시 실행해주세요.';\n} else if (lowerMsg.indexOf('access_token') !== -1 && lowerMsg.indexOf('expired') !== -1) {\n  explanation = 'Threads 액세스 토큰이 만료되었습니다.';\n  action = '토큰을 재발급하고 60일 토큰 교환을 다시 진행해주세요.';\n} else if (lowerMsg.indexOf(\"json' property isn't an object\") !== -1) {\n  explanation = 'Code 노드 실행 모드 설정에 문제가 있습니다.';\n  action = '문제가 된 Code 노드의 모드가 runOnceForAllItems로 되어있는지 확인해주세요.';\n} else if (lowerMsg.indexOf('creation_id') !== -1 || lowerMsg.indexOf('threads_publish') !== -1) {\n  explanation = 'Threads 게시물 발행 단계에서 문제가 발생했습니다.';\n  action = '컨테이너 생성 응답에 id 값이 정상적으로 있는지 확인해주세요.';\n}\n\nconst message = '🚨 쿠팡 파트너스 자동 포스팅 오류\\n\\n' + explanation + '\\n\\n- 실패 단계: ' + friendlyStep + '\\n- 원본 에러: ' + errorMessage + '\\n- 대처 방법: ' + action + '\\n- 실행 링크: ' + (execution.url || '(없음)');\n\nreturn [{ json: { telegram_message: message } }];"
+        "jsCode": "const nodeNameMap = {\n  '현재 토큰 불러오기': 'Threads 로그인 정보 확인',\n  '현재 토큰 불러오기 (갱신용)': 'Threads 로그인 정보 확인 (자동 갱신)',\n  '현재 토큰 불러오기 (조회수용)': 'Threads 로그인 정보 확인 (노출수 조회용)',\n  'NVIDIA 요청 만들기': '게시글 문구 준비',\n  '스토리텔링 생성 (NVIDIA API)': 'AI 게시글 문구 생성',\n  '응답 파싱 및 댓글 텍스트 구성': '게시글/댓글 문구 정리',\n  '본문 컨테이너 생성': 'Threads 게시글 준비',\n  '본문 게시': 'Threads 게시글 올리기',\n  '댓글 컨테이너 생성': 'Threads 댓글 준비',\n  '댓글 게시 (제휴링크)': 'Threads 댓글(제휴링크) 올리기',\n  '토큰 갱신 요청': 'Threads 로그인 정보 갱신',\n  '새 토큰 저장': 'Threads 로그인 정보 저장',\n  '시트에 게시완료 표시': '구글 시트에 게시 완료 기록',\n  '시트 큐에서 미게시 상품 조회': '구글 시트에서 상품 목록 불러오기',\n  '상품 정보 입력 (시트)': '상품 정보 준비',\n  '노출수 조회 (Threads Insights)': 'Threads 노출수(조회수) 확인',\n  '시트에 views 기록': '구글 시트에 노출수 기록'\n};\n\nconst PRODUCT_RELATED_STEPS = new Set([\n  '현재 토큰 불러오기', 'NVIDIA 요청 만들기', '스토리텔링 생성 (NVIDIA API)',\n  '응답 파싱 및 댓글 텍스트 구성', '본문 컨테이너 생성', '본문 게시',\n  '댓글 컨테이너 생성', '댓글 게시 (제휴링크)', '시트에 게시완료 표시',\n  '상품 정보 입력 (시트)'\n]);\n\nconst errorTriggerData = $('오류 발생 감지').first().json;\nconst execution = errorTriggerData.execution || {};\nconst errorObj = execution.error || {};\nconst errorMessage = errorObj.message || '알 수 없는 오류';\nconst lastNode = execution.lastNodeExecuted || '알 수 없는 단계';\nconst friendlyStep = nodeNameMap[lastNode] || lastNode;\n\n// n8n이 저장하는 error.message는 \"Service unavailable - try again later...\" 식으로 뭉뚱그려되어있고,\n// 실제 원인 문구(\"503\", \"resourceExhausted\" 등)는 error.messages 배열이나 httpCode에 따로 있음 - 다 합쳐서 검색해야 패턴이 제대로 걸림.\nconst combinedText = [errorMessage, ...(Array.isArray(errorObj.messages) ? errorObj.messages : []), errorObj.httpCode]\n  .filter(Boolean)\n  .join(' ');\nconst lowerMsg = combinedText.toLowerCase();\n\nlet explanation = '\"' + friendlyStep + '\" 단계에서 오류가 발생했습니다.';\nlet action = '실행 기록(n8n Executions)을 확인해주세요.';\n\nif (lowerMsg.indexOf('authorization') !== -1) {\n  explanation = 'API 인증 정보(Authorization 헤더)에 문제가 있습니다.';\n  action = 'NVIDIA API Key 등 관련 Credential 값을 다시 확인해주세요.';\n} else if (lowerMsg.indexOf('econnaborted') !== -1 || lowerMsg.indexOf('timeout') !== -1) {\n  explanation = 'AI(NVIDIA) 서버 응답이 너무 오래 걸려서 연결이 끊겼습니다.';\n  action = '보통 일시적 현상입니다. 다음 자동 실행에서 정상 진행되는지 확인해주세요. 계속되면 NVIDIA 서비스 상태를 확인해주세요.';\n} else if (lowerMsg.indexOf('resourceexhausted') !== -1 || lowerMsg.indexOf('503') !== -1 || lowerMsg.indexOf('overload') !== -1) {\n  explanation = 'AI(NVIDIA) 서버가 혼잡해서 요청이 거절되었습니다.';\n  action = '잠시 후 다음 자동 실행에서 자연스럽게 해결됩니다. 반복되면 NVIDIA 서비스 상태를 확인해주세요.';\n} else if (lowerMsg.indexOf('access_token') !== -1 && lowerMsg.indexOf('expired') !== -1) {\n  explanation = 'Threads 로그인 정보(토큰)가 만료되었습니다.';\n  action = '토큰을 재발급하고 60일 토큰 교환을 다시 진행해주세요.';\n} else if (lowerMsg.indexOf(\"json' property isn't an object\") !== -1) {\n  explanation = 'Code 노드 설정에 문제가 있습니다.';\n  action = '문제된 Code 노드의 실행 모드가 올바른지 확인해주세요 (개발자 확인 필요).';\n} else if (lowerMsg.indexOf('creation_id') !== -1 || lowerMsg.indexOf('threads_publish') !== -1) {\n  explanation = 'Threads 게시물 발행 단계에서 문제가 발생했습니다.';\n  action = '개발자에게 확인 요청하세요 - 컨테이너 생성 응답이 정상이었는지 확인이 필요합니다.';\n} else if (lowerMsg.indexOf('topic_tag') !== -1) {\n  explanation = 'Threads 게시글의 토픽 태그 값이 Threads 규칙에 안 맞았습니다 (특수문자/공백/50자 초과 등).';\n  action = '별도 조치 필요 없음 - 다음 실행에서는 AI가 다른 값을 만들어 보통 자연스럽게 해결됩니다. 계속 반복되면 개발자에게 알려주세요.';\n} else if (lowerMsg.indexOf('quota') !== -1 && (lowerMsg.indexOf('drive') !== -1 || lowerMsg.indexOf('storage') !== -1)) {\n  explanation = '이미지 저장 공간(구글 드라이브 또는 이미지 호스팅) 문제입니다.';\n  action = '개발자에게 문의하세요.';\n} else if (lowerMsg.indexOf('quota') !== -1 || lowerMsg.indexOf('rate limit') !== -1 || lowerMsg.indexOf('429') !== -1) {\n  explanation = 'API 호출 한도(요청 제한)에 걸렸습니다.';\n  action = '보통 잠시 후 자동으로 정상화됩니다. 계속 반복되면 개발자에게 알려주세요.';\n}\n\nconst sheetRows = $input.all().map(item => item.json);\nconst candidateRow = sheetRows.find(row => row.affiliate_link && String(row.affiliate_link).trim());\nlet productLine = '';\nif (PRODUCT_RELATED_STEPS.has(lastNode) && candidateRow && candidateRow.product_title) {\n  productLine = '\\n- 관련 상품: ' + candidateRow.product_title;\n}\n\nconst message = '🚨 쿠팡 파트너스 자동 포스팅 오류\\n\\n' + explanation + '\\n\\n- 실패 단계: ' + friendlyStep + productLine + '\\n- 원본 에러: ' + errorMessage + '\\n- 대처 방법: ' + action + '\\n- 실행 링크: ' + (execution.url || '(없음)');\n\nreturn [{ json: { telegram_message: message } }];"
       }
     },
     {
-      "id": "err-telegram-1",
+      "id": "77e0abc8-3c07-464f-b3af-4243a15a264e",
       "name": "텔레그램으로 알림 보내기",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
-      "position": [240, 300],
+      "position": [
+        672,
+        0
+      ],
       "parameters": {
         "resource": "message",
         "operation": "sendMessage",
-        "chatId": "REPLACE_WITH_YOUR_TELEGRAM_CHAT_ID",
+        "chatId": "523002062",
         "text": "={{ $json.telegram_message }}",
         "additionalFields": {}
       },
+      "webhookId": "0cc1a352-187a-4f79-85a7-375a1bd26d8a",
       "credentials": {
         "telegramApi": {
-          "id": "",
-          "name": "Telegram Bot"
+          "id": "ygcjpxuhUsuRUGsD",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "id": "736d5e4d-80dd-4e85-bb81-57f0775d3c41",
+      "name": "미게시 상품 조회 (에러용)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        224,
+        0
+      ],
+      "parameters": {
+        "resource": "sheet",
+        "operation": "read",
+        "authentication": "serviceAccount",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "1K_howGdnGcBgiHlCXTpvU0LnYAsGvsUe0Iwkjc3t-JA"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "시트1"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "posted",
+              "lookupValue": ""
+            }
+          ]
+        },
+        "combineFilters": "AND",
+        "returnFirstMatch": false,
+        "options": {}
+      },
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "googleApi": {
+          "id": "yD53zrsOtfHqSvxT",
+          "name": "Google Sheets - Coupang Queue"
         }
       }
     }
   ],
   "connections": {
-    "오류 발생 감지": { "main": [[{ "node": "에러를 쉬운 말로 변환", "type": "main", "index": 0 }]] },
-    "에러를 쉬운 말로 변환": { "main": [[{ "node": "텔레그램으로 알림 보내기", "type": "main", "index": 0 }]] }
+    "에러를 쉬운 말로 변환": {
+      "main": [
+        [
+          {
+            "node": "텔레그램으로 알림 보내기",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "오류 발생 감지": {
+      "main": [
+        [
+          {
+            "node": "미게시 상품 조회 (에러용)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "미게시 상품 조회 (에러용)": {
+      "main": [
+        [
+          {
+            "node": "에러를 쉬운 말로 변환",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
   },
-  "active": false,
+  "active": true,
   "settings": {
-    "executionOrder": "v1"
+    "executionOrder": "v1",
+    "availableInMCP": true
   },
   "pinData": {},
   "n8nLiveWorkflowId": "j8NT6Clw2sGilnnx",
