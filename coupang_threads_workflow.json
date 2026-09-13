@@ -2124,6 +2124,20 @@
           "name": "Telegram account"
         }
       }
+    },
+    {
+      "id": "96ee0c9c-fb89-46e0-bd4e-bd5bf80da761",
+      "name": "계정 순번 배정 (시트큐)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -80,
+        1550
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const ACCOUNTS = [\n  { account_id: 'account_A', threads_user_id: '27629464336738548' },\n  { account_id: 'account_B', threads_user_id: '27802565872778237' }\n  // 계정 추가 시 이 배열에 { account_id, threads_user_id } 객체만 추가하면 됨 (순번에 자동 포함됨)\n];\n\nconst staticData = $getWorkflowStaticData('global');\nconst lastIndex = typeof staticData.sheet_queue_account_turn === 'number' ? staticData.sheet_queue_account_turn : -1;\nconst nextIndex = (lastIndex + 1) % ACCOUNTS.length;\nstaticData.sheet_queue_account_turn = nextIndex;\nconst account = ACCOUNTS[nextIndex];\n\nconst row = $input.first().json;\nreturn [{\n  json: {\n    ...row,\n    account_id: account.account_id,\n    threads_user_id: account.threads_user_id\n  }\n}];"
+      }
     }
   ],
   "connections": {
@@ -2449,17 +2463,6 @@
         [
           {
             "node": "시트조회 재시도 카운트 증가",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "제휴링크 있는 상품만 선택": {
-      "main": [
-        [
-          {
-            "node": "상품 정보 입력 (시트)",
             "type": "main",
             "index": 0
           }
@@ -3023,6 +3026,28 @@
         [
           {
             "node": "토큰 만료 임박 알림 (텔레그램)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "제휴링크 있는 상품만 선택": {
+      "main": [
+        [
+          {
+            "node": "계정 순번 배정 (시트큐)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "계정 순번 배정 (시트큐)": {
+      "main": [
+        [
+          {
+            "node": "상품 정보 입력 (시트)",
             "type": "main",
             "index": 0
           }
