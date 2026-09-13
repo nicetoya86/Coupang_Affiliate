@@ -2054,6 +2054,76 @@
       "parameters": {
         "jsCode": "// 계정 추가 시 이 배열에 { account_id, threads_user_id, keywords } 객체를 추가하세요.\n// 예시(비활성, 실제 계정 준비되면 아래 형태로 추가):\n// { account_id: 'acc_kitchen', threads_user_id: 'PASTE_ACTUAL_ID', keywords: ['주방', '조리', '냄비', '프라이팬', '청소기'] },\n// { account_id: 'acc_camp', threads_user_id: 'PASTE_ACTUAL_ID', keywords: ['캠핑', '텐트', '아웃도어', '등산'] },\nconst ACCOUNT_MAP = [\n  { account_id: 'acc_general', threads_user_id: '27629464336738548', keywords: [] } // fallback, 항상 마지막\n];\n\nconst body = $input.first().json.body || {};\nconst text = `${body.product_title || ''} ${body.product_desc || ''}`.toLowerCase();\n\nlet matched = ACCOUNT_MAP.find(a =>\n  a.keywords.length && a.keywords.some(k => text.includes(k))\n);\nif (!matched) {\n  matched = ACCOUNT_MAP.find(a => a.keywords.length === 0);\n}\n\nreturn [{\n  json: {\n    ...$input.first().json,\n    account_id: matched.account_id,\n    threads_user_id: matched.threads_user_id\n  }\n}];"
       }
+    },
+    {
+      "id": "075da731-aa6a-45ce-a448-76f09c0bc9c5",
+      "name": "토큰 만료 임박 확인",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -16,
+        2060
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const staticData = $getWorkflowStaticData('global');\nconst expiresAt = staticData.expires_at || {};\nconst tokens = staticData.tokens || {};\nconst now = Date.now();\nconst THRESHOLD_DAYS = 7;\n\nconst accountIds = Object.keys(tokens);\nconst alerts = [];\n\nfor (const accountId of accountIds) {\n  const expiresIso = expiresAt[accountId];\n  if (!expiresIso) {\n    alerts.push(`- ${accountId}: 갱신 기록 없음 (최초 시딩 후 자동 갱신이 아직 한 번도 안 됨)`);\n    continue;\n  }\n  const daysRemaining = Math.floor((new Date(expiresIso).getTime() - now) / 86400000);\n  if (daysRemaining <= THRESHOLD_DAYS) {\n    const reason = daysRemaining <= 0 ? '이미 만료됨' : `${daysRemaining}일 후 만료`;\n    alerts.push(`- ${accountId}: ${reason} (만료일 ${expiresIso})`);\n  }\n}\n\nif (alerts.length === 0) {\n  return [{ json: { alert: false } }];\n}\n\nreturn [{ json: { alert: true, message: alerts.join('\\n') } }];"
+      }
+    },
+    {
+      "id": "0f8be002-b533-466f-a252-3af9f3c128b2",
+      "name": "토큰 만료 임박?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        208,
+        2060
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.alert }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              },
+              "rightValue": ""
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "c2251b2f-46be-47a8-91b0-280e10e067dc",
+      "name": "토큰 만료 임박 알림 (텔레그램)",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        432,
+        2060
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "523002062",
+        "text": "=⚠️ Threads 토큰 만료 임박\n\n{{ $json.message }}\n\n50일 자동 갱신 브랜치(계정별 토큰 갱신 루프)가 정상 실행됐는지 n8n Executions에서 확인해주세요.",
+        "additionalFields": {}
+      },
+      "webhookId": "8aa5dfc7-bf63-44d1-b5dd-f22704e78d10",
+      "credentials": {
+        "telegramApi": {
+          "id": "ygcjpxuhUsuRUGsD",
+          "name": "Telegram account"
+        }
+      }
     }
   ],
   "connections": {
@@ -2838,6 +2908,11 @@
             "node": "게시완료 상품 조회 (노출수용)",
             "type": "main",
             "index": 0
+          },
+          {
+            "node": "토큰 만료 임박 확인",
+            "type": "main",
+            "index": 0
           }
         ]
       ]
@@ -2926,6 +3001,28 @@
         [
           {
             "node": "중복 상품 확인",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "토큰 만료 임박 확인": {
+      "main": [
+        [
+          {
+            "node": "토큰 만료 임박?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "토큰 만료 임박?": {
+      "main": [
+        [
+          {
+            "node": "토큰 만료 임박 알림 (텔레그램)",
             "type": "main",
             "index": 0
           }
