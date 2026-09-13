@@ -16,10 +16,17 @@
   .status.error { color: #c00; }
   .status.ok { color: #0a7a0a; }
   .hint { color: #666; font-size: 13px; }
+  .tip-box { background: #fff8e1; border: 1px solid #f0c419; border-radius: 6px; padding: 12px 16px; margin-bottom: 16px; font-size: 14px; line-height: 1.6; }
+  .tip-box strong { color: #a06a00; }
 </style>
 </head>
 <body>
   <h1>쿠팡 상품 수집</h1>
+  <div class="tip-box">
+    📈 <strong>조회수 잘 나오는 상품 기준</strong> (2026-09-12 분석, 상위 10개 평균가 6,475원 vs 나머지 11,037원 · 조회수 4배↑)<br>
+    1. <strong>7,000원 이하</strong> 저가 상품 우선 수집<br>
+    2. <strong>범용 생활소모품·전자 액세서리</strong> 우선 (세제, 폰케이스, 이어폰, 미니 소품 등) — 캠핑 전용장비·반려동물 특수용품 같은 니치 카테고리는 후순위
+  </div>
   <p class="hint">터미널에서 <code>npm run serve</code>로 서버를 켜둔 상태여야 동작합니다. 쿠팡 목록 페이지에서 상품 카드 여러 개를 드래그로 선택해 복사(Ctrl+C)한 다음, 아래에 붙여넣고(Ctrl+V) "미리보기"를 누르세요. "쿠팡 목록 수집" 북마클릿으로 복사한 경우에만 썸네일 합성 미리보기가 뜹니다(이미지 URL이 있어야 합성 가능).</p>
 
   <textarea id="raw" placeholder="여기에 붙여넣기 (Ctrl+V)"></textarea>
@@ -30,7 +37,7 @@
   <div id="resultArea"></div>
 
   <script>
-    const API_BASE = 'http://localhost:5175';
+    const API_BASE = '';
     const raw = document.getElementById('raw');
     const previewBtn = document.getElementById('previewBtn');
     const resultArea = document.getElementById('resultArea');

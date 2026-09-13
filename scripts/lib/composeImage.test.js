@@ -1,18 +1,20 @@
 const test = require('node:test');
 const assert = require('node:assert');
-const { formatWon, escapeXml } = require('./composeImage');
+const sharp = require('sharp');
+const { composeProductImage } = require('./composeImage');
 
-test('formatWon: 숫자만 남겨 천단위 콤마 + 원 붙인다', () => {
-  assert.strictEqual(formatWon('39,800원'), '39,800원');
-  assert.strictEqual(formatWon(1890000), '1,890,000원');
-});
-
-test('formatWon: 값 없으면 빈 문자열', () => {
-  assert.strictEqual(formatWon(''), '');
-  assert.strictEqual(formatWon(null), '');
-  assert.strictEqual(formatWon(undefined), '');
-});
-
-test('escapeXml: SVG 삽입용 특수문자 이스케이프', () => {
-  assert.strictEqual(escapeXml('A&B <C> "D"'), 'A&amp;B &lt;C&gt; &quot;D&quot;');
+test('composeProductImage: 800x800 정사각형 PNG로 리사이즈, 가격/할인 배지 없음', async () => {
+  const input = await sharp({ create: { width: 300, height: 150, channels: 3, background: '#ff0000' } })
+    .png()
+    .toBuffer();
+  const output = await composeProductImage({
+    imageBuffer: input,
+    title: '무시되어야 함',
+    discountPrice: '1,000원',
+    discountRate: 50,
+  });
+  const meta = await sharp(output).metadata();
+  assert.strictEqual(meta.width, 800);
+  assert.strictEqual(meta.height, 800, '배지 배너(200px)가 더 이상 추가되지 않아야 함');
+  assert.strictEqual(meta.format, 'png');
 });

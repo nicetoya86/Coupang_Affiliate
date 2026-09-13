@@ -1,0 +1,31 @@
+{
+  "manifest_version": 3,
+  "name": "Threads 웜업 큐",
+  "version": "1.1",
+  "description": "Threads 계정 탐색/추적 속도만 올려주는 도구. 팔로우/댓글은 자동화하지 않음 - 사람이 직접 클릭.",
+  "permissions": ["storage", "tabs", "sidePanel"],
+  "host_permissions": [
+    "https://www.threads.net/*",
+    "https://threads.net/*",
+    "https://www.threads.com/*",
+    "https://threads.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.threads.net/*",
+        "https://threads.net/*",
+        "https://www.threads.com/*",
+        "https://threads.com/*"
+      ],
+      "js": ["content.js"]
+    }
+  ],
+  "action": {},
+  "side_panel": {
+    "default_path": "popup.html"
+  }
+}

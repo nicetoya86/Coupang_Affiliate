@@ -1,11 +1,14 @@
 {
   "version": "2.0",
-  "lastUpdated": "2026-08-30T14:17:34.231Z",
+  "lastUpdated": "2026-09-13T03:44:33.627Z",
   "activeFeatures": [
     "coupang-threads-auto-posting",
     "scripts",
     "scratchpad",
-    "Desktop"
+    "Desktop",
+    "threads-warmup-extension",
+    "tmp",
+    "Temp"
   ],
   "primaryFeature": "coupang-threads-auto-posting",
   "features": {
@@ -38,9 +41,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-07-22T16:25:26.291Z",
-        "lastUpdated": "2026-08-30T14:17:34.230Z"
+        "lastUpdated": "2026-09-10T05:53:04.417Z"
       },
-      "lastFile": "D:\\vibecording\\Coupang_Affiliate\\scripts\\collect-server.js"
+      "lastFile": "D:\\vibecording\\Coupang_Affiliate\\scripts\\_tmp-convert-image.js"
     },
     "scratchpad": {
       "phase": "do",
@@ -51,9 +54,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-08-05T15:49:40.391Z",
-        "lastUpdated": "2026-08-30T11:43:54.480Z"
+        "lastUpdated": "2026-09-13T03:44:33.626Z"
       },
-      "lastFile": "C:\\Users\\nicet\\AppData\\Local\\Temp\\claude\\D--vibecording-Coupang-Affiliate\\464d3646-0628-4ede-b847-654145999eb8\\scratchpad\\backfill-media-id.js"
+      "lastFile": "C:\\Users\\nicet\\AppData\\Local\\Temp\\claude\\D--vibecording-Coupang-Affiliate\\1d0fbe43-95f2-43ab-aec3-8aa75c5fe0ad\\scratchpad\\verify_deployed3.js"
     },
     "Desktop": {
       "phase": "do",
@@ -67,6 +70,45 @@
         "lastUpdated": "2026-08-18T14:42:20.693Z"
       },
       "lastFile": "C:\\Users\\nicet\\Desktop\\쿠팡상품등록 실행.bat"
+    },
+    "threads-warmup-extension": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-09-04T13:47:13.739Z",
+        "lastUpdated": "2026-09-06T15:18:47.087Z"
+      },
+      "lastFile": "D:\\vibecording\\Coupang_Affiliate\\scripts\\threads-warmup-extension\\popup.js"
+    },
+    "tmp": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-09-13T03:37:06.126Z",
+        "lastUpdated": "2026-09-13T03:37:06.126Z"
+      },
+      "lastFile": "\\tmp\\parse_node_code.js"
+    },
+    "Temp": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-09-13T03:43:27.811Z",
+        "lastUpdated": "2026-09-13T03:43:27.811Z"
+      },
+      "lastFile": "C:\\Users\\nicet\\AppData\\Local\\Temp\\deployed_parse_node.js"
     }
   },
   "pipeline": {
@@ -77,7 +119,7 @@
   "session": {
     "startedAt": "2026-07-20T15:29:58.618Z",
     "onboardingCompleted": false,
-    "lastActivity": "2026-08-30T14:17:34.231Z"
+    "lastActivity": "2026-09-13T03:44:33.627Z"
   },
   "history": [
     {
@@ -1019,6 +1061,294 @@
     {
       "timestamp": "2026-08-30T14:17:34.230Z",
       "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-01T22:57:20.451Z",
+      "feature": "scratchpad",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-02T14:55:16.103Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-02T14:55:29.587Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-02T14:55:37.520Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-02T14:55:41.011Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-02T14:55:45.074Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-02T14:55:52.561Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-02T14:55:56.567Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-02T14:56:03.217Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-02T14:56:06.633Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-02T14:59:56.987Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-04T13:47:13.739Z",
+      "feature": "threads-warmup-extension",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-04T13:47:34.947Z",
+      "feature": "threads-warmup-extension",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-05T01:33:47.314Z",
+      "feature": "threads-warmup-extension",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-05T01:34:03.625Z",
+      "feature": "threads-warmup-extension",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-05T01:34:15.772Z",
+      "feature": "threads-warmup-extension",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-05T03:57:43.557Z",
+      "feature": "threads-warmup-extension",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-05T03:57:46.643Z",
+      "feature": "threads-warmup-extension",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-05T03:57:50.588Z",
+      "feature": "threads-warmup-extension",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-06T10:16:51.390Z",
+      "feature": "threads-warmup-extension",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-06T10:16:55.472Z",
+      "feature": "threads-warmup-extension",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-06T11:25:20.006Z",
+      "feature": "threads-warmup-extension",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-06T11:29:08.432Z",
+      "feature": "threads-warmup-extension",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-06T11:36:29.303Z",
+      "feature": "threads-warmup-extension",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-06T11:36:34.019Z",
+      "feature": "threads-warmup-extension",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-06T12:33:10.436Z",
+      "feature": "threads-warmup-extension",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-06T15:17:30.940Z",
+      "feature": "threads-warmup-extension",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-06T15:18:38.577Z",
+      "feature": "threads-warmup-extension",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-06T15:18:47.087Z",
+      "feature": "threads-warmup-extension",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-07T13:42:20.901Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-07T13:44:31.318Z",
+      "feature": "scratchpad",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-07T13:45:51.679Z",
+      "feature": "scratchpad",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-07T13:45:55.635Z",
+      "feature": "scratchpad",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-07T16:48:29.803Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-07T16:48:36.985Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-07T16:48:54.062Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-07T16:56:59.767Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-10T01:15:28.607Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-10T05:52:52.711Z",
+      "feature": "scratchpad",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-10T05:53:04.417Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-13T03:36:34.738Z",
+      "feature": "scratchpad",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-13T03:37:06.126Z",
+      "feature": "tmp",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-13T03:40:54.672Z",
+      "feature": "scratchpad",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-13T03:41:09.323Z",
+      "feature": "scratchpad",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-13T03:42:33.307Z",
+      "feature": "scratchpad",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-13T03:43:27.811Z",
+      "feature": "Temp",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-13T03:43:39.158Z",
+      "feature": "scratchpad",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-13T03:44:33.626Z",
+      "feature": "scratchpad",
       "phase": "do",
       "action": "updated"
     }

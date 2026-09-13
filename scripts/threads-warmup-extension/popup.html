@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  body { width: 320px; font-family: sans-serif; font-size: 13px; padding: 8px; }
+  h3 { margin: 4px 0 8px; }
+  .progress { display: flex; justify-content: space-around; margin-bottom: 8px; }
+  .progress div { text-align: center; }
+  .progress .num { font-size: 18px; font-weight: bold; }
+  button.small { font-size: 11px; padding: 2px 6px; margin-left: 4px; cursor: pointer; }
+  ul { list-style: none; padding: 0; margin: 0; max-height: 260px; overflow-y: auto; }
+  li { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; border-bottom: 1px solid #eee; }
+  .empty { color: #888; padding: 8px 0; text-align: center; }
+  .reset { margin-top: 8px; font-size: 11px; color: #888; cursor: pointer; text-align: right; }
+  .note { font-size: 11px; color: #888; margin-top: 8px; }
+  .autoOpen { margin: 4px 0 8px; font-size: 12px; display: flex; align-items: center; gap: 4px; }
+</style>
+</head>
+<body>
+  <h3>Threads 웜업 큐</h3>
+  <div class="progress">
+    <div>팔로우<br><span class="num" id="followCount">0</span>/30</div>
+    <div>댓글<br><span class="num" id="commentCount">0</span>/10 <button class="small" id="commentPlus">+1</button></div>
+  </div>
+  <label class="autoOpen"><input type="checkbox" id="autoOpenToggle"> 탭 닫으면 다음 프로필 자동으로 열기 (하루 최대 40개)</label>
+  <ul id="queueList"></ul>
+  <div class="reset" id="clearQueue">목록 초기화</div>
+  <div class="reset" id="resetDay">오늘 카운트 초기화</div>
+  <div class="note">💬 = 내 게시물에 반응한 계정 · 🏷️ = 관련 주제 검색으로 발견 · 아이콘 없음 = 그냥 둘러보다 발견. 목록은 threads.net 페이지를 볼 때 자동으로 쌓임. 팔로우/댓글은 항상 직접 클릭.</div>
+  <script src="popup.js"></script>
+</body>
+</html>

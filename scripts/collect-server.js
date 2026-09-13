@@ -19,7 +19,7 @@ const { upsizeCoupangThumbnail } = require('./lib/coupangImageUrl');
 const { toSheetRow, nowKstIso } = require('./lib/sheetRow');
 const { parseListingPayload } = require('./lib/parseListingClipboard');
 
-// 미리보기 화면에서 실제 합성 결과(할인율/가격 배지)를 눈으로 확인할 수 있도록, 실제 업로드 없이
+// 미리보기 화면에서 실제 게시될 이미지(리사이즈만, 배지 없음)를 눈으로 확인할 수 있도록, 실제 업로드 없이
 // 로컬에서만 합성해 base64로 돌려준다. imageUrl 없거나 다운로드/합성 실패하면 조용히 빈 값.
 async function buildThumbnailPreview(item) {
   if (!item.imageUrl) return '';
