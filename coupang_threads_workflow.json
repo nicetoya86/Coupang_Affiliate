@@ -647,13 +647,13 @@
           "interval": [
             {
               "field": "hours",
-              "hoursInterval": 6
+              "hoursInterval": 3
             }
           ]
         }
       },
       "id": "5a2e8130-ac28-4709-8bb4-098086a36244",
-      "name": "6시간마다 시트 확인",
+      "name": "3시간마다 시트 확인",
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.2,
       "position": [
@@ -2382,17 +2382,6 @@
         ]
       ]
     },
-    "6시간마다 시트 확인": {
-      "main": [
-        [
-          {
-            "node": "시트 큐에서 미게시 상품 조회",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "상품 정보 입력 (시트)": {
       "main": [
         [
@@ -3048,6 +3037,17 @@
         [
           {
             "node": "상품 정보 입력 (시트)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "3시간마다 시트 확인": {
+      "main": [
+        [
+          {
+            "node": "시트 큐에서 미게시 상품 조회",
             "type": "main",
             "index": 0
           }
