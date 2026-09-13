@@ -176,7 +176,8 @@
       "position": [
         816,
         -112
-      ]
+      ],
+      "onError": "continueErrorOutput"
     },
     {
       "parameters": {
@@ -1342,7 +1343,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify($json.ai_request) }}",
+        "jsonBody": "={{ JSON.stringify($('NVIDIA 요청 만들기').first().json.ai_request) }}",
         "options": {}
       },
       "id": "8dd6bc16-0c71-4d11-ba7b-1367581c42ef",
@@ -2179,6 +2180,13 @@
         [
           {
             "node": "본문 컨테이너 생성",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "NVIDIA 재시도 카운트 증가",
             "type": "main",
             "index": 0
           }
