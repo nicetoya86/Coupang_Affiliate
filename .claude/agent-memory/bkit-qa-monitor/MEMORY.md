@@ -1,0 +1,2 @@
+- [QA Summary — Coupang × Threads n8n](qa_coupang_threads_summary.md) — Workflow readiness status, blockers, test checklist
+- [QA Completion 2026-09-10](qa-2026-09-10-status.md) — Image simplification validated, merge-click-report hardcoded paths fixed, 3 blockers identified
