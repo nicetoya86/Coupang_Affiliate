@@ -155,7 +155,7 @@
         -112
       ],
       "retryOnFail": false,
-      "maxTries": 3,
+      "maxTries": 5,
       "waitBetweenTries": 5000,
       "onError": "continueErrorOutput",
       "credentials": {
@@ -1232,7 +1232,7 @@
     {
       "parameters": {
         "chatId": "523002062",
-        "text": "=🚨 Threads 게시 실패 - 상품 건너뜀\n\n제휴링크: {{ $('응답 파싱 및 댓글 텍스트 구성').first().json.affiliate_link }}\n카테고리: {{ $('응답 파싱 및 댓글 텍스트 구성').first().json.topic_tag }}\n\n재시도 3회 모두 실패(이미지 다운로드 타임아웃 등)해서 이 상품은 건너뛰고 다음 상품으로 자동 진행합니다.",
+        "text": "=🚨 Threads 게시 실패 - 상품 건너뜀\n\n제휴링크: {{ $('응답 파싱 및 댓글 텍스트 구성').first().json.affiliate_link }}\n카테고리: {{ $('응답 파싱 및 댓글 텍스트 구성').first().json.topic_tag }}\n계정: {{ $('응답 파싱 및 댓글 텍스트 구성').first().json.account_id }}\n\n실패 사유: {{ $('본문생성 재시도 카운트 증가').last().json.error ? $('본문생성 재시도 카운트 증가').last().json.error.message : '알 수 없음' }}\n\n이 상품은 건너뛰고 다음 상품으로 자동 진행합니다.",
         "additionalFields": {}
       },
       "id": "c98f75ee-38d8-4cd3-83c3-11514b08731f",
@@ -1298,7 +1298,7 @@
                 "type": "number",
                 "operation": "lte"
               },
-              "rightValue": 3
+              "rightValue": 5
             }
           ],
           "combinator": "and"
@@ -1315,7 +1315,10 @@
       ]
     },
     {
-      "parameters": {},
+      "parameters": {
+        "amount": 15,
+        "unit": "seconds"
+      },
       "id": "bca40296-a383-4914-b903-d4d6ff4450b5",
       "name": "NVIDIA 재시도 대기",
       "type": "n8n-nodes-base.wait",
@@ -1387,7 +1390,7 @@
     },
     {
       "parameters": {
-        "errorMessage": "NVIDIA 스토리텔링 생성 3회 재시도 모두 실패"
+        "errorMessage": "NVIDIA 스토리텔링 생성 5회 재시도 모두 실패"
       },
       "id": "ad0a6648-a3ac-4289-8718-33454c53c13a",
       "name": "NVIDIA 재시도 소진 (에러)",
@@ -1428,6 +1431,14 @@
                 "operation": "lte"
               },
               "rightValue": 3
+            },
+            {
+              "leftValue": "={{ $json.error ? $json.error.message : '' }}",
+              "operator": {
+                "type": "string",
+                "operation": "notContains"
+              },
+              "rightValue": "\"error_subcode\":33"
             }
           ],
           "combinator": "and"
@@ -2039,7 +2050,7 @@
           "options": {
             "caseSensitive": true,
             "leftValue": "",
-            "typeValidation": "strict",
+            "typeValidation": "loose",
             "version": 1
           },
           "conditions": [
