@@ -1,6 +1,6 @@
 {
   "version": "2.0",
-  "lastUpdated": "2026-09-13T12:12:11.156Z",
+  "lastUpdated": "2026-09-15T23:04:00.716Z",
   "activeFeatures": [
     "coupang-threads-auto-posting",
     "scripts",
@@ -13,23 +13,26 @@
   "primaryFeature": "coupang-threads-auto-posting",
   "features": {
     "coupang-threads-auto-posting": {
-      "phase": "act",
+      "phase": "design",
       "planPath": "docs/01-plan/features/coupang-threads-auto-posting.plan.md",
+      "designPath": "docs/02-design/features/coupang-threads-auto-posting.design.md",
       "analysisPath": "docs/03-analysis/coupang-threads-auto-posting.analysis.md",
       "startedAt": "2026-07-22T00:00:00.000Z",
-      "matchRate": 44,
-      "matchRateNote": "Recorded at Check phase before fixes; fixes applied 2026-07-23 (Act-1), re-analysis pending",
+      "matchRate": 89,
+      "matchRateNote": "Re-analyzed 2026-09-16 against live 80-node workflow: 9/11 Plan FRs done/exceeded, FR-08 intentionally deferred, only FR-04 (reply-as-reply live confirmation) still open. Real gap flipped direction: Design doc still missing, implementation coverage by docs only ~35% (multi-account support, Threads Insights tracking, Sheets-queue sourcing, standardized retry pattern all undocumented). Also folds in same-day fix: NVIDIA HTTP node missing options.timeout caused a 24min all-retries-exhausted failure at 09:00, fixed to 30s timeout and published.",
       "iterationCount": 1,
       "blockedOn": [
-        "Telegram bot credential + chat ID",
-        ".mcp.json plaintext token decision",
-        "live end-to-end reply confirmation"
+        "account_B Threads token invalid (code 100/33, every account_B post fails) - needs real re-authentication, not a code fix",
+        "live end-to-end reply-as-reply confirmation (FR-04)",
+        "50-day token refresh branch confirmed firing on schedule",
+        "excluded-category guard still missing on both intake paths (design.md §6.3)",
+        "Plan v0.3 not yet bumped to v0.4 to reflect current live scope"
       ],
-      "phaseNumber": 5,
+      "phaseNumber": 4,
       "previousPhase": "check",
       "autoAdvanced": true,
       "timestamps": {
-        "lastUpdated": "2026-07-22T15:40:11.186Z"
+        "lastUpdated": "2026-09-16T00:00:00.000Z"
       }
     },
     "scripts": {
@@ -54,9 +57,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-08-05T15:49:40.391Z",
-        "lastUpdated": "2026-09-13T03:44:33.626Z"
+        "lastUpdated": "2026-09-15T23:04:00.715Z"
       },
-      "lastFile": "C:\\Users\\nicet\\AppData\\Local\\Temp\\claude\\D--vibecording-Coupang-Affiliate\\1d0fbe43-95f2-43ab-aec3-8aa75c5fe0ad\\scratchpad\\verify_deployed3.js"
+      "lastFile": "C:\\Users\\nicet\\AppData\\Local\\Temp\\claude\\D--vibecording-Coupang-Affiliate\\27155301-390c-48e9-b93c-2700cd7843b6\\scratchpad\\parse9.js"
     },
     "Desktop": {
       "phase": "do",
@@ -119,7 +122,7 @@
   "session": {
     "startedAt": "2026-07-20T15:29:58.618Z",
     "onboardingCompleted": false,
-    "lastActivity": "2026-09-13T12:12:11.156Z"
+    "lastActivity": "2026-09-15T23:04:00.716Z"
   },
   "history": [
     {
@@ -1357,6 +1360,88 @@
       "feature": "scripts",
       "phase": "do",
       "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-15T21:54:28.225Z",
+      "feature": "scratchpad",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-15T21:54:40.500Z",
+      "feature": "scratchpad",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-15T21:55:23.521Z",
+      "feature": "scratchpad",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-15T23:00:43.671Z",
+      "feature": "scratchpad",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-15T23:01:04.542Z",
+      "feature": "scratchpad",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-15T23:01:39.009Z",
+      "feature": "scratchpad",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-15T23:02:04.094Z",
+      "feature": "scratchpad",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-15T23:02:18.561Z",
+      "feature": "scratchpad",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-15T23:04:00.715Z",
+      "feature": "scratchpad",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-16T00:00:00.000Z",
+      "feature": "coupang-threads-auto-posting",
+      "phase": "check",
+      "action": "re-analyzed",
+      "matchRate": 89
+    },
+    {
+      "timestamp": "2026-09-16T00:05:00.000Z",
+      "feature": "coupang-threads-auto-posting",
+      "phase": "design",
+      "action": "created",
+      "note": "retroactive Design doc written from live 80-node workflow; found 2 new error-handling gaps (no retry on comment publish chain and token refresh call)"
+    },
+    {
+      "timestamp": "2026-09-16T00:15:00.000Z",
+      "feature": "coupang-threads-auto-posting",
+      "phase": "design",
+      "action": "fixed",
+      "note": "Added native retryOnFail (3 tries/5s) to 본문 게시 and 토큰 갱신 요청 — both had zero retry config. Corrected design.md: 댓글 컨테이너 생성/댓글 게시 already had native retry, original gap read was wrong there. Published as activeVersionId b0633da7."
+    },
+    {
+      "timestamp": "2026-09-16T00:30:00.000Z",
+      "feature": "coupang-threads-auto-posting",
+      "phase": "design",
+      "action": "root-cause-found",
+      "note": "User asked to re-verify account A/B posting reliability. Found: account_B Threads token is invalid (Threads API code 100/error_subcode 33 on every container-creation attempt, confirmed on 2 scheduled runs today). This was hidden because the 본문생성 exhaustion path had no stopAndError, so n8n reported execution status=success even though nothing was posted. Added stopAndError node so this now surfaces as error (activeVersionId 68ac25d8). account_B still cannot post until a real token re-auth happens — that part is not fixable via code."
     }
   ]
 }
