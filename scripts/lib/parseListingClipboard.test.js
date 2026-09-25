@@ -170,15 +170,21 @@ test('북마클릿 {raw,urls,images} JSON이면 이미지도 순서대로 매칭
   assert.strictEqual(items[3].imageUrl, 'https://thumbnail.coupangcdn.com/thumbnails/remote/230x230ex/image/retail/images/4444.jpg');
 });
 
-test('images 배열이 카드 수보다 적으면 뒤쪽은 빈 값으로 채워진다', () => {
+// [중요] images 개수가 카드 수와 안 맞으면(뒤쪽만 모자라든, 앞쪽에서 하나 빠져서 전체가 밀렸든
+// 여기선 구분할 수 없다) 위치 기반 매칭 자체를 포기한다. 하나라도 밀리면 "제목은 A인데 사진은
+// B"처럼 완전히 다른 상품 사진이 조용히 붙는 사고로 이어지므로(2026-09-25 실제 발생), 차라리
+// 전부 빈 값으로 두고 미리보기에서 눈에 띄게(❌) 만드는 쪽이 안전하다.
+test('images 개수가 카드 수와 안 맞으면 전부 빈 값으로 둔다 (위치 밀림 방지)', () => {
   const payload = JSON.stringify({
     raw: REAL_SAMPLE,
     urls: [],
     images: ['https://thumbnail.coupangcdn.com/thumbnails/remote/230x230ex/image/retail/images/1111.jpg'],
   });
   const items = parseListingPayload(payload);
-  assert.strictEqual(items[0].imageUrl, 'https://thumbnail.coupangcdn.com/thumbnails/remote/230x230ex/image/retail/images/1111.jpg');
+  assert.strictEqual(items[0].imageUrl, '');
   assert.strictEqual(items[1].imageUrl, '');
+  assert.strictEqual(items[2].imageUrl, '');
+  assert.strictEqual(items[3].imageUrl, '');
 });
 
 // 2026-08-30 실제 북마클릿 결과 - 카드당 상품사진 1개 + 로켓/내일도착/캐시백 공용 아이콘 3개(총 16개)가

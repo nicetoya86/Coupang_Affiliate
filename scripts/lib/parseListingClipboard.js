@@ -112,8 +112,14 @@ function isProductPhotoUrl(url) {
 
 // 북마클릿(bookmarklet-listing.js)이 넣은 {raw, urls, images} JSON이면 텍스트+URL+이미지를
 // 순서대로 매칭하고, 아니면(그냥 드래그+Ctrl+C만 한 경우) URL/이미지 없이 텍스트만 파싱한다.
-// urls/images는 선택 영역 안에서 DOM 순서대로 모은 것이라 items와 같은 순서라고 가정 - 카드
-// 개수와 어긋나면(선택 범위가 틀어졌거나 마크업이 바뀌면) 뒤쪽부터 밀릴 수 있음.
+// urls/images는 선택 영역 안에서 DOM 순서대로 모은 것이라 items와 같은 순서라고 가정한다.
+//
+// [중요] 카드 개수와 어긋나면(선택 범위가 카드 경계와 안 맞았거나 마크업이 바뀐 경우) 위치
+// 기반 매칭이 조용히 다 밀려서, "제목은 A인데 사진은 B" 같은 완전히 다른 상품 사진이 배지까지
+// 찍혀서 합성/게시되는 사고로 이어질 수 있다(2026-09-25 실제 발생 확인 - 카드1 사진을 못 잡아서
+// 이후 전체가 한 칸씩 밀림). 그래서 개수가 안 맞으면 아예 매칭을 포기하고 이미지/URL 없이
+// 반환한다 - 사진 없는 카드는 미리보기에서 눈에 띄지만(❌), 엉뚱한 사진이 배지까지 붙어 조용히
+// 맞는 것처럼 보이는 쪽이 훨씬 위험하다.
 function parseListingPayload(clipboardText) {
   let raw = clipboardText || '';
   let urls = [];
@@ -129,7 +135,13 @@ function parseListingPayload(clipboardText) {
     // JSON이 아니면 순수 텍스트로 취급
   }
   const items = parseListingClipboard(raw);
-  return items.map((item, i) => ({ ...item, productUrl: urls[i] || '', imageUrl: images[i] || '' }));
+  const urlsAligned = urls.length === items.length;
+  const imagesAligned = images.length === items.length;
+  return items.map((item, i) => ({
+    ...item,
+    productUrl: urlsAligned ? urls[i] || '' : '',
+    imageUrl: imagesAligned ? images[i] || '' : '',
+  }));
 }
 
 module.exports = { parseListingClipboard, parseListingPayload, isTitleCandidate };
