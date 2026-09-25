@@ -146,9 +146,12 @@ const server = http.createServer(async (req, res) => {
         const child = spawn('node', ['process-account-a.js', '--json', JSON.stringify(job)], {
           cwd: path.join(__dirname, '..', 'video-remotion'),
           detached: true,
-          stdio: 'ignore',
+          stdio: ['ignore', 'inherit', 'inherit'],
         });
         child.unref();
+        child.on('error', (err) => {
+          console.error(`[계정A] "${job.productTitle}" 프로세스 실행 실패: ${err.message}`);
+        });
         console.log(`[계정A] "${job.productTitle}" 영상 파이프라인 백그라운드 시작`);
       }
       return;
