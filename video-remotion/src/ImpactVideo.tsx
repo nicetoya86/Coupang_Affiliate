@@ -12,7 +12,6 @@ export type ImpactVideoProps = {
 
 export const ImpactVideo: React.FC<ImpactVideoProps> = ({
   productImageUrl,
-  price,
   hookText,
   variant,
 }) => {
@@ -38,7 +37,7 @@ export const ImpactVideo: React.FC<ImpactVideoProps> = ({
       <AbsoluteFill style={{ transform: `scale(${scale}) translate(${translateXPercent}%, ${translateYPercent}%)` }}>
         <Img src={productImageUrl} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
       </AbsoluteFill>
-      <HookOverlay hookText={hookText} price={price} />
+      <HookOverlay hookText={hookText} />
     </AbsoluteFill>
   );
 };

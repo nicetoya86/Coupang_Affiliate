@@ -1,7 +1,7 @@
 import React from 'react';
 import { clampHookText } from './text-utils';
 
-export const HookOverlay: React.FC<{ hookText: string; price: string }> = ({ hookText, price }) => {
+export const HookOverlay: React.FC<{ hookText: string }> = ({ hookText }) => {
   const displayText = clampHookText(hookText, 40);
 
   return (
@@ -26,17 +26,6 @@ export const HookOverlay: React.FC<{ hookText: string; price: string }> = ({ hoo
         }}
       >
         {displayText}
-      </div>
-      <div
-        style={{
-          marginTop: 12,
-          color: '#ffe066',
-          fontWeight: 700,
-          fontSize: 34,
-          fontFamily: 'sans-serif',
-        }}
-      >
-        {price}
       </div>
     </div>
   );
