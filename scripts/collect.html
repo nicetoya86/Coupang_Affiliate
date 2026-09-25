@@ -62,13 +62,14 @@
           <td>${it.discountRate != null ? it.discountRate + '%' : '-'}</td>
           <td>${it.productUrl ? '✅' : '❌'}</td>
           <td>${it.isDuplicate ? '중복' : '신규'}</td>
+          <td><input type="checkbox" data-account-a-idx="${idx}" ${it.isDuplicate ? 'disabled' : ''}></td>
         </tr>
       `).join('');
 
       resultArea.innerHTML = `
         <div class="status">총 ${items.length}개 인식됨 (신규 ${freshCount} / 중복 ${dupCount})</div>
         <table>
-          <thead><tr><th>추가</th><th>썸네일 미리보기</th><th>상품명</th><th>판매가</th><th>원가</th><th>할인율</th><th>URL</th><th>상태</th></tr></thead>
+          <thead><tr><th>추가</th><th>썸네일 미리보기</th><th>상품명</th><th>판매가</th><th>원가</th><th>할인율</th><th>URL</th><th>상태</th><th>계정A 영상용</th></tr></thead>
           <tbody>${rows}</tbody>
         </table>
         <button id="commitBtn">체크된 상품 구글 시트에 추가</button>
@@ -97,8 +98,12 @@
     }
 
     async function commit() {
-      const checked = Array.from(document.querySelectorAll('#resultArea input[type=checkbox]:checked'))
-        .map((el) => lastItems[Number(el.dataset.idx)]);
+      const checked = Array.from(document.querySelectorAll('#resultArea input[type=checkbox][data-idx]:checked'))
+        .map((el) => {
+          const idx = Number(el.dataset.idx);
+          const accountACheckbox = document.querySelector(`input[data-account-a-idx="${idx}"]`);
+          return { ...lastItems[idx], accountA: !!(accountACheckbox && accountACheckbox.checked) };
+        });
       if (!checked.length) { renderStatus('선택된 상품이 없습니다.', 'error'); return; }
       renderStatus('시트에 추가하는 중...');
       try {
