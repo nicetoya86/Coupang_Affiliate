@@ -1,4 +1,4 @@
-const SHEET_COLUMNS = ['collected_at', 'product_title', 'price', 'product_desc', 'affiliate_link', 'image_url', 'posted'];
+const SHEET_COLUMNS = ['collected_at', 'product_title', 'price', 'product_desc', 'affiliate_link', 'image_url', 'posted', 'media_id', 'views', 'account_id', 'video_url'];
 
 // epoch ms is timezone-independent, so shift by KST's fixed +9h offset and relabel - no reliance
 // on the host machine's local timezone setting.
@@ -16,6 +16,10 @@ function toSheetRow(candidate, collectedAt) {
     candidate.affiliate_link || '',
     candidate.image_url || '',
     '',
+    '',
+    '',
+    candidate.account_id || '',
+    candidate.video_url || '',
   ];
 }
 
