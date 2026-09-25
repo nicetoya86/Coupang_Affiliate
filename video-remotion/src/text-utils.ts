@@ -3,5 +3,6 @@ export function clampHookText(text: string, maxLength: number = 40): string {
   if (trimmed.length <= maxLength) {
     return trimmed;
   }
-  return trimmed.slice(0, maxLength - 1).trimEnd() + '…';
+  const chars = Array.from(trimmed);
+  return chars.slice(0, maxLength - 1).join('').trimEnd() + '…';
 }

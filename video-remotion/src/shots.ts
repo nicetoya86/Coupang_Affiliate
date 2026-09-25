@@ -9,8 +9,8 @@ type PresetKey = 'center' | 'topLeft' | 'bottomRight' | 'full';
 export const CROP_PRESETS: Record<PresetKey, CropPreset> = {
   full: { scale: 1, translateXPercent: 0, translateYPercent: 0 },
   center: { scale: 1.6, translateXPercent: 0, translateYPercent: 0 },
-  topLeft: { scale: 2.0, translateXPercent: -18, translateYPercent: -18 },
-  bottomRight: { scale: 2.0, translateXPercent: 18, translateYPercent: 18 },
+  topLeft: { scale: 2.0, translateXPercent: 18, translateYPercent: 18 },
+  bottomRight: { scale: 2.0, translateXPercent: -18, translateYPercent: -18 },
 };
 
 export const SHOT1_DURATION_IN_FRAMES = 9;

@@ -2,7 +2,7 @@ import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { validateInput, buildOutputPath } from './render-utils.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -41,7 +41,8 @@ function main() {
   fs.mkdirSync(outDir, { recursive: true });
   const outputPath = buildOutputPath(outDir, input.productImageUrl, input.variant);
 
-  const propsPath = path.join(os.tmpdir(), `impact-video-props-${Date.now()}.json`);
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'impact-video-props-'));
+  const propsPath = path.join(tmpDir, 'props.json');
   fs.writeFileSync(propsPath, JSON.stringify(input), 'utf8');
 
   const entry = path.join(__dirname, 'src', 'index.ts');
@@ -56,15 +57,12 @@ function main() {
     console.error('Remotion 렌더링 실패: ' + e.message);
     process.exit(1);
   } finally {
-    fs.rmSync(propsPath, { force: true });
+    fs.rmSync(tmpDir, { recursive: true, force: true });
   }
 
   console.log(outputPath);
 }
 
-// ponytail: import.meta.url vs process.argv[1] file:// 비교는 Windows 경로에서 깨지기 쉬워
-// 브리프 권장대로 basename 비교로 단순화함 (검증: node render.js 직접 실행 시 main() 호출됨,
-// node --test 임포트 시 호출 안 됨을 확인함)
-if (process.argv[1]?.endsWith('render.js')) {
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   main();
 }

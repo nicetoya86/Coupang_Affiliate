@@ -12,3 +12,13 @@ test('clampHookText truncates long text with an ellipsis, staying within maxLeng
   assert.ok(result.length <= 20);
   assert.ok(result.endsWith('…'));
 });
+
+test('clampHookText does not split a surrogate pair (emoji) when truncating', () => {
+  const withEmoji = '이거 정말 대박인데 진짜 안 사면 후회할듯🎉 완전 강추함';
+  const result = clampHookText(withEmoji, 15);
+  assert.ok(result.length <= 16); // allows for the trailing ellipsis
+  // A broken surrogate half serializes as the U+FFFD-adjacent lone surrogate;
+  // Array.from + join never produces one, so round-tripping through
+  // encodeURIComponent should never throw.
+  assert.doesNotThrow(() => encodeURIComponent(result));
+});

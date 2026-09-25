@@ -1,6 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { validateInput, slugify, buildOutputFilename, ALLOWED_VARIANTS } from './render-utils.js';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 test('validateInput passes for a well-formed input', () => {
   const errors = validateInput({
@@ -52,4 +57,14 @@ test('buildOutputFilename embeds slug, variant and timestamp', () => {
 
 test('ALLOWED_VARIANTS contains exactly the two spec variants', () => {
   assert.deepEqual(ALLOWED_VARIANTS, ['jumpcut-closeup', 'zoomout-reveal']);
+});
+
+test('ALLOWED_VARIANTS values each have a matching Composition id in Root.tsx', () => {
+  const rootTsx = fs.readFileSync(path.join(__dirname, 'src', 'Root.tsx'), 'utf8');
+  for (const variant of ALLOWED_VARIANTS) {
+    assert.ok(
+      rootTsx.includes(`id="${variant}"`),
+      `Root.tsx is missing a Composition with id="${variant}"`
+    );
+  }
 });
