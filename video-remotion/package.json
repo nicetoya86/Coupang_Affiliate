@@ -1,0 +1,23 @@
+{
+  "name": "video-remotion",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test:ts": "tsx --test src/shots.test.ts src/text-utils.test.ts",
+    "test:js": "node --test render-utils.test.js render.test.js",
+    "test": "npm run test:ts && npm run test:js"
+  },
+  "dependencies": {
+    "remotion": "^4.0.0",
+    "@remotion/cli": "^4.0.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0",
+    "@types/react": "^18.3.0",
+    "@types/node": "^20.14.0",
+    "tsx": "^4.16.0"
+  }
+}
