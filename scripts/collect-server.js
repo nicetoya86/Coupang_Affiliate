@@ -12,6 +12,7 @@ require('dotenv').config();
 const http = require('node:http');
 const fs = require('node:fs');
 const path = require('node:path');
+const { spawn } = require('node:child_process');
 const { createSheetsClient, getExistingProductTitles, appendRows } = require('./lib/sheets');
 const { composeAndUploadImage } = require('./lib/imagePipeline');
 const { composeProductImage } = require('./lib/composeImage');
@@ -114,6 +115,7 @@ const server = http.createServer(async (req, res) => {
       }
       const now = nowKstIso();
       const rows = [];
+      const accountAJobs = [];
       for (const p of items) {
         const imageUrl = await composeAndUploadImage(
           p.imageUrl,
@@ -128,13 +130,27 @@ const server = http.createServer(async (req, res) => {
               product_desc: p.title,
               affiliate_link: '',
               image_url: imageUrl,
+              account_id: p.accountA ? 'account_A' : '',
             },
             now,
           ),
         );
+        if (p.accountA) {
+          accountAJobs.push({ productTitle: p.title, productDesc: p.title, price: p.discountPrice, imageUrl });
+        }
       }
       await appendRows(sheets, GOOGLE_SHEET_ID, GOOGLE_SHEET_NAME, rows);
       sendJson(res, 200, { added: rows.length });
+
+      for (const job of accountAJobs) {
+        const child = spawn('node', ['process-account-a.js', '--json', JSON.stringify(job)], {
+          cwd: path.join(__dirname, '..', 'video-remotion'),
+          detached: true,
+          stdio: 'ignore',
+        });
+        child.unref();
+        console.log(`[계정A] "${job.productTitle}" 영상 파이프라인 백그라운드 시작`);
+      }
       return;
     }
 
