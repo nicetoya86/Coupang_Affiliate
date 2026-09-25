@@ -5,3 +5,4 @@ scripts/.state.json
 scripts/.storage-state.json
 scripts/service-account.json
 scripts/screenshots/
+.worktrees/
