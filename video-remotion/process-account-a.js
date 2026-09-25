@@ -98,18 +98,35 @@ async function main() {
   }
   console.log(`[${input.productTitle}] 영상 URL: ${videoUrl}`);
 
-  const sheets = createSheetsClient(path.resolve(__dirname, process.env.GOOGLE_SERVICE_ACCOUNT_KEY_FILE));
+  let sheets;
+  try {
+    sheets = createSheetsClient(path.resolve(__dirname, process.env.GOOGLE_SERVICE_ACCOUNT_KEY_FILE));
+  } catch (e) {
+    console.error('구글시트 인증 실패: ' + e.message);
+    process.exit(1);
+  }
   const spreadsheetId = process.env.GOOGLE_SHEET_ID;
   const sheetName = process.env.GOOGLE_SHEET_NAME || '시트1';
 
   console.log(`[${input.productTitle}] 제휴링크 대기 시작 (최대 30분)...`);
-  const ready = await pollForReadyRow(sheets, spreadsheetId, sheetName, input.productTitle);
+  let ready;
+  try {
+    ready = await pollForReadyRow(sheets, spreadsheetId, sheetName, input.productTitle);
+  } catch (e) {
+    console.error(`[${input.productTitle}] 시트 조회 실패: ${e.message}. 영상은 이미 업로드됨: ${videoUrl}`);
+    process.exit(1);
+  }
   if (!ready) {
     console.error(`[${input.productTitle}] 30분 동안 제휴링크가 채워지지 않았습니다. video_url을 시트에 기록하지 못했습니다: ${videoUrl}`);
     process.exit(1);
   }
 
-  await writeVideoUrl(sheets, spreadsheetId, sheetName, ready.rowNumber, videoUrl);
+  try {
+    await writeVideoUrl(sheets, spreadsheetId, sheetName, ready.rowNumber, videoUrl);
+  } catch (e) {
+    console.error(`[${input.productTitle}] video_url 기록 실패: ${e.message}. 렌더링된 영상: ${videoUrl}, 대상 행: ${ready.rowNumber}`);
+    process.exit(1);
+  }
   console.log(`[${input.productTitle}] 완료: ${ready.rowNumber}행에 video_url 기록함.`);
 }
 
