@@ -108,7 +108,23 @@ async function main() {
   const spreadsheetId = process.env.GOOGLE_SHEET_ID;
   const sheetName = process.env.GOOGLE_SHEET_NAME || '시트1';
 
-  console.log(`[${input.productTitle}] 제휴링크 대기 시작 (최대 30분)...`);
+  // rowNumber를 이미 알고 있으면(collect-server.js가 방금 추가한 행 번호를 넘겨준 경우)
+  // 제휴링크를 기다릴 필요 없이 바로 그 행에 기록한다 — 시트 등록 시점에 video_url까지 채워짐.
+  // rowNumber가 없으면(수동 복구 실행 등) 예전처럼 제휴링크가 채워질 때까지 폴링한다.
+  const targetRowNumber = input.rowNumber;
+
+  if (targetRowNumber) {
+    try {
+      await writeVideoUrl(sheets, spreadsheetId, sheetName, targetRowNumber, videoUrl);
+    } catch (e) {
+      console.error(`[${input.productTitle}] video_url 기록 실패: ${e.message}. 렌더링된 영상: ${videoUrl}, 대상 행: ${targetRowNumber}`);
+      process.exit(1);
+    }
+    console.log(`[${input.productTitle}] 완료: ${targetRowNumber}행에 video_url 기록함 (즉시 기록).`);
+    return;
+  }
+
+  console.log(`[${input.productTitle}] rowNumber 없음 — 제휴링크 대기 모드로 전환 (최대 30분)...`);
   let ready;
   try {
     ready = await pollForReadyRow(sheets, spreadsheetId, sheetName, input.productTitle);

@@ -116,7 +116,7 @@ const server = http.createServer(async (req, res) => {
       const now = nowKstIso();
       const rows = [];
       const accountAJobs = [];
-      for (const p of items) {
+      for (const [idx, p] of items.entries()) {
         const imageUrl = await composeAndUploadImage(
           p.imageUrl,
           { title: p.title, originalPrice: p.originalPrice, discountPrice: p.discountPrice, discountRate: p.discountRate },
@@ -140,13 +140,19 @@ const server = http.createServer(async (req, res) => {
           ),
         );
         if (isAccountA) {
-          accountAJobs.push({ productTitle: p.title, productDesc: p.title, price: p.discountPrice, imageUrl });
+          accountAJobs.push({ productTitle: p.title, productDesc: p.title, price: p.discountPrice, imageUrl, rowIndex: idx });
         }
       }
-      await appendRows(sheets, GOOGLE_SHEET_ID, GOOGLE_SHEET_NAME, rows);
+      const firstRowNumber = await appendRows(sheets, GOOGLE_SHEET_ID, GOOGLE_SHEET_NAME, rows);
       sendJson(res, 200, { added: rows.length });
 
       for (const job of accountAJobs) {
+        // firstRowNumber를 못 얻으면(응답 형식이 예상과 다르면) rowNumber 없이 넘긴다 —
+        // process-account-a.js가 예전처럼 제휴링크 폴링으로 알아서 찾아간다 (하위 호환 경로).
+        if (firstRowNumber != null) {
+          job.rowNumber = firstRowNumber + job.rowIndex;
+        }
+        delete job.rowIndex;
         const child = spawn(process.execPath, ['process-account-a.js', '--json', JSON.stringify(job)], {
           cwd: path.join(__dirname, '..', 'video-remotion'),
           detached: true,
