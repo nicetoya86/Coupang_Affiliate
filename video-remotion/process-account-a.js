@@ -88,7 +88,7 @@ async function main() {
       hookText,
       variant: 'jumpcut-closeup',
     });
-    videoUrl = execFileSync('node', ['render.js', '--json', renderInput], {
+    videoUrl = execFileSync(process.execPath, ['render.js', '--json', renderInput], {
       cwd: __dirname,
       encoding: 'utf8',
     }).trim();

@@ -122,6 +122,10 @@ const server = http.createServer(async (req, res) => {
           { title: p.title, originalPrice: p.originalPrice, discountPrice: p.discountPrice, discountRate: p.discountRate },
           CLOUDINARY_CONFIG,
         );
+        const isAccountA = p.accountA && !!imageUrl;
+        if (p.accountA && !imageUrl) {
+          console.warn(`[계정A] "${p.title}" 이미지 합성 실패로 계정A 처리를 건너뜁니다 (일반 이미지로 처리됨).`);
+        }
         rows.push(
           toSheetRow(
             {
@@ -130,12 +134,12 @@ const server = http.createServer(async (req, res) => {
               product_desc: p.title,
               affiliate_link: '',
               image_url: imageUrl,
-              account_id: p.accountA ? 'account_A' : '',
+              account_id: isAccountA ? 'account_A' : '',
             },
             now,
           ),
         );
-        if (p.accountA) {
+        if (isAccountA) {
           accountAJobs.push({ productTitle: p.title, productDesc: p.title, price: p.discountPrice, imageUrl });
         }
       }
@@ -143,10 +147,14 @@ const server = http.createServer(async (req, res) => {
       sendJson(res, 200, { added: rows.length });
 
       for (const job of accountAJobs) {
-        const child = spawn('node', ['process-account-a.js', '--json', JSON.stringify(job)], {
+        const child = spawn(process.execPath, ['process-account-a.js', '--json', JSON.stringify(job)], {
           cwd: path.join(__dirname, '..', 'video-remotion'),
           detached: true,
           stdio: ['ignore', 'inherit', 'inherit'],
+          env: {
+            ...process.env,
+            GOOGLE_SERVICE_ACCOUNT_KEY_FILE: path.resolve(__dirname, process.env.GOOGLE_SERVICE_ACCOUNT_KEY_FILE),
+          },
         });
         child.unref();
         child.on('error', (err) => {

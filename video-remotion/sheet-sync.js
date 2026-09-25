@@ -33,6 +33,7 @@ async function findReadyRow(sheets, spreadsheetId, sheetName, productTitle) {
     if (title === productTitle && link && String(link).trim()) {
       const rowObject = {};
       headers.forEach((h, idx) => { rowObject[h] = row[idx] || ''; });
+      if (rowObject.video_url) continue; // 이미 처리된(video_url 존재) 동명 행은 건너뛰고 계속 탐색
       return { rowNumber: i + 1, row: rowObject }; // 1-based, 헤더가 1행이므로 i=1 -> 2행
     }
   }

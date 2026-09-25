@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "test:ts": "tsx --test src/shots.test.ts src/text-utils.test.ts",
-    "test:js": "node --test render-utils.test.js render.test.js",
+    "test:js": "node --test render-utils.test.js render.test.js nvidia-hook.test.js sheet-sync.test.js",
     "test": "npm run test:ts && npm run test:js"
   },
   "dependencies": {
