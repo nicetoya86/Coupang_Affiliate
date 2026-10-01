@@ -92,7 +92,7 @@
   // 카드별 {url, image}: 상품 링크에서 위로 올라가며 그 카드 하나만 담은 컨테이너를 찾아 그 안의
   // 상품사진을 읽는다(위치 추정 없음). 컨테이너가 다른 상품 링크까지 품으면 모호하므로 image를 비운다.
   // 개수 불일치로 이미지가 통째로 날아가(❌) 미리보기가 비던 문제 대응 (2026-10-01).
-  var PHOTO = new RegExp('/image/(retail|vendor_inventory)/');
+  var PHOTO = new RegExp('/image/(retail|vendor_inventory|rs_quotation_api)/|/thumbnails/remote/');
   var cards = [];
   var seenCard = {};
   var live = document.querySelectorAll('a[href*="/vp/products/"]');

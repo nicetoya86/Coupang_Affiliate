@@ -107,7 +107,8 @@ function parseListingClipboard(raw) {
 // "image/badges/"(뱃지류) 경로에 있고, 실제 상품사진은 "image/retail/" 또는 "image/vendor_inventory/"
 // 경로에 있음 - 화이트리스트로 실제 상품사진만 남긴다.
 function isProductPhotoUrl(url) {
-  return /\/image\/(retail|vendor_inventory)\//.test(String(url || ''));
+  // rs_quotation_api 같은 새 경로도 있어(2026-10-02 확인) 경로 화이트리스트 대신 썸네일 CDN 경로도 인정한다.
+  return /\/image\/(retail|vendor_inventory|rs_quotation_api)\/|\/thumbnails\/remote\//.test(String(url || ''));
 }
 
 // 북마클릿(bookmarklet-listing.js)이 넣은 {raw, urls, images} JSON이면 텍스트+URL+이미지를

@@ -255,3 +255,13 @@ test('cards 페어가 오면 images 개수가 어긋나도 카드별 사진/URL�
   assert.strictEqual(out[2].imageUrl, photo);
   assert.strictEqual(out[3].productUrl, 'https://www.coupang.com/vp/products/3');
 });
+
+test('rs_quotation_api 경로 상품사진도 인정해 4개 카드 전부 매칭한다 (2026-10-02 실제 복사)', () => {
+  const T = 'https://thumbnail.coupangcdn.com/thumbnails/remote/230x230ex/image/';
+  const icon = 'https://image.coupangcdn.com/image/badges/cashback/web/list-cash-icon@2x.png';
+  const base = JSON.parse(REAL_BOOKMARKLET_PAYLOAD);
+  const photos = [T + 'retail/images/a.png', T + 'vendor_inventory/e7be/b.png', T + 'retail/images/c.jpg', T + 'rs_quotation_api/1whng3lv/d.jpg'];
+  const images = photos.flatMap((p) => [p, icon]);
+  const out = parseListingPayload(JSON.stringify({ ...base, images }));
+  assert.deepStrictEqual(out.map((i) => i.imageUrl), photos);
+});
