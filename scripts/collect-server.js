@@ -153,21 +153,37 @@ const server = http.createServer(async (req, res) => {
           job.rowNumber = firstRowNumber + job.rowIndex;
         }
         delete job.rowIndex;
+      }
+
+      // 렌더(Remotion/헤드리스 Chrome)는 메모리를 많이 써서 동시에 여러 개 돌리면 죽을 수 있어 한 개씩 순서대로 돌린다.
+      // 로그는 파일로 남긴다: detached + stdio:'inherit'는 Windows에서 서버 콘솔에 출력이 안 보여 실패 원인을 알 수 없었음.
+      const logPath = path.join(__dirname, '..', 'video-remotion', 'out', 'account-a.log');
+      fs.mkdirSync(path.dirname(logPath), { recursive: true });
+      const runJob = (job) => new Promise((resolve) => {
+        const logFd = fs.openSync(logPath, 'a');
+        console.log(`[계정A] "${job.productTitle}" 영상 파이프라인 시작 (1~2분 소요, 서버를 끄지 마세요)`);
         const child = spawn(process.execPath, ['process-account-a.js', '--json', JSON.stringify(job)], {
           cwd: path.join(__dirname, '..', 'video-remotion'),
-          detached: true,
-          stdio: ['ignore', 'inherit', 'inherit'],
+          windowsHide: true,
+          stdio: ['ignore', logFd, logFd],
           env: {
             ...process.env,
             GOOGLE_SERVICE_ACCOUNT_KEY_FILE: path.resolve(__dirname, process.env.GOOGLE_SERVICE_ACCOUNT_KEY_FILE),
           },
         });
-        child.unref();
+        fs.closeSync(logFd);
         child.on('error', (err) => {
           console.error(`[계정A] "${job.productTitle}" 프로세스 실행 실패: ${err.message}`);
+          resolve();
         });
-        console.log(`[계정A] "${job.productTitle}" 영상 파이프라인 백그라운드 시작`);
-      }
+        child.on('exit', (code) => {
+          console.log(`[계정A] "${job.productTitle}" ${code ? '실패 (exit ' + code + ') - 로그: ' + logPath : '완료'}`);
+          resolve();
+        });
+      });
+      (async () => {
+        for (const job of accountAJobs) await runJob(job);
+      })();
       return;
     }
 
