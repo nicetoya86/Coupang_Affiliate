@@ -1,33 +1,31 @@
-// 점프컷(경직된 하드컷) 대신 하나의 연속된 카메라 무빙(ease-in-out) — 자연스러운 Ken Burns.
+// 스크롤 하이재킹용: 첫 0.7초에 강하게 줌아웃(+모션블러)으로 시선을 잡고, 이후 느린 푸시인 + 중반 펀치인 한 번.
+// 모든 구간이 이징으로 이어져 속도 불연속(뚝 끊김)이 없다.
 export const FPS = 30;
 export const TOTAL_DURATION_IN_FRAMES = 150; // 5s
 
+export const INTRO_FRAMES = 22;
+export const INTRO_SCALE = 2.0; // 첫 프레임 배율 (초근접)
+export const DRIFT_SCALE = 0.2;
+export const PUNCH_AT = 70;
+export const PUNCH_FRAMES = 9;
+export const PUNCH_SCALE = 0.16;
+
 type Variant = 'jumpcut-closeup' | 'zoomout-reveal';
-export type Camera = { scale: number; translateXPercent: number; translateYPercent: number };
+export type Camera = { scale: number; translateXPercent: number; translateYPercent: number; blurPx: number };
 
-// variant id는 n8n/오케스트레이터 호환 위해 유지. jumpcut-closeup = 서서히 밀고 들어감, zoomout-reveal = 당겨 나옴.
-const PATHS: Record<Variant, { from: Camera; to: Camera }> = {
-  'jumpcut-closeup': {
-    from: { scale: 1.04, translateXPercent: 1.5, translateYPercent: 1 },
-    to: { scale: 1.28, translateXPercent: -1.5, translateYPercent: -1 },
-  },
-  'zoomout-reveal': {
-    from: { scale: 1.3, translateXPercent: -1.5, translateYPercent: -1 },
-    to: { scale: 1.04, translateXPercent: 1, translateYPercent: 0.5 },
-  },
-};
-
+const clamp01 = (x: number) => Math.min(Math.max(x, 0), 1);
+const easeOutQuart = (t: number) => 1 - Math.pow(1 - t, 4);
 const easeInOutSine = (t: number) => -(Math.cos(Math.PI * t) - 1) / 2;
 
 export function getCamera(variant: Variant, frame: number): Camera {
-  const { from, to } = PATHS[variant];
-  const t = Math.min(Math.max(frame / (TOTAL_DURATION_IN_FRAMES - 1), 0), 1);
-  const e = easeInOutSine(t);
-  // 아주 약한 핸드헬드 흔들림: 시작/끝(t=0,1)에서 0이 되도록 sin(πt) 가중
-  const sway = Math.sin(Math.PI * t) * 0.25;
+  const intro = easeOutQuart(clamp01(frame / INTRO_FRAMES)); // 0 → 1, 시작은 빠르고 끝은 부드럽게 멈춤
+  const drift = easeInOutSine(clamp01((frame - INTRO_FRAMES) / (TOTAL_DURATION_IN_FRAMES - 1 - INTRO_FRAMES)));
+  const punch = variant === 'jumpcut-closeup' ? PUNCH_SCALE * easeOutQuart(clamp01((frame - PUNCH_AT) / PUNCH_FRAMES)) : 0;
+  const settle = 1 - intro;
   return {
-    scale: from.scale + (to.scale - from.scale) * e,
-    translateXPercent: from.translateXPercent + (to.translateXPercent - from.translateXPercent) * e + Math.sin(frame / 11) * sway,
-    translateYPercent: from.translateYPercent + (to.translateYPercent - from.translateYPercent) * e + Math.cos(frame / 14) * sway,
+    scale: 1 + (INTRO_SCALE - 1) * settle + DRIFT_SCALE * drift + punch,
+    translateXPercent: 5 * settle - 1.2 * drift,
+    translateYPercent: 3.5 * settle - 0.8 * drift,
+    blurPx: 4 * settle * settle,
   };
 }

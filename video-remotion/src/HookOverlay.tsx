@@ -4,7 +4,7 @@ import { clampHookText } from './text-utils';
 
 export const HookOverlay: React.FC<{ hookText: string }> = ({ hookText }) => {
   const frame = useCurrentFrame();
-  const t = interpolate(frame, [8, 24], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
+  const t = interpolate(frame, [4, 14], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
   const displayText = clampHookText(hookText, 40);
 
   return (

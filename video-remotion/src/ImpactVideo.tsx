@@ -17,11 +17,11 @@ export const ImpactVideo: React.FC<ImpactVideoProps> = ({
 }) => {
   const frame = useCurrentFrame();
 
-  const { scale, translateXPercent, translateYPercent } = getCamera(variant, frame);
+  const { scale, translateXPercent, translateYPercent, blurPx } = getCamera(variant, frame);
 
   return (
     <AbsoluteFill style={{ backgroundColor: '#000000', filter: 'saturate(1.18)' }}>
-      <AbsoluteFill style={{ transform: `scale(${scale}) translate(${translateXPercent}%, ${translateYPercent}%)` }}>
+      <AbsoluteFill style={{ transform: `scale(${scale}) translate(${translateXPercent}%, ${translateYPercent}%)`, filter: `blur(${blurPx}px)` }}>
         <Img src={productImageUrl} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
       </AbsoluteFill>
       <HookOverlay hookText={hookText} />
