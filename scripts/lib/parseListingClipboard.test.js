@@ -243,3 +243,15 @@ test('실제 북마클릿 결과: 공용 뱃지/로고 아이콘은 걸러내고
     assert.ok(!it.imageUrl.includes('badges/cashback'));
   });
 });
+
+test('cards 페어가 오면 images 개수가 어긋나도 카드별 사진/URL을 그대로 쓴다', () => {
+  const items = parseListingPayload(REAL_BOOKMARKLET_PAYLOAD);
+  const raw = JSON.parse(REAL_BOOKMARKLET_PAYLOAD).raw;
+  const photo = 'https://thumbnail.coupangcdn.com/thumbnails/remote/230x230ex/image/retail/images/x.jpg';
+  const cards = items.map((_, i) => ({ url: 'https://www.coupang.com/vp/products/' + i, image: i === 1 ? '' : photo }));
+  const out = parseListingPayload(JSON.stringify({ raw, urls: [], images: [], cards }));
+  assert.strictEqual(out[0].imageUrl, photo);
+  assert.strictEqual(out[1].imageUrl, '');
+  assert.strictEqual(out[2].imageUrl, photo);
+  assert.strictEqual(out[3].productUrl, 'https://www.coupang.com/vp/products/3');
+});

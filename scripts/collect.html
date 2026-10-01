@@ -55,7 +55,7 @@
       const rows = items.map((it, idx) => `
         <tr class="${it.isDuplicate ? 'dup' : ''}">
           <td><input type="checkbox" data-idx="${idx}" ${it.isDuplicate ? 'disabled' : 'checked'}></td>
-          <td class="thumb">${it.thumbnailPreview ? `<img src="${it.thumbnailPreview}" alt="">` : (it.imageUrl ? '이미지있음(합성실패)' : '❌')}</td>
+          <td class="thumb">${it.thumbnailPreview ? `<img src="${it.thumbnailPreview}" alt="">` : (it.imageUrl ? '이미지있음(합성실패)' : '사진 못 잡음 ❌')}</td>
           <td>${it.title}</td>
           <td>${it.discountPrice || '-'}</td>
           <td>${it.originalPrice || '-'}</td>

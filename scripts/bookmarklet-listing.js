@@ -89,7 +89,44 @@
     }
   }
 
-  var payload = JSON.stringify({ raw: text, urls: urls, images: images });
+  // 카드별 {url, image}: 상품 링크에서 위로 올라가며 그 카드 하나만 담은 컨테이너를 찾아 그 안의
+  // 상품사진을 읽는다(위치 추정 없음). 컨테이너가 다른 상품 링크까지 품으면 모호하므로 image를 비운다.
+  // 개수 불일치로 이미지가 통째로 날아가(❌) 미리보기가 비던 문제 대응 (2026-10-01).
+  var PHOTO = new RegExp('/image/(retail|vendor_inventory)/');
+  var cards = [];
+  var seenCard = {};
+  var live = document.querySelectorAll('a[href*="/vp/products/"]');
+  for (var c = 0; c < live.length; c++) {
+    var a0 = live[c];
+    if (!range.intersectsNode(a0)) continue;
+    var h0 = a0.getAttribute('href') || '';
+    if (h0.indexOf('http') !== 0) h0 = location.origin + h0;
+    if (seenCard[h0]) continue;
+    seenCard[h0] = true;
+    var box = a0;
+    while (box && box !== document.body && !box.querySelector('[class*="cover_box"], [class*="cover-box"], img')) box = box.parentElement;
+    var cardImg = '';
+    if (box && box !== document.body) {
+      var others = box.querySelectorAll('a[href*="/vp/products/"]');
+      var clean = true;
+      for (var o = 0; o < others.length; o++) {
+        var oh = others[o].getAttribute('href') || '';
+        if (oh.indexOf('http') !== 0) oh = location.origin + oh;
+        if (oh !== h0) clean = false;
+      }
+      if (clean) {
+        var cands = box.querySelectorAll('[class*="cover_box"], [class*="cover-box"], img');
+        for (var d = 0; d < cands.length && !cardImg; d++) {
+          var u = cands[d].tagName === 'IMG' ? (cands[d].currentSrc || cands[d].getAttribute('src') || cands[d].getAttribute('data-src') || '') : bgUrl(cands[d]);
+          if (u && u.indexOf('http') !== 0 && u.indexOf('//') === 0) u = location.protocol + u;
+          if (PHOTO.test(u)) cardImg = u;
+        }
+      }
+    }
+    cards.push({ url: h0, image: cardImg });
+  }
+
+  var payload = JSON.stringify({ raw: text, urls: urls, images: images, cards: cards });
 
   navigator.clipboard.writeText(payload).then(
     function () {

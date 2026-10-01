@@ -124,17 +124,27 @@ function parseListingPayload(clipboardText) {
   let raw = clipboardText || '';
   let urls = [];
   let images = [];
+  let cards = [];
   try {
     const parsed = JSON.parse(clipboardText);
     if (parsed && typeof parsed.raw === 'string') {
       raw = parsed.raw;
       urls = Array.isArray(parsed.urls) ? parsed.urls : [];
       images = Array.isArray(parsed.images) ? parsed.images.filter(isProductPhotoUrl) : [];
+      cards = Array.isArray(parsed.cards) ? parsed.cards : [];
     }
   } catch (e) {
     // JSON이 아니면 순수 텍스트로 취급
   }
   const items = parseListingClipboard(raw);
+  // 카드별로 URL+사진이 한 쌍으로 묶여 온 경우(신형 북마클릿)는 위치 추정 없이 그대로 쓴다.
+  if (cards.length && cards.length === items.length) {
+    return items.map((item, i) => ({
+      ...item,
+      productUrl: cards[i].url || '',
+      imageUrl: isProductPhotoUrl(cards[i].image) ? cards[i].image : '',
+    }));
+  }
   const urlsAligned = urls.length === items.length;
   const imagesAligned = images.length === items.length;
   return items.map((item, i) => ({
