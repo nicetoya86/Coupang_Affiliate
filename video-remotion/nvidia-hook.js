@@ -1,6 +1,9 @@
 // 영상 자막용 한 줄 훅 생성. 게시물 본문(n8n 'NVIDIA 요청 만들기')과 달리 짧은 한 문장만 만든다.
 const MAX_CAPTION_CHARS = 28;
-const MAX_ATTEMPTS = 3;
+const MAX_ATTEMPTS = 5;
+const RETRY_DELAY_MS = 3000;
+// NVIDIA가 계속 503이어도 영상은 만들어지도록 하는 최후 폴백(상품 무관 일반 훅).
+const GENERIC_CAPTIONS = ['이거 아직 모르는 사람 많대', '나만 몰랐나 싶은 꿀템이래', '알고 나면 없으면 불편하대', '이런 거 하나쯤 있으면 편하다던데'];
 const EMOJI_RE = /[\p{Extended_Pictographic}️‍]/gu;
 const BANNED_RE = /(^|\s)너(는|가|도|를|한테|랑)?(\s|$)|써보니|사용해보니|하더라/;
 
@@ -95,20 +98,27 @@ async function requestCaption(productTitle, productDesc, apiKey) {
 }
 
 // 규칙(길이/금지어)을 어기면 재요청하고, 끝까지 어기면 첫 문장 폴백. 금지어가 남으면 에러.
-async function generateHookText(productTitle, productDesc, apiKey) {
+async function generateHookText(productTitle, productDesc, apiKey, { delayMs = RETRY_DELAY_MS } = {}) {
   let last = '';
+  let lastError = null;
   for (let i = 0; i < MAX_ATTEMPTS; i++) {
+    if (i > 0 && delayMs) await new Promise((r) => setTimeout(r, delayMs * i));
     try {
       last = await requestCaption(productTitle, productDesc, apiKey);
     } catch (e) {
-      if (i === MAX_ATTEMPTS - 1) throw e; // 503 등 일시 오류는 재시도
+      lastError = e; // 503 등 일시 오류는 점점 길게 쉬며 재시도
       continue;
     }
+    lastError = null;
     if (isValidCaption(last)) return last;
+  }
+  if (lastError || !last) {
+    console.warn('자막 AI 생성 실패, 일반 훅으로 대체: ' + (lastError && lastError.message));
+    return GENERIC_CAPTIONS[Math.floor(Math.random() * GENERIC_CAPTIONS.length)];
   }
   const fb = fallbackCaption(last);
   if (!fb || BANNED_RE.test(fb)) {
-    throw new Error('자막 생성 규칙을 만족하는 결과를 얻지 못했습니다: ' + last);
+    return GENERIC_CAPTIONS[Math.floor(Math.random() * GENERIC_CAPTIONS.length)];
   }
   return fb;
 }

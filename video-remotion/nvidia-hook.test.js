@@ -43,3 +43,20 @@ test('fallbackCaption: 첫 문장만, 길면 단어 경계에서 자름', () => 
 test('cleanCaption: 이모지/따옴표 제거', () => {
   assert.equal(cleanCaption('"안녕 😊 반가워"'), '안녕 반가워');
 });
+
+test('generateHookText: API가 계속 실패하면 일반 훅으로 폴백, 일시 오류 후 성공하면 그 결과 사용', async () => {
+  const { generateHookText } = await import('./nvidia-hook.js');
+  const realFetch = globalThis.fetch;
+  try {
+    globalThis.fetch = async () => ({ ok: false, status: 503, json: async () => ({ error: 'overloaded' }) });
+    const fb = await generateHookText('t', 'd', 'k', { delayMs: 0 });
+    assert.ok(fb && Array.from(fb).length <= 28);
+    let n = 0;
+    globalThis.fetch = async () => (++n < 3
+      ? { ok: false, status: 503, json: async () => ({}) }
+      : { ok: true, status: 200, json: async () => ({ choices: [{ message: { content: '{"caption":"케이스 누래진 적 있지?"}' } }] }) });
+    assert.equal(await generateHookText('t', 'd', 'k', { delayMs: 0 }), '케이스 누래진 적 있지?');
+  } finally {
+    globalThis.fetch = realFetch;
+  }
+});
