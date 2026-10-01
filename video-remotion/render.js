@@ -28,6 +28,30 @@ export function parseArgs(argv) {
   throw new Error('--json <inline JSON> 또는 --input <파일 경로> 중 하나가 필요합니다.');
 }
 
+// npx/shell 기동 오버헤드를 피하려고 remotion CLI를 node로 직접 실행한다.
+const REMOTION_CLI = path.join(__dirname, 'node_modules', '@remotion', 'cli', 'remotion-cli.js');
+const BUNDLE_DIR = path.join(__dirname, '.bundle');
+
+function newestMtimeMs(dir) {
+  let newest = 0;
+  for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, e.name);
+    newest = Math.max(newest, e.isDirectory() ? newestMtimeMs(full) : fs.statSync(full).mtimeMs);
+  }
+  return newest;
+}
+
+// 렌더마다 webpack 번들링(~7초)을 다시 하지 않도록 번들을 캐시한다. src가 바뀌면 자동 재생성.
+function ensureBundle() {
+  const entry = path.join(__dirname, 'src', 'index.ts');
+  const marker = path.join(BUNDLE_DIR, 'index.html');
+  if (fs.existsSync(marker) && fs.statSync(marker).mtimeMs > newestMtimeMs(path.join(__dirname, 'src'))) return;
+  execFileSync(process.execPath, [REMOTION_CLI, 'bundle', entry, `--out-dir=${BUNDLE_DIR}`], {
+    cwd: __dirname,
+    stdio: ['ignore', 'ignore', 'inherit'],
+  });
+}
+
 async function main() {
   loadEnvIfPresent();
 
@@ -64,13 +88,16 @@ async function main() {
   const propsPath = path.join(tmpDir, 'props.json');
   fs.writeFileSync(propsPath, JSON.stringify(input), 'utf8');
 
-  const entry = path.join(__dirname, 'src', 'index.ts');
-
   try {
+    ensureBundle();
+    // 측정(4코어): 25.5s -> 11.9s. crf 23/veryfast는 정지 이미지 위주라 화질 손실 거의 없이 파일도 3.5MB -> 1MB.
     execFileSync(
-      'npx',
-      ['remotion', 'render', entry, input.variant, outputPath, `--props=${propsPath}`],
-      { cwd: __dirname, stdio: ['ignore', 'pipe', 'inherit'], shell: process.platform === 'win32' }
+      process.execPath,
+      [
+        REMOTION_CLI, 'render', BUNDLE_DIR, input.variant, outputPath, `--props=${propsPath}`,
+        `--concurrency=${os.cpus().length}`, '--x264-preset=veryfast', '--crf=23',
+      ],
+      { cwd: __dirname, stdio: ['ignore', 'pipe', 'inherit'] }
     );
   } catch (e) {
     console.error('Remotion 렌더링 실패: ' + e.message);
