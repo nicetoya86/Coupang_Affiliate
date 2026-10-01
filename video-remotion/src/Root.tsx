@@ -1,9 +1,8 @@
 import React from 'react';
 import { Composition } from 'remotion';
 import { ImpactVideo, ImpactVideoProps } from './ImpactVideo';
-import { TOTAL_DURATION_IN_FRAMES } from './shots';
+import { FPS, TOTAL_DURATION_IN_FRAMES } from './shots';
 
-const FPS = 30;
 const WIDTH = 1080;
 const HEIGHT = 1080;
 

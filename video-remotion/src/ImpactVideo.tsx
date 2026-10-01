@@ -1,7 +1,7 @@
 import React from 'react';
 import { AbsoluteFill, Img, useCurrentFrame } from 'remotion';
 import { HookOverlay } from './HookOverlay';
-import { SHOT1_DURATION_IN_FRAMES, getShot1Scale, getShotForFrame } from './shots';
+import { getCamera } from './shots';
 
 export type ImpactVideoProps = {
   productImageUrl: string;
@@ -17,20 +17,7 @@ export const ImpactVideo: React.FC<ImpactVideoProps> = ({
 }) => {
   const frame = useCurrentFrame();
 
-  let scale: number;
-  let translateXPercent: number;
-  let translateYPercent: number;
-
-  if (frame < SHOT1_DURATION_IN_FRAMES) {
-    scale = getShot1Scale(variant, frame);
-    translateXPercent = 0;
-    translateYPercent = 0;
-  } else {
-    const { preset } = getShotForFrame(frame);
-    scale = preset.scale;
-    translateXPercent = preset.translateXPercent;
-    translateYPercent = preset.translateYPercent;
-  }
+  const { scale, translateXPercent, translateYPercent } = getCamera(variant, frame);
 
   return (
     <AbsoluteFill style={{ backgroundColor: '#000000', filter: 'saturate(1.18)' }}>

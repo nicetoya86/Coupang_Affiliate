@@ -1,49 +1,31 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {
-  CROP_PRESETS,
-  SHOT1_DURATION_IN_FRAMES,
-  SHOT_2_TO_4_DURATIONS_IN_FRAMES,
-  TOTAL_DURATION_IN_FRAMES,
-  getShotForFrame,
-  getShot1Scale,
-} from './shots';
+import { TOTAL_DURATION_IN_FRAMES, getCamera } from './shots';
 
-test('TOTAL_DURATION_IN_FRAMES matches spec (93 frames / 3.1s at 30fps)', () => {
-  assert.equal(SHOT1_DURATION_IN_FRAMES, 9);
-  assert.deepEqual(SHOT_2_TO_4_DURATIONS_IN_FRAMES, [30, 30, 24]);
-  assert.equal(TOTAL_DURATION_IN_FRAMES, 93);
+test('push-in: 시작 ≈1.04, 끝 ≈1.28, 단조 증가', () => {
+  const s = getCamera('jumpcut-closeup', 0).scale;
+  const e = getCamera('jumpcut-closeup', TOTAL_DURATION_IN_FRAMES - 1).scale;
+  assert.ok(Math.abs(s - 1.04) < 1e-9 && Math.abs(e - 1.28) < 1e-9);
+  let prev = s;
+  for (let f = 1; f < TOTAL_DURATION_IN_FRAMES; f++) {
+    const cur = getCamera('jumpcut-closeup', f).scale;
+    assert.ok(cur >= prev);
+    prev = cur;
+  }
 });
 
-test('getShotForFrame returns shot 1 (full preset) for frames before shot1 ends', () => {
-  const result = getShotForFrame(5);
-  assert.equal(result.shotIndex, 0);
-  assert.deepEqual(result.preset, CROP_PRESETS.full);
+test('프레임 간 점프 없음 (하드컷 회귀 방지): scale/translate 변화량 작음', () => {
+  for (const v of ['jumpcut-closeup', 'zoomout-reveal'] as const) {
+    for (let f = 1; f < TOTAL_DURATION_IN_FRAMES; f++) {
+      const a = getCamera(v, f - 1);
+      const b = getCamera(v, f);
+      assert.ok(Math.abs(b.scale - a.scale) < 0.01);
+      assert.ok(Math.abs(b.translateXPercent - a.translateXPercent) < 0.5);
+      assert.ok(Math.abs(b.translateYPercent - a.translateYPercent) < 0.5);
+    }
+  }
 });
 
-test('getShotForFrame cycles center -> topLeft -> bottomRight across shots 2-4', () => {
-  assert.deepEqual(getShotForFrame(9).preset, CROP_PRESETS.center);
-  assert.deepEqual(getShotForFrame(39).preset, CROP_PRESETS.topLeft);
-  assert.deepEqual(getShotForFrame(69).preset, CROP_PRESETS.bottomRight);
-});
-
-test('getShotForFrame clamps a frame past the end to the last shot', () => {
-  const result = getShotForFrame(999);
-  assert.deepEqual(result.preset, CROP_PRESETS.bottomRight);
-});
-
-test('getShot1Scale for jumpcut-closeup hard-cuts at frame 4', () => {
-  assert.equal(getShot1Scale('jumpcut-closeup', 0), 1);
-  assert.equal(getShot1Scale('jumpcut-closeup', 3), 1);
-  assert.equal(getShot1Scale('jumpcut-closeup', 4), 2.2);
-  assert.equal(getShot1Scale('jumpcut-closeup', 8), 2.2);
-});
-
-test('getShot1Scale for zoomout-reveal eases from 2.4 down to 1.0', () => {
-  const first = getShot1Scale('zoomout-reveal', 0);
-  const last = getShot1Scale('zoomout-reveal', SHOT1_DURATION_IN_FRAMES - 1);
-  assert.equal(first, 2.4);
-  assert.ok(Math.abs(last - 1.0) < 0.001);
-  const mid = getShot1Scale('zoomout-reveal', 4);
-  assert.ok(mid < first && mid > last);
+test('zoomout-reveal: 당겨 나옴', () => {
+  assert.ok(getCamera('zoomout-reveal', 0).scale > getCamera('zoomout-reveal', TOTAL_DURATION_IN_FRAMES - 1).scale);
 });

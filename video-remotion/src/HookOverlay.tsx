@@ -1,7 +1,10 @@
 import React from 'react';
+import { interpolate, useCurrentFrame } from 'remotion';
 import { clampHookText } from './text-utils';
 
 export const HookOverlay: React.FC<{ hookText: string }> = ({ hookText }) => {
+  const frame = useCurrentFrame();
+  const t = interpolate(frame, [8, 24], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
   const displayText = clampHookText(hookText, 40);
 
   return (
@@ -13,6 +16,8 @@ export const HookOverlay: React.FC<{ hookText: string }> = ({ hookText }) => {
         bottom: 0,
         padding: '32px 40px 40px',
         background: 'rgba(0, 0, 0, 0.55)',
+        opacity: t,
+        transform: `translateY(${(1 - t) * 24}px)`,
       }}
     >
       <div

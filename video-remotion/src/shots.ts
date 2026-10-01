@@ -1,66 +1,33 @@
-export type CropPreset = {
-  scale: number;
-  translateXPercent: number;
-  translateYPercent: number;
+// 점프컷(경직된 하드컷) 대신 하나의 연속된 카메라 무빙(ease-in-out) — 자연스러운 Ken Burns.
+export const FPS = 30;
+export const TOTAL_DURATION_IN_FRAMES = 150; // 5s
+
+type Variant = 'jumpcut-closeup' | 'zoomout-reveal';
+export type Camera = { scale: number; translateXPercent: number; translateYPercent: number };
+
+// variant id는 n8n/오케스트레이터 호환 위해 유지. jumpcut-closeup = 서서히 밀고 들어감, zoomout-reveal = 당겨 나옴.
+const PATHS: Record<Variant, { from: Camera; to: Camera }> = {
+  'jumpcut-closeup': {
+    from: { scale: 1.04, translateXPercent: 1.5, translateYPercent: 1 },
+    to: { scale: 1.28, translateXPercent: -1.5, translateYPercent: -1 },
+  },
+  'zoomout-reveal': {
+    from: { scale: 1.3, translateXPercent: -1.5, translateYPercent: -1 },
+    to: { scale: 1.04, translateXPercent: 1, translateYPercent: 0.5 },
+  },
 };
 
-type PresetKey = 'center' | 'topLeft' | 'bottomRight' | 'full';
+const easeInOutSine = (t: number) => -(Math.cos(Math.PI * t) - 1) / 2;
 
-export const CROP_PRESETS: Record<PresetKey, CropPreset> = {
-  full: { scale: 1, translateXPercent: 0, translateYPercent: 0 },
-  center: { scale: 1.6, translateXPercent: 0, translateYPercent: 0 },
-  topLeft: { scale: 2.0, translateXPercent: 18, translateYPercent: 18 },
-  bottomRight: { scale: 2.0, translateXPercent: -18, translateYPercent: -18 },
-};
-
-export const SHOT1_DURATION_IN_FRAMES = 9;
-export const SHOT_2_TO_4_DURATIONS_IN_FRAMES: readonly number[] = [30, 30, 24];
-export const SHOT_2_TO_4_PRESET_SEQUENCE: readonly PresetKey[] = ['center', 'topLeft', 'bottomRight'];
-
-export const TOTAL_DURATION_IN_FRAMES =
-  SHOT1_DURATION_IN_FRAMES + SHOT_2_TO_4_DURATIONS_IN_FRAMES.reduce((a, b) => a + b, 0);
-
-export const JUMPCUT_SPLIT_FRAME = 4;
-export const JUMPCUT_CLOSEUP_SCALE = 2.2;
-export const ZOOMOUT_START_SCALE = 2.4;
-export const ZOOMOUT_END_SCALE = 1.0;
-
-export function getShotForFrame(frame: number): {
-  shotIndex: number;
-  frameWithinShot: number;
-  preset: CropPreset;
-} {
-  if (frame < SHOT1_DURATION_IN_FRAMES) {
-    return { shotIndex: 0, frameWithinShot: frame, preset: CROP_PRESETS.full };
-  }
-
-  let cursor = SHOT1_DURATION_IN_FRAMES;
-  for (let i = 0; i < SHOT_2_TO_4_DURATIONS_IN_FRAMES.length; i++) {
-    const duration = SHOT_2_TO_4_DURATIONS_IN_FRAMES[i];
-    if (frame < cursor + duration) {
-      const presetKey = SHOT_2_TO_4_PRESET_SEQUENCE[i];
-      return { shotIndex: i + 1, frameWithinShot: frame - cursor, preset: CROP_PRESETS[presetKey] };
-    }
-    cursor += duration;
-  }
-
-  const lastIndex = SHOT_2_TO_4_DURATIONS_IN_FRAMES.length - 1;
-  const presetKey = SHOT_2_TO_4_PRESET_SEQUENCE[lastIndex];
+export function getCamera(variant: Variant, frame: number): Camera {
+  const { from, to } = PATHS[variant];
+  const t = Math.min(Math.max(frame / (TOTAL_DURATION_IN_FRAMES - 1), 0), 1);
+  const e = easeInOutSine(t);
+  // 아주 약한 핸드헬드 흔들림: 시작/끝(t=0,1)에서 0이 되도록 sin(πt) 가중
+  const sway = Math.sin(Math.PI * t) * 0.25;
   return {
-    shotIndex: lastIndex + 1,
-    frameWithinShot: SHOT_2_TO_4_DURATIONS_IN_FRAMES[lastIndex] - 1,
-    preset: CROP_PRESETS[presetKey],
+    scale: from.scale + (to.scale - from.scale) * e,
+    translateXPercent: from.translateXPercent + (to.translateXPercent - from.translateXPercent) * e + Math.sin(frame / 11) * sway,
+    translateYPercent: from.translateYPercent + (to.translateYPercent - from.translateYPercent) * e + Math.cos(frame / 14) * sway,
   };
-}
-
-export function getShot1Scale(
-  variant: 'jumpcut-closeup' | 'zoomout-reveal',
-  frameWithinShot1: number
-): number {
-  if (variant === 'jumpcut-closeup') {
-    return frameWithinShot1 < JUMPCUT_SPLIT_FRAME ? 1 : JUMPCUT_CLOSEUP_SCALE;
-  }
-  const progress = Math.min(frameWithinShot1 / (SHOT1_DURATION_IN_FRAMES - 1), 1);
-  const eased = 1 - Math.pow(1 - progress, 3);
-  return ZOOMOUT_START_SCALE + (ZOOMOUT_END_SCALE - ZOOMOUT_START_SCALE) * eased;
 }
