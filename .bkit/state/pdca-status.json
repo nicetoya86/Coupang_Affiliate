@@ -1,6 +1,6 @@
 {
   "version": "2.0",
-  "lastUpdated": "2026-09-15T23:04:00.716Z",
+  "lastUpdated": "2026-09-25T14:17:59.912Z",
   "activeFeatures": [
     "coupang-threads-auto-posting",
     "scripts",
@@ -8,7 +8,8 @@
     "Desktop",
     "threads-warmup-extension",
     "tmp",
-    "Temp"
+    "Temp",
+    "video-remotion"
   ],
   "primaryFeature": "coupang-threads-auto-posting",
   "features": {
@@ -44,9 +45,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-07-22T16:25:26.291Z",
-        "lastUpdated": "2026-09-13T12:12:11.155Z"
+        "lastUpdated": "2026-09-25T14:17:59.912Z"
       },
-      "lastFile": "D:\\vibecording\\Coupang_Affiliate\\scripts\\_tmp_check_queue.js"
+      "lastFile": "D:\\vibecording\\Coupang_Affiliate\\scripts\\lib\\pairCheckedItems.test.js"
     },
     "scratchpad": {
       "phase": "do",
@@ -57,9 +58,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-08-05T15:49:40.391Z",
-        "lastUpdated": "2026-09-15T23:04:00.715Z"
+        "lastUpdated": "2026-09-25T10:50:23.624Z"
       },
-      "lastFile": "C:\\Users\\nicet\\AppData\\Local\\Temp\\claude\\D--vibecording-Coupang-Affiliate\\27155301-390c-48e9-b93c-2700cd7843b6\\scratchpad\\parse9.js"
+      "lastFile": "C:\\Users\\nicet\\AppData\\Local\\Temp\\claude\\D--vibecording-Coupang-Affiliate\\ca4509f2-dc0f-4708-a8a3-94eb1ef5b958\\scratchpad\\find-row.js"
     },
     "Desktop": {
       "phase": "do",
@@ -112,6 +113,19 @@
         "lastUpdated": "2026-09-13T03:43:27.811Z"
       },
       "lastFile": "C:\\Users\\nicet\\AppData\\Local\\Temp\\deployed_parse_node.js"
+    },
+    "video-remotion": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-09-25T06:51:33.292Z",
+        "lastUpdated": "2026-09-25T13:10:05.337Z"
+      },
+      "lastFile": "D:\\vibecording\\Coupang_Affiliate\\video-remotion\\process-account-a.js"
     }
   },
   "pipeline": {
@@ -122,7 +136,7 @@
   "session": {
     "startedAt": "2026-07-20T15:29:58.618Z",
     "onboardingCompleted": false,
-    "lastActivity": "2026-09-15T23:04:00.716Z"
+    "lastActivity": "2026-09-25T14:17:59.912Z"
   },
   "history": [
     {
@@ -1442,6 +1456,480 @@
       "phase": "design",
       "action": "root-cause-found",
       "note": "User asked to re-verify account A/B posting reliability. Found: account_B Threads token is invalid (Threads API code 100/error_subcode 33 on every container-creation attempt, confirmed on 2 scheduled runs today). This was hidden because the 본문생성 exhaustion path had no stopAndError, so n8n reported execution status=success even though nothing was posted. Added stopAndError node so this now surfaces as error (activeVersionId 68ac25d8). account_B still cannot post until a real token re-auth happens — that part is not fixable via code."
+    },
+    {
+      "timestamp": "2026-09-25T05:32:31.581Z",
+      "feature": "scratchpad",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T05:32:43.048Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T05:33:02.099Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T05:38:21.486Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T05:38:30.203Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T05:38:45.931Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T06:51:33.292Z",
+      "feature": "video-remotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T06:56:17.942Z",
+      "feature": "video-remotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T06:56:35.457Z",
+      "feature": "video-remotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T06:56:46.598Z",
+      "feature": "video-remotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T06:56:54.761Z",
+      "feature": "video-remotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T07:00:16.835Z",
+      "feature": "video-remotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T07:00:21.434Z",
+      "feature": "video-remotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T07:00:26.193Z",
+      "feature": "video-remotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T07:00:27.226Z",
+      "feature": "video-remotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T07:04:25.333Z",
+      "feature": "video-remotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T07:04:33.391Z",
+      "feature": "video-remotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T07:07:34.350Z",
+      "feature": "video-remotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T07:07:47.755Z",
+      "feature": "video-remotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T07:20:34.867Z",
+      "feature": "video-remotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T07:20:36.235Z",
+      "feature": "video-remotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T07:20:39.510Z",
+      "feature": "video-remotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T07:20:42.796Z",
+      "feature": "video-remotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T07:20:44.595Z",
+      "feature": "video-remotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T07:20:45.790Z",
+      "feature": "video-remotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T07:20:48.345Z",
+      "feature": "video-remotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T07:20:52.672Z",
+      "feature": "video-remotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T07:20:55.544Z",
+      "feature": "video-remotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T07:33:31.731Z",
+      "feature": "video-remotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T07:33:37.713Z",
+      "feature": "video-remotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T07:33:41.031Z",
+      "feature": "video-remotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T07:46:19.592Z",
+      "feature": "video-remotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T07:46:37.309Z",
+      "feature": "video-remotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T07:46:43.817Z",
+      "feature": "video-remotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T07:46:48.922Z",
+      "feature": "video-remotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T09:31:58.497Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T09:32:10.054Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T09:32:12.626Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T09:34:56.143Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T09:36:45.691Z",
+      "feature": "video-remotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T09:37:35.001Z",
+      "feature": "video-remotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T09:40:40.277Z",
+      "feature": "video-remotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T09:40:52.081Z",
+      "feature": "video-remotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T09:41:12.642Z",
+      "feature": "video-remotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T09:46:05.409Z",
+      "feature": "video-remotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T09:46:10.812Z",
+      "feature": "video-remotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T09:46:30.835Z",
+      "feature": "scratchpad",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T09:48:21.372Z",
+      "feature": "scratchpad",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T09:53:21.879Z",
+      "feature": "video-remotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T09:53:31.009Z",
+      "feature": "video-remotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T09:59:14.337Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T09:59:21.725Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T10:04:04.736Z",
+      "feature": "scratchpad",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T10:04:14.885Z",
+      "feature": "scratchpad",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T10:04:26.409Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T10:04:40.402Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T10:04:58.023Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T10:08:30.022Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T10:10:20.099Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T10:14:59.656Z",
+      "feature": "scratchpad",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T10:49:15.703Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T10:49:21.622Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T10:49:31.044Z",
+      "feature": "video-remotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T10:49:35.841Z",
+      "feature": "video-remotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T10:50:23.624Z",
+      "feature": "scratchpad",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T10:50:36.103Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T10:50:50.995Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T10:52:39.194Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T12:17:40.559Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T12:19:31.124Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T13:09:23.589Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T13:09:28.223Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T13:09:37.352Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T13:09:43.268Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T13:10:05.337Z",
+      "feature": "video-remotion",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T14:14:37.157Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T14:14:55.324Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T14:17:47.811Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-09-25T14:17:59.912Z",
+      "feature": "scripts",
+      "phase": "do",
+      "action": "updated"
     }
   ]
 }
