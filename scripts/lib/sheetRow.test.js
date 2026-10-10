@@ -44,5 +44,5 @@ test('account_id/video_url을 안 넘기면 빈 문자열로 채운다 (기존 4
   const row = toSheetRow({ product_title: '제목만' }, '2026-09-25T00:00:00.000Z');
   assert.strictEqual(row[SHEET_COLUMNS.indexOf('account_id')], '');
   assert.strictEqual(row[SHEET_COLUMNS.indexOf('video_url')], '');
-  assert.strictEqual(row.length, 11);
+  assert.strictEqual(row.length, 18);
 });

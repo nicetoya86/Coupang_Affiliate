@@ -73,6 +73,8 @@ async function main() {
         {
           product_title: p.title,
           price: p.discountPrice,
+          original_price: p.originalPrice,
+          discount_rate: p.discountRate,
           product_desc: p.title,
           affiliate_link: '',
           image_url: imageUrl,

@@ -78,6 +78,8 @@ async function runNonInteractive(sheets, cliArgs) {
   const candidate = {
     product_title: productTitle,
     price: discountPrice,
+    original_price: originalPrice,
+    discount_rate: discountRate,
     product_desc: productDesc,
     affiliate_link: affiliateLink,
     image_url: imageUrl,
@@ -138,6 +140,8 @@ async function runInteractive(sheets) {
     const candidate = {
       product_title: productTitle,
       price: discountPrice,
+      original_price: originalPrice,
+      discount_rate: discountRate,
       product_desc: productDesc,
       affiliate_link: affiliateLink,
       image_url: imageUrl,
