@@ -6,3 +6,7 @@ scripts/.storage-state.json
 scripts/service-account.json
 scripts/screenshots/
 .worktrees/
+
+.bkit/snapshots/
+before.json
+after.json
